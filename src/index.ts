@@ -11,10 +11,10 @@ ShopPDataSource.initialize()
         app.use(routes);
         app.listen(ShopPConfig.PORT, () => {
             console.log(`App is listenning at port ${ShopPConfig.PORT}!`);
-        })
+        });
     })
     .catch(err => {
         console.error('There are some errors while initialzing data source!');
         console.error('Detail:');
-        console.log(err)
+        console.log(err);
     });
