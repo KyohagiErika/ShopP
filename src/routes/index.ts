@@ -1,7 +1,13 @@
 import { Router } from "express";
+import auth from "./auth";
+import user from "./user";
 import AccountModel from "../models/account";
 
 const routes = Router();
+
+routes.use("/auth", auth);
+routes.use("/user", user);
+
 routes.get('/', async (req, res) => {
     const accounts = await AccountModel.find();
     if (accounts) {
