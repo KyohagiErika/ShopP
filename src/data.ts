@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
-import { Account } from "./entities/account";
+import { UserRole } from "./entities/userRole";
+import { User } from "./entities/user"
 import ShopPConfig from "./utils/shopp.config";
 
 export const ShopPDataSource = new DataSource({
@@ -9,5 +10,5 @@ export const ShopPDataSource = new DataSource({
     username: ShopPConfig.DATABASE_USERNAME,
     password: ShopPConfig.DATABASE_PASSWORD,
     database: ShopPConfig.DATABASE_NAME,
-    entities: [Account]
+    entities: [UserRole, User]
 });

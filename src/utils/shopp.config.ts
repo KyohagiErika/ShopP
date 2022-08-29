@@ -9,4 +9,5 @@ export default class ShopPConfig {
     static DATABASE_USERNAME = process.env.DATABASE_USERNAME || 'root';
     static DATABASE_PASSWORD = process.env.DATABASE_PASSWORD || '300618';
     static DATABASE_NAME = process.env.DATABASE_NAME || 'shopp';
+    static JWT_SECRET = '@QEGTUI';
 }
