@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import UserModel from "../models/user";
-import Enum from "../utils/shopp.enum";
+import { RoleEnum } from "../utils/shopp.enum"
 
 export default class UserMiddleware {
     static listAll = async (req: Request, res: Response) => {
@@ -34,7 +34,7 @@ export default class UserMiddleware {
     static postNew = async (req: Request, res: Response) => {
         const data = req.query;
         if (data.email && data.password  && data.phone) {
-            const result = await UserModel.postNew(data.email.toString(), data.phone.toString(), data.password.toString(), Enum.RoleEnum.CUSTOMER);
+            const result = await UserModel.postNew(data.email.toString(), data.phone.toString(), data.password.toString(), RoleEnum.CUSTOMER);
             if (result) {
                 res.send(result);
             } else {

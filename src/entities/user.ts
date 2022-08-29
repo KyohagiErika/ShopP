@@ -9,7 +9,7 @@ import {
 import { Length, IsNotEmpty } from "class-validator";
 import bcrypt from "bcryptjs";
 import { UserRole } from "./userRole";
-import Enum from "../utils/shopp.enum"
+import { StatusEnum} from "../utils/shopp.enum"
 
 @Entity()
 export class User {
@@ -33,10 +33,10 @@ export class User {
 
   @Column({
     type: "enum",
-    enum: Enum.StatusEnum,
-    default: Enum.StatusEnum.ACTIVE
+    enum: StatusEnum,
+    default: StatusEnum.ACTIVE
   })
-  status: Enum.StatusEnum
+  status: StatusEnum
 
   @Column()
   @CreateDateColumn()

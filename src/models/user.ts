@@ -2,7 +2,7 @@ import { validate } from "class-validator";
 import { ShopPDataSource } from "../data";
 import { User } from "../entities/user";
 import { UserRole } from "../entities/userRole";
-import Enum from "../utils/shopp.enum";
+import { StatusEnum, RoleEnum } from "../utils/shopp.enum";
 
 export default class UserModel {
   static async listAll() {
@@ -46,7 +46,7 @@ export default class UserModel {
     };
   }
 
-  static async postNew(email: string, phone: string, password: string, role: Enum.RoleEnum) {
+  static async postNew(email: string, phone: string, password: string, role: RoleEnum) {
     //Get parameters from the body
     let user = new User();
     user.email = email;
@@ -95,7 +95,7 @@ export default class UserModel {
         user = await userRepository.findOne({ 
           where: {
             id: id,
-            status: Enum.StatusEnum.ACTIVE
+            status: StatusEnum.ACTIVE
           } });
         if (user) {
           //Validate the new values on model
@@ -133,11 +133,11 @@ export default class UserModel {
         user = await userRepository.findOne({ 
           where: {
             id: id,
-            status: Enum.StatusEnum.ACTIVE
+            status: StatusEnum.ACTIVE
           } 
         });
         if(user !== null) {
-          user.status = Enum.StatusEnum.INACTIVE;
+          user.status = StatusEnum.INACTIVE;
 
           const errors = await validate(user);
           if(errors.length > 0) return errors;

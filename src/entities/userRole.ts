@@ -7,7 +7,7 @@ import {
 } from "typeorm"
 import { IsNotEmpty } from "class-validator";
 import { User } from "./user";
-import Enum from "../utils/shopp.enum"
+import { RoleEnum } from "../utils/shopp.enum"
 
 @Entity()
 export class UserRole extends BaseEntity {
@@ -20,7 +20,7 @@ export class UserRole extends BaseEntity {
     @IsNotEmpty()
     @Column({
         type: "enum",
-        enum: Enum.RoleEnum,
+        enum: RoleEnum,
     })
-    role: Enum.RoleEnum
+    role: RoleEnum
 }
