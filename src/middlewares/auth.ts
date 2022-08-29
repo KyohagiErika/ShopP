@@ -5,8 +5,16 @@ import { validate } from "class-validator";
 
 import { User } from "../entities/user";
 import config from "../utils/shopp.config";
+import { ControllerService } from "../utils/decorators";
 
 class AuthMiddleware {
+
+  @ControllerService()
+  static async test(req: Request, res: Response) {
+    throw new Error('test error');
+    res.send({ message: 'Success!' });
+  }
+
   static login = async (req: Request, res: Response) => {
     //Check if username and password are set
     let { email, password } = req.body;
