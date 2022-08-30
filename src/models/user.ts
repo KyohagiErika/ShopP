@@ -15,15 +15,17 @@ export default class UserModel {
         id: true,
         email: true,
         phone: true,
-        status: true,
         createdAt: true,
         roles: true
-      }//We dont want to send the passwords on response 
+      },//We dont want to send the passwords on response 
+      where: {
+        status: StatusEnum.ACTIVE
+      }
     });
     return users && (users.length > 0) ? users : false;
   };
 
-  static async getOneById(id: number) {
+  static async getOneById(userId: number) {
     //Get the user from database
     const userRepository = ShopPDataSource.getRepository(User);
     try {
@@ -37,7 +39,8 @@ export default class UserModel {
           roles: true
         }, //We dont want to send the password on response
         where: {
-          id: id
+          id: userId,
+          status: StatusEnum.ACTIVE
         }
       });
       return user ? user : false;
@@ -76,8 +79,8 @@ export default class UserModel {
     const userRepository = ShopPDataSource.getRepository(User);
     const userRoleRepository = ShopPDataSource.getRepository(UserRole);
     try {
-      await userRepository.save(user);
-      await userRoleRepository.save(userRole);
+      await userRepository.manager.save(user);
+      await userRoleRepository.manager.save(userRole);
     } catch (e) {
       return e;
     }
@@ -125,14 +128,14 @@ export default class UserModel {
     };
   }
 
-  static async delete(id: number) {
+  static async delete(userId: number) {
     const userRepository = ShopPDataSource.getRepository(User);
     let user: User | null | undefined;
     if (user !== null && user !== undefined) {
       try {
         user = await userRepository.findOne({ 
           where: {
-            id: id,
+            id: userId,
             status: StatusEnum.ACTIVE
           } 
         });
@@ -141,7 +144,9 @@ export default class UserModel {
 
           const errors = await validate(user);
           if(errors.length > 0) return errors;
-          return true;
+
+          await userRepository.manager.save(user)
+          return user;
         } else return false;
         
       } catch (error) {

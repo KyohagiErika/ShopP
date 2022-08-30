@@ -1,5 +1,4 @@
 import {
-    BaseEntity,
     Column,
     Entity,
     ManyToOne,
@@ -10,7 +9,7 @@ import { User } from "./user";
 import { RoleEnum } from "../utils/shopp.enum"
 
 @Entity()
-export class UserRole extends BaseEntity {
+export class UserRole {
     @PrimaryGeneratedColumn()
     id: number;
 

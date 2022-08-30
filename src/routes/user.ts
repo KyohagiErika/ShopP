@@ -7,18 +7,18 @@ import UserMiddleware from "../middlewares/user";
 const routes = Router();
 
 //Get all users
-routes.get("/", [checkJwt, checkRole(RoleEnum.ADMIN)], UserMiddleware.listAll);
+routes.get("/list-all",  UserMiddleware.listAll);//[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 // Get one user
-routes.get("/:id([0-9]+)", [checkJwt, checkRole(RoleEnum.ADMIN)], UserMiddleware.getOneById);
+routes.get("/:id([0-9]+)",  UserMiddleware.getOneById);//[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 //Create a new user
-routes.post("/", [checkJwt, checkRole(RoleEnum.ADMIN)], UserMiddleware.postNew);
+routes.post("/",  UserMiddleware.postNew);//[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 //Edit one user
 routes.put("/:id([0-9]+)", [checkJwt, checkRole(RoleEnum.ADMIN)], UserMiddleware.edit);
 
 //Delete one user
-routes.delete("/:id([0-9]+)", [checkJwt, checkRole(RoleEnum.ADMIN)], UserMiddleware.delete);
+routes.put("/delete/:id([0-9]+)",  UserMiddleware.delete);//[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 export default routes;
