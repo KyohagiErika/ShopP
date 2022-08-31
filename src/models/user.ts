@@ -15,8 +15,9 @@ export default class UserModel {
         id: true,
         email: true,
         phone: true,
-        createdAt: true,
-        roles: true
+        roles: {
+          role: true
+        }
       },//We dont want to send the passwords on response 
       where: {
         status: StatusEnum.ACTIVE
@@ -34,9 +35,9 @@ export default class UserModel {
           id: true,
           email: true,
           phone: true,
-          status: true,
-          createdAt: true,
-          roles: true
+          roles: {
+            role: true
+          }
         }, //We dont want to send the password on response
         where: {
           id: userId,
@@ -45,7 +46,7 @@ export default class UserModel {
       });
       return user ? user : false;
     } catch (error) {
-      return error;
+      return { "error": error };
     };
   }
 
@@ -79,10 +80,10 @@ export default class UserModel {
     const userRepository = ShopPDataSource.getRepository(User);
     const userRoleRepository = ShopPDataSource.getRepository(UserRole);
     try {
-      await userRepository.manager.save(user);
-      await userRoleRepository.manager.save(userRole);
+      await userRepository.save(user);
+      await userRoleRepository.save(userRole);
     } catch (e) {
-      return e;
+      return { "e": e };
     }
     //If all ok, send 201 response
     //res.status(201).send("User created");
@@ -92,70 +93,77 @@ export default class UserModel {
   static async edit(id: number, email: string, phone: string) {
     //Try to find user on database
     const userRepository = ShopPDataSource.getRepository(User);
-    let user: User | undefined | null;
-    if (user !== undefined && user !== null) {
       try {
-        user = await userRepository.findOne({ 
+        const user : User | null = await userRepository.findOne({
           where: {
             id: id,
             status: StatusEnum.ACTIVE
-          } });
-        if (user) {
+          }
+        });
+        if (user !== null) {
           //Validate the new values on model
           user.email = email;
           user.phone = phone;
           const errors = await validate(user);
           if (errors.length > 0) {
             //res.status(400).send(errors);
-            return errors;
+            return {"errors" : errors};
           }
 
           //Try to safe, if fails, that means username already in use
           try {
             await userRepository.save(user);
+            return true;
           } catch (e) {
-            return e;
+            return {"e" : e};
           }
-        }
+        } 
+      return {"error": "Wrong id"};
         //After all send a 204 (no content, but accepted) response
         //res.status(204).send();
-        return true;
+        
       } catch (error) {
         //If not found, send a 404 response
         //res.status(404).send("User not found");
-        return error;
-      }
+        return {"error" : error};
     };
   }
 
   static async delete(userId: number) {
     const userRepository = ShopPDataSource.getRepository(User);
-    let user: User | null | undefined;
-    if (user !== null && user !== undefined) {
       try {
-        user = await userRepository.findOne({ 
+        const user : User | null = await userRepository.findOne({
           where: {
             id: userId,
             status: StatusEnum.ACTIVE
-          } 
+          }
         });
-        if(user !== null) {
+        if (user !== null) {
+          //Validate the new values on model
           user.status = StatusEnum.INACTIVE;
-
           const errors = await validate(user);
-          if(errors.length > 0) return errors;
+          if (errors.length > 0) {
+            //res.status(400).send(errors);
+            return {"errors" : errors};
+          }
 
-          await userRepository.manager.save(user)
-          return user;
-        } else return false;
+          //Try to safe, if fails, that means username already in use
+          try {
+            await userRepository.save(user);
+            return true;
+          } catch (e) {
+            return {"e" : e};
+          }
+        } 
+      return {"error": "Unavailabe user"};
+        //After all send a 204 (no content, but accepted) response
+        //res.status(204).send();
         
       } catch (error) {
+        //If not found, send a 404 response
         //res.status(404).send("User not found");
-        return error;
-      }
-      //After all send a 204 (no content, but accepted) response
-      //res.status(204).send();     
-    }
+        return {"error" : error};
+    };
+    };
   };
-};
 

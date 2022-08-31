@@ -11,7 +11,7 @@ import bcrypt from "bcryptjs";
 import { UserRole } from "./userRole";
 import { StatusEnum} from "../utils/shopp.enum"
 
-@Entity()
+@Entity({name: "user"})
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -27,7 +27,6 @@ export class User {
   phone: string;
 
   @Column()
-  @Length(10, 40)
   @IsNotEmpty()
   password: string;
 
