@@ -3,13 +3,16 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  OneToMany
+  OneToMany,
+  OneToOne,
+  JoinColumn
 } from "typeorm";
 
 import { Length, IsNotEmpty } from "class-validator";
 import bcrypt from "bcryptjs";
 import { UserRole } from "./userRole";
 import { StatusEnum} from "../utils/shopp.enum"
+import { Shop } from "./shop";
 
 @Entity()
 export class User {
@@ -47,6 +50,11 @@ export class User {
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   roles: UserRole[]
+
+  @OneToOne(() => Shop)
+  @JoinColumn()
+  @IsNotEmpty()
+  shop: Shop;
 
   hashPassword() {
     this.password = bcrypt.hashSync(this.password, 8);

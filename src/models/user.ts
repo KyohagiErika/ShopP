@@ -5,6 +5,7 @@ import { UserRole } from "../entities/userRole";
 import { StatusEnum, RoleEnum } from "../utils/shopp.enum";
 
 export default class UserModel {
+  static status: { status: StatusEnum; };
   static async listAll() {
     const userRepository = ShopPDataSource.getRepository(User);
     const users = await userRepository.find({
