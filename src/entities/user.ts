@@ -3,30 +3,32 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  OneToMany
+  OneToMany,
+  OneToOne,
 } from "typeorm";
 
 import { Length, IsNotEmpty } from "class-validator";
 import bcrypt from "bcryptjs";
 import { UserRole } from "./userRole";
-import { StatusEnum} from "../utils/shopp.enum"
+import { Customer } from "./customer";
+import { StatusEnum } from "../utils/shopp.enum";
 
-@Entity()
+@Entity({ name: "user" })
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ name: "email" })
   @Length(4, 60)
   @IsNotEmpty()
   email: string;
 
-  @Column()
+  @Column({name:'phone'})
   @Length(10)
   @IsNotEmpty()
   phone: string;
 
-  @Column()
+  @Column({name:'password'})
   @Length(10, 40)
   @IsNotEmpty()
   password: string;
@@ -34,19 +36,22 @@ export class User {
   @Column({
     type: "enum",
     enum: StatusEnum,
-    default: StatusEnum.ACTIVE
+    default: StatusEnum.ACTIVE,
   })
-  status: StatusEnum
+  status: StatusEnum;
 
-  @Column()
+  @Column({name:'createdAt'})
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @Column({name:'lockedAt'})
   lockedAt: Date;
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)
-  roles: UserRole[]
+  roles: UserRole[];
+
+  @OneToOne(() => Customer, (customer) => customer.user)
+  customer: Customer;
 
   hashPassword() {
     this.password = bcrypt.hashSync(this.password, 8);
