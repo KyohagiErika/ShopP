@@ -18,7 +18,10 @@ export default class CustomerModel {
         gender: true,
         dob: true,
         placeOfDelivery: true,
-        followingShops: true,
+        // not need following shops
+      },
+      where: {
+        user: { status: StatusEnum.ACTIVE },
       },
     });
     return customers && customers.length > 0 ? customers : false;
@@ -39,6 +42,7 @@ export default class CustomerModel {
         },
         where: {
           id: customerId,
+          user: { status: StatusEnum.ACTIVE },
         },
       });
       return customer ? customer : false;
@@ -87,12 +91,13 @@ export default class CustomerModel {
   ) {
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    let customer: Customer | undefined | null
+    let customer: Customer | undefined | null;
     if (customer !== undefined && customer !== null) {
       try {
         customer = await customerRepository.findOne({
           where: {
             id: id,
+            user: { status: StatusEnum.ACTIVE },
           },
         });
         if (customer) {
@@ -101,7 +106,7 @@ export default class CustomerModel {
           customer.avatar = avatar;
           customer.gender = gender;
           customer.dob = dob;
-          customer.placeOfDelivery = placeOfDelivery
+          customer.placeOfDelivery = placeOfDelivery;
           const errors = await validate(customer);
           if (errors.length > 0) {
             return errors;
@@ -113,26 +118,36 @@ export default class CustomerModel {
             return e;
           }
         }
-        
 
-        return true
-      } catch(error) {
-        return error
+        return true;
+      } catch (error) {
+        return error;
       }
     }
   }
-  static async delete(id:number) {
-    const customerRepository =ShopPDataSource.getRepository(Customer)
-    let customer: Customer | null |undefined
-    if(customer !==null && customer !==undefined) {
+  static async delete(id: string) {
+    const customerRepository = ShopPDataSource.getRepository(Customer);
+    let customer: Customer | null | undefined;
+    if (customer !== null && customer !== undefined) {
       try {
-        customer =await customerRepository.findOne({
+        customer = await customerRepository.findOne({
           where: {
-            id:id,
-          }
-        })
-      }catch(error) {
-        return error
+            id: id,
+            user: { status: StatusEnum.ACTIVE },
+          },
+        });
+        if (customer !== null) {
+          customer.user.status = StatusEnum.ACTIVE;
+
+          const errors = await validate(customer);
+          if (errors.length > 0) return errors;
+
+          // manager
+          await customerRepository.save(customer);
+          return customer;
+        } else return false;
+      } catch (error) {
+        return error;
       }
     }
   }
