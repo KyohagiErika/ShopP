@@ -108,9 +108,7 @@ export default class CustomerModel {
           }
 
           try {
-            await customerRepository.update({id:id}, {
-              
-            });
+            await customerRepository.save(customer);
           } catch (e) {
             return e;
           }
@@ -119,6 +117,21 @@ export default class CustomerModel {
 
         return true
       } catch(error) {
+        return error
+      }
+    }
+  }
+  static async delete(id:number) {
+    const customerRepository =ShopPDataSource.getRepository(Customer)
+    let customer: Customer | null |undefined
+    if(customer !==null && customer !==undefined) {
+      try {
+        customer =await customerRepository.findOne({
+          where: {
+            id:id,
+          }
+        })
+      }catch(error) {
         return error
       }
     }
