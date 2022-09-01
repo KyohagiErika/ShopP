@@ -11,6 +11,5 @@ export const ShopPDataSource = new DataSource({
     password: ShopPConfig.DATABASE_PASSWORD,
     database: ShopPConfig.DATABASE_NAME,
     entities: [UserRole, User],
-    logger: new AdvancedConsoleLogger('all'),
-    synchronize: true
+    logger: new AdvancedConsoleLogger('all')
 });
