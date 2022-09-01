@@ -47,3 +47,11 @@ Outside the `src` dir, we also want to specify the `.env` which contains the env
 __NOTE:__
 * Always have the `.env` up-to-dated with the `.env.local`.
 * Update the `.env.local` (if necessary) before pushing again. 
+### CLI
+```
+npm run <cli>
+```
+* `build` - build the project.
+* `start` - start the project.
+* `init-database` - synchronize the database with the entities.
+* `copy-dts` - Minh Tiến bổ sung chỗ này :)
