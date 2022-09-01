@@ -23,12 +23,12 @@ export class User {
   @IsNotEmpty()
   email: string;
 
-  @Column({name:'phone'})
+  @Column({ name: "phone" })
   @Length(10)
   @IsNotEmpty()
   phone: string;
 
-  @Column({name:'password'})
+  @Column({ name: "password" })
   @Length(10, 40)
   @IsNotEmpty()
   password: string;
@@ -40,11 +40,11 @@ export class User {
   })
   status: StatusEnum;
 
-  @Column({name:'createdAt'})
+  @Column({ name: "created_at" })
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({name:'lockedAt'})
+  @Column({ name: "locked_at" })
   lockedAt: Date;
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)

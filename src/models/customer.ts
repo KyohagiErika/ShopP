@@ -55,7 +55,7 @@ export default class CustomerModel {
     name: string,
     gender: GenderEnum,
     dob: Date,
-    avatar: number | undefined,
+    avatar: number,
     placeOfDelivery: string
   ) {
     let customer = new Customer();
@@ -84,9 +84,9 @@ export default class CustomerModel {
   static async edit(
     id: string,
     name: string,
-    avatar: number | null | undefined,
+    avatar: number ,
     gender: GenderEnum,
-    dob: Date | null | undefined,
+    dob: Date ,
     placeOfDelivery: string
   ) {
     // find customer on database

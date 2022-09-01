@@ -1,20 +1,19 @@
 import {
   Entity,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   OneToOne,
 } from "typeorm";
 
 import { Length, IsNotEmpty } from "class-validator";
-import bcrypt from "bcryptjs";
 import { User } from "./user";
 import { GenderEnum } from "../utils/shopp.enum";
 import { Cart } from "./cart";
 
-@Entity({ name: "Customer" })
+@Entity({ name: "customer" })
 export class Customer {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Column({ name: "name" })
@@ -23,9 +22,10 @@ export class Customer {
   name: string;
 
   @Column({ name: "avatar" })
-  avatar: number | null|undefined;
+  avatar: number ;
 
   @Column({
+    name:"gender",
     type: "enum",
     enum: GenderEnum,
     default: GenderEnum.MALE,
@@ -34,7 +34,7 @@ export class Customer {
 
   @Column({ name: "dob" })
   @CreateDateColumn()
-  dob: Date|null|undefined;
+  dob: Date;
 
   @OneToOne(() => User, (user) => user.customer)
   user: User;
