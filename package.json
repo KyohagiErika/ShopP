@@ -7,7 +7,8 @@
     "copy-dts": "copyfiles -u 1 \"src/**/*.d.ts\" build",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "init-database": "typeorm-ts-node-commonjs schema:sync --dataSource src/data.ts"
   },
   "author": "Le Thanh Long",
   "license": "MIT",
