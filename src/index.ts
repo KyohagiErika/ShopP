@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import helmet from "helmet";
 import http from "http";
+import chalk from "chalk";
 
 ShopPDataSource.initialize()
     .then(source => {
@@ -17,7 +18,7 @@ ShopPDataSource.initialize()
         app.use(routes);
         const server = http.createServer(app);
         server.listen(ShopPConfig.PORT, () => {
-            console.log(`Server is listenning at port ${ShopPConfig.PORT}!`);
+            console.log(chalk.bold(chalk.magenta(`Server is listenning at port ${ShopPConfig.PORT}!`)));
         });
     })
     .catch(err => {
