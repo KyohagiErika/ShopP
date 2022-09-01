@@ -18,18 +18,17 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: "email" })
+  @Column()
   @Length(4, 60)
   @IsNotEmpty()
   email: string;
 
-  @Column({ name: "phone" })
+  @Column()
   @Length(10)
   @IsNotEmpty()
   phone: string;
 
-  @Column({ name: "password" })
-  @Length(10, 40)
+  @Column()
   @IsNotEmpty()
   password: string;
 
@@ -40,11 +39,11 @@ export class User {
   })
   status: StatusEnum;
 
-  @Column({ name: "created_at" })
+  @Column()
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ name: "locked_at" })
+  @Column()
   lockedAt: Date;
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)
