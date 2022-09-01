@@ -10,18 +10,19 @@ import { User } from "./user";
 import { RoleEnum } from "../utils/shopp.enum"
 
 @Entity()
-export class UserRole {
+export class LocalFile {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User, (user) => user.roles)
-    //@JoinColumn({name: "user"})
-    user: User
+    @IsNotEmpty()
+    @Column()
+    filename: string;
 
     @IsNotEmpty()
-    @Column({
-        type: "enum",
-        enum: RoleEnum,
-    })
-    role: RoleEnum
+    @Column()
+    path: string;
+
+    @IsNotEmpty()
+    @Column()
+    mimetype: string;
 }
