@@ -11,7 +11,7 @@ import bcrypt from "bcryptjs";
 import { UserRole } from "./userRole";
 import { StatusEnum} from "../utils/shopp.enum"
 
-@Entity({name: "user"})
+@Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
