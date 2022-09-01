@@ -9,10 +9,30 @@ import { ControllerService } from "../utils/decorators";
 
 class AuthMiddleware {
 
-  @ControllerService()
+  @ControllerService({
+    deepWatch: false,
+    query: [
+      {
+        name: 'hello'
+      }
+    ],
+    body: [
+      {
+        name: 'test',
+        type: Number,
+        validator: (propertyName: string, value: number) => {
+          if (value < 10) {
+            return `${propertyName} must greater or equal to 10`;
+          }
+          return null;
+        }
+      }
+    ]
+  })
   static async test(req: Request, res: Response) {
-    //throw new Error('test error');
+    // throw new Error('test error');
     res.send({ message: 'Success!' });
+    // res.send('asdasd');
   }
 
   static async login (req: Request, res: Response) {
