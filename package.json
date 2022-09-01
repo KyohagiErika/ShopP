@@ -14,6 +14,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
+    "chalk": "^4.1.2",
     "class-validator": "^0.13.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
@@ -25,14 +26,14 @@
     "typeorm": "^0.3.7"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
     "@types/body-parser": "^1.19.2",
+    "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.9",
     "@types/multer": "^1.4.7",
     "@types/mysql": "^2.15.21",
-    "typescript": "^4.7.4",
-    "@types/bcryptjs": "^2.4.2",
-    "@types/cors": "^2.8.12",
-    "@types/jsonwebtoken": "^8.5.9",
-    "ts-node-dev": "^2.0.0"
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.7.4"
   }
 }
