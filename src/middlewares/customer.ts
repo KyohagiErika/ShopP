@@ -35,8 +35,8 @@ export default class CustomerMiddleware {
         data.name.toString(),
         data.gender,
         data.dob,
-        data.avatar,
-        data.placeOfDelivery.toString()
+        data.placeOfDelivery.toString(),
+        +data.userId
       );
       if (result) {
         res.send(result);
@@ -52,7 +52,7 @@ export default class CustomerMiddleware {
   static async edit(req: Request, res: Response) {
     const data = req.query;
     const id = (req.params as unknown) as string;
-    if (data.id && id && data.name && data.placeOfDelivery && data.avatar &&data.dob &&data.gender) {
+    if (data.id && id && data.name && data.placeOfDelivery &&data.dob &&data.gender) {
       let gender:GenderEnum;
       if(data.gender.toString().toUpperCase()==='FEMALE'){
         gender = GenderEnum.FEMALE;
@@ -62,7 +62,6 @@ export default class CustomerMiddleware {
       const result = await CustomerModel.edit(
         id,
         data.name.toString(),
-        +data.avatar,
         gender,
         new Date(data.dob.toString()),
         data.placeOfDelivery.toString()
@@ -79,7 +78,7 @@ export default class CustomerMiddleware {
 
   @ControllerService()
   static async delete(req: Request, res: Response) {
-    const id = req.params.id.toString(); //parseInt(req.params);//(req.params as unknown) as number;
+    const id = req.params.id.toString(); //parseString(req.params);//(req.params as unknown) as number;
     if (id) {
       const result = await CustomerModel.delete(id);
       if (result) {

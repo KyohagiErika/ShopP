@@ -2,6 +2,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  JoinColumn,
   CreateDateColumn,
   OneToOne,
 } from "typeorm";
@@ -13,37 +14,38 @@ import { Cart } from "./cart";
 
 @Entity({ name: "customer" })
 export class Customer {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ name: "name" })
+  @Column()
   @Length(1, 100)
   @IsNotEmpty()
   name: string;
 
-  @Column({ name: "avatar" })
-  avatar: number ;
+  @Column()
+  avatar:number;
 
   @Column({
-    name:"gender",
+    name: "gender",
     type: "enum",
     enum: GenderEnum,
     default: GenderEnum.MALE,
   })
   gender: GenderEnum;
 
-  @Column({ name: "dob" })
+  @Column()
   @CreateDateColumn()
   dob: Date;
 
   @OneToOne(() => User, (user) => user.customer)
+  @JoinColumn({ name: "user" })
   user: User;
 
-  @Column({ name: "place_of_delivery" })
+  @Column()
   @IsNotEmpty()
   placeOfDelivery: string;
 
-  @Column("json", { name: "following_shops" })
+  @Column("json")
   followingShops: string[];
 
   @OneToOne(() => Cart, (cart) => cart.customer)

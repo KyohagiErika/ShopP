@@ -1,7 +1,7 @@
+import { User } from './../entities/user';
 import { Customer } from "./../entities/customer";
 import { validate } from "class-validator";
 import { ShopPDataSource } from "../data";
-import { User } from "../entities/user";
 import { StatusEnum, GenderEnum } from "../utils/shopp.enum";
 
 export default class CustomerModel {
@@ -55,16 +55,25 @@ export default class CustomerModel {
     name: string,
     gender: GenderEnum,
     dob: Date,
-    avatar: number,
-    placeOfDelivery: string
+    placeOfDelivery: string,
+    userId: number
   ) {
     let customer = new Customer();
     customer.name = name;
     customer.gender = gender;
     customer.dob = dob;
-    customer.avatar = avatar;
     customer.placeOfDelivery = placeOfDelivery;
-
+    const userRepository = ShopPDataSource.getRepository(User);
+    let user;
+    try {
+      user = userRepository.findOneOrFail({
+        where: { 
+          id: userId ,
+          status:StatusEnum.ACTIVE
+        }
+      });
+    } catch (e) {return e}
+    customer.user = await user
     const errorsCustomer = await validate(customer);
     if (errorsCustomer.length > 0) {
       return errorsCustomer;
@@ -84,17 +93,14 @@ export default class CustomerModel {
   static async edit(
     id: string,
     name: string,
-    avatar: number ,
     gender: GenderEnum,
-    dob: Date ,
+    dob: Date,
     placeOfDelivery: string
   ) {
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    let customer: Customer | undefined | null;
-    if (customer !== undefined && customer !== null) {
       try {
-        customer = await customerRepository.findOne({
+        let customer:Customer | null = await customerRepository.findOne({
           where: {
             id: id,
             user: { status: StatusEnum.ACTIVE },
@@ -103,7 +109,6 @@ export default class CustomerModel {
         if (customer) {
           customer.id = id;
           customer.name = name;
-          customer.avatar = avatar;
           customer.gender = gender;
           customer.dob = dob;
           customer.placeOfDelivery = placeOfDelivery;
@@ -117,38 +122,34 @@ export default class CustomerModel {
           } catch (e) {
             return e;
           }
-        }
+        } else return false
 
         return true;
       } catch (error) {
         return error;
       }
-    }
+    
   }
   static async delete(id: string) {
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    let customer: Customer | null | undefined;
-    if (customer !== null && customer !== undefined) {
+    
       try {
-        customer = await customerRepository.findOne({
+        let customer:Customer | null = await customerRepository.findOne({
           where: {
             id: id,
             user: { status: StatusEnum.ACTIVE },
           },
         });
         if (customer !== null) {
-          customer.user.status = StatusEnum.ACTIVE;
-
-          const errors = await validate(customer);
+          customer.user.status = StatusEnum.INACTIVE;
+          const errors = await validate(customer.user);
           if (errors.length > 0) return errors;
 
-          // manager
           await customerRepository.save(customer);
-          return customer;
-        } else return false;
+          return true;
+        } return false
       } catch (error) {
         return error;
       }
-    }
   }
 }

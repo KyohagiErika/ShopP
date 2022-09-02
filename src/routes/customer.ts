@@ -16,13 +16,13 @@ routes.get("/:id", CustomerMiddleware.getOneById); //[checkJwt, checkRole(RoleEn
 routes.post("/", CustomerMiddleware.postNew); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 //Edit one user
-routes.put(
+routes.post(
   "/:id",
   [checkJwt, checkRole(RoleEnum.ADMIN)],
   CustomerMiddleware.edit
 );
 
-//Delete one user
-routes.put("/delete/:id", CustomerMiddleware.delete); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+//Delete one customer
+routes.post("/delete/:id", CustomerMiddleware.delete); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 export default routes;
