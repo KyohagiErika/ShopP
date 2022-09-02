@@ -7,7 +7,16 @@
 			"group": "build",
 			"problemMatcher": [],
 			"label": "npm: build",
-			"detail": "tsc"
-		}
+			"detail": "tsc",
+			"dependsOn": ["npm: format-code"]
+		},
+		{
+			"type": "npm",
+			"script": "format-code",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: format-code",
+			"detail": "prettier --write ."
+		},
 	]
 }

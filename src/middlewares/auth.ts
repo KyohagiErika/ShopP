@@ -1,20 +1,19 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { ShopPDataSource } from "../data";
-import { validate } from "class-validator";
+import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import { ShopPDataSource } from '../data';
+import { validate } from 'class-validator';
 
-import { User } from "../entities/user";
-import config from "../utils/shopp.config";
-import { ControllerService } from "../utils/decorators";
+import { User } from '../entities/user';
+import config from '../utils/shopp.config';
+import { ControllerService } from '../utils/decorators';
 
 class AuthMiddleware {
-
   @ControllerService({
     deepWatch: false,
     query: [
       {
-        name: 'hello'
-      }
+        name: 'hello',
+      },
     ],
     body: [
       {
@@ -25,9 +24,9 @@ class AuthMiddleware {
             return `${propertyName} must greater or equal to 10`;
           }
           return null;
-        }
-      }
-    ]
+        },
+      },
+    ],
   })
   static async test(req: Request, res: Response) {
     // throw new Error('test error');
@@ -35,7 +34,7 @@ class AuthMiddleware {
     // res.send('asdasd');
   }
 
-  static async login (req: Request, res: Response) {
+  static async login(req: Request, res: Response) {
     //Check if username and password are set
     let { email, password } = req.body;
     if (!(email && password)) {
@@ -62,15 +61,15 @@ class AuthMiddleware {
       const token = jwt.sign(
         { userId: user.id, username: user.email },
         config.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: '1h' }
       );
 
       //Send the jwt in the response
       res.send(token);
     }
-  };
+  }
 
-  static async changePassword (req: Request, res: Response) {
+  static async changePassword(req: Request, res: Response) {
     //Get ID from JWT
     const id = res.locals.jwtPayload.userId;
 
@@ -108,6 +107,6 @@ class AuthMiddleware {
 
       res.status(204).send();
     }
-  };
+  }
 }
 export default AuthMiddleware;

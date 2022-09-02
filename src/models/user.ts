@@ -1,29 +1,29 @@
-import { validate } from "class-validator";
-import { ShopPDataSource } from "../data";
-import { User } from "../entities/user";
-import { UserRole } from "../entities/userRole";
-import { StatusEnum, RoleEnum } from "../utils/shopp.enum";
+import { validate } from 'class-validator';
+import { ShopPDataSource } from '../data';
+import { User } from '../entities/user';
+import { UserRole } from '../entities/userRole';
+import { StatusEnum, RoleEnum } from '../utils/shopp.enum';
 
 export default class UserModel {
   static async listAll() {
     const userRepository = ShopPDataSource.getRepository(User);
     const users = await userRepository.find({
       relations: {
-        roles: true
+        roles: true,
       },
       select: {
         id: true,
         email: true,
         phone: true,
         createdAt: true,
-        roles: true
-      },//We dont want to send the passwords on response 
+        roles: true,
+      }, //We dont want to send the passwords on response
       where: {
-        status: StatusEnum.ACTIVE
-      }
+        status: StatusEnum.ACTIVE,
+      },
     });
-    return users && (users.length > 0) ? users : false;
-  };
+    return users && users.length > 0 ? users : false;
+  }
 
   static async getOneById(userId: number) {
     //Get the user from database
@@ -36,20 +36,25 @@ export default class UserModel {
           phone: true,
           status: true,
           createdAt: true,
-          roles: true
+          roles: true,
         }, //We dont want to send the password on response
         where: {
           id: userId,
-          status: StatusEnum.ACTIVE
-        }
+          status: StatusEnum.ACTIVE,
+        },
       });
       return user ? user : false;
     } catch (error) {
       return error;
-    };
+    }
   }
 
-  static async postNew(email: string, phone: string, password: string, role: RoleEnum) {
+  static async postNew(
+    email: string,
+    phone: string,
+    password: string,
+    role: RoleEnum
+  ) {
     //Get parameters from the body
     let user = new User();
     user.email = email;
@@ -66,7 +71,7 @@ export default class UserModel {
       return errorsUser;
     }
 
-    const errorUserRole = await validate(userRole)
+    const errorUserRole = await validate(userRole);
     if (errorUserRole.length > 0) {
       //res.status(400).send(errors);
       return errorsUser;
@@ -87,7 +92,7 @@ export default class UserModel {
     //If all ok, send 201 response
     //res.status(201).send("User created");
     return user;
-  };
+  }
 
   static async edit(id: number, email: string, phone: string) {
     //Try to find user on database
@@ -95,11 +100,12 @@ export default class UserModel {
     let user: User | undefined | null;
     if (user !== undefined && user !== null) {
       try {
-        user = await userRepository.findOne({ 
+        user = await userRepository.findOne({
           where: {
             id: id,
-            status: StatusEnum.ACTIVE
-          } });
+            status: StatusEnum.ACTIVE,
+          },
+        });
         if (user) {
           //Validate the new values on model
           user.email = email;
@@ -125,7 +131,7 @@ export default class UserModel {
         //res.status(404).send("User not found");
         return error;
       }
-    };
+    }
   }
 
   static async delete(userId: number) {
@@ -133,29 +139,27 @@ export default class UserModel {
     let user: User | null | undefined;
     if (user !== null && user !== undefined) {
       try {
-        user = await userRepository.findOne({ 
+        user = await userRepository.findOne({
           where: {
             id: userId,
-            status: StatusEnum.ACTIVE
-          } 
+            status: StatusEnum.ACTIVE,
+          },
         });
-        if(user !== null) {
+        if (user !== null) {
           user.status = StatusEnum.INACTIVE;
 
           const errors = await validate(user);
-          if(errors.length > 0) return errors;
+          if (errors.length > 0) return errors;
 
-          await userRepository.manager.save(user)
+          await userRepository.manager.save(user);
           return user;
         } else return false;
-        
       } catch (error) {
         //res.status(404).send("User not found");
         return error;
       }
       //After all send a 204 (no content, but accepted) response
-      //res.status(204).send();     
+      //res.status(204).send();
     }
-  };
-};
-
+  }
+}
