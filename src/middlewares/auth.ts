@@ -1,21 +1,26 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { ShopPDataSource } from "../data";
-import { validate } from "class-validator";
+import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import { ShopPDataSource } from '../data';
+import { validate } from 'class-validator';
 
+<<<<<<< HEAD
 import { User } from "../entities/user";
 import config from "../utils/shopp.config";
 import { ControllerService } from "../utils/decorators";
 import { StatusEnum } from "../utils/shopp.enum";
+=======
+import { User } from '../entities/user';
+import config from '../utils/shopp.config';
+import { ControllerService } from '../utils/decorators';
+>>>>>>> 4dd75347c01dd2c862b08bf5f2ce5f9fd87f84ed
 
 class AuthMiddleware {
-
   @ControllerService({
     deepWatch: false,
     query: [
       {
-        name: 'hello'
-      }
+        name: 'hello',
+      },
     ],
     body: [
       {
@@ -26,9 +31,9 @@ class AuthMiddleware {
             return `${propertyName} must greater or equal to 10`;
           }
           return null;
-        }
-      }
-    ]
+        },
+      },
+    ],
   })
   static async test(req: Request, res: Response) {
     // throw new Error('test error');
@@ -38,7 +43,7 @@ class AuthMiddleware {
 
   static async loginWithEmail (req: Request, res: Response) {
     //Check if username and password are set
-    let { email,phone, password } = req.body;
+    let { email, password } = req.body;
     if (!email) {
       res.status(400).send({message: 'Empty email!'});
     }
@@ -71,16 +76,20 @@ class AuthMiddleware {
       const token = jwt.sign(
         { userId: user.id, email: user.email },
         config.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: '1h' }
       );
 
       //Send the jwt in the response
+<<<<<<< HEAD
       res.send({'token' : token});
       res.setHeader("auth", token);
+=======
+      res.send({ token: token });
+>>>>>>> 4dd75347c01dd2c862b08bf5f2ce5f9fd87f84ed
     }
-  };
+  }
 
-  static async changePassword (req: Request, res: Response) {
+  static async changePassword(req: Request, res: Response) {
     //Get ID from JWT
     const id = res.locals.jwtPayload.userId;
 
@@ -123,6 +132,6 @@ class AuthMiddleware {
 
       res.status(204).send({message: "Change password successfully!"});
     }
-  };
+  }
 }
 export default AuthMiddleware;

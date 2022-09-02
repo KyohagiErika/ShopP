@@ -10,7 +10,7 @@ routes.use("/user", user);
 routes.use("/upload", upload);
 
 routes.use(async (req, res) => {
-    res.status(404).send('Not found!');
+  res.status(404).send('Not found!');
 });
 
 export default routes;
