@@ -65,7 +65,7 @@ class AuthMiddleware {
       );
 
       //Send the jwt in the response
-      res.send({"token" : token});
+      res.send({ token: token });
     }
   }
 
