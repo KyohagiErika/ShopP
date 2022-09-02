@@ -59,13 +59,13 @@ class AuthMiddleware {
 
       //Sing JWT, valid for 1 hour
       const token = jwt.sign(
-        { userId: user.id, username: user.email },
+        { userId: user.id, email: user.email },
         config.JWT_SECRET,
         { expiresIn: '1h' }
       );
 
       //Send the jwt in the response
-      res.send(token);
+      res.send({"token" : token});
     }
   }
 

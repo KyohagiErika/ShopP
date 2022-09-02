@@ -27,7 +27,6 @@ export class User {
   phone: string;
 
   @Column()
-  @Length(10, 40)
   @IsNotEmpty()
   password: string;
 
