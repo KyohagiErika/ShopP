@@ -15,12 +15,8 @@ routes.get("/:id", CustomerMiddleware.getOneById); //[checkJwt, checkRole(RoleEn
 //Create a new customer
 routes.post("/", CustomerMiddleware.postNew); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
-//Edit one user
-routes.post(
-  "/:id",
-  [checkJwt, checkRole(RoleEnum.ADMIN)],
-  CustomerMiddleware.edit
-);
+//Edit one customer
+routes.post("/:id", CustomerMiddleware.edit);
 
 //Delete one customer
 routes.post("/delete/:id", CustomerMiddleware.delete); //[checkJwt, checkRole(RoleEnum.ADMIN)],

@@ -60,7 +60,7 @@ export default class CustomerMiddleware {
         gender = GenderEnum.MALE
       }
       const result = await CustomerModel.edit(
-        id,
+        data.id.toString(),
         data.name.toString(),
         gender,
         new Date(data.dob.toString()),
