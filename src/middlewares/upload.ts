@@ -24,4 +24,12 @@ const imageFilter = (req: Request, file: any, callback: any) => {
     callback(null, true);
 };
 
-export const uploadFile = multer({ fileFilter: imageFilter, storage: fileStorage})
+const videoFilter = (req: Request, file: any, callback: any) => {
+    if (!file.originalname.match(/\.(mp4|ogg|wmv|webm|avi)$/)) {
+        return callback(new Error('Only video files are allowed!'), false);
+    }
+    callback(null, true);
+};
+
+export const uploadImage = multer({ fileFilter: imageFilter, storage: fileStorage})
+export const uploadVideo = multer({ fileFilter: videoFilter, storage: fileStorage})

@@ -2,17 +2,10 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { ShopPDataSource } from '../data';
 import { validate } from 'class-validator';
-
-<<<<<<< HEAD
 import { User } from "../entities/user";
 import config from "../utils/shopp.config";
 import { ControllerService } from "../utils/decorators";
 import { StatusEnum } from "../utils/shopp.enum";
-=======
-import { User } from '../entities/user';
-import config from '../utils/shopp.config';
-import { ControllerService } from '../utils/decorators';
->>>>>>> 4dd75347c01dd2c862b08bf5f2ce5f9fd87f84ed
 
 class AuthMiddleware {
   @ControllerService({
@@ -80,12 +73,8 @@ class AuthMiddleware {
       );
 
       //Send the jwt in the response
-<<<<<<< HEAD
       res.send({'token' : token});
       res.setHeader("auth", token);
-=======
-      res.send({ token: token });
->>>>>>> 4dd75347c01dd2c862b08bf5f2ce5f9fd87f84ed
     }
   }
 

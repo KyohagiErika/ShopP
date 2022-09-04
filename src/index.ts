@@ -16,6 +16,7 @@ ShopPDataSource.initialize()
     app.use(cors());
     app.use(helmet());
     app.use(routes);
+    app.use(express.static('public'));
     const server = http.createServer(app);
     server.listen(ShopPConfig.PORT, () => {
       console.log(
