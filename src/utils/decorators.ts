@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import chalk from 'chalk';
 import { HttpStatusCode } from './shopp.enum';
+import { ShopPDataSource } from '../data';
 
 type AsyncFunction = (...args: any[]) => Promise<any>;
 
@@ -193,5 +194,22 @@ export function ControllerService(options?: ControllerServiceOption) {
       };
     }
     propDescriptor.value = addWatch(addValidator(target[propKey]));
+  };
+}
+
+export function ModelService() {
+  return function (
+    target: any,
+    propKey: PropertyKey,
+    propDescriptor: PropertyDescriptor
+  ) {
+    function addTransaction(func: AsyncFunction) {
+      return async function (...args: any[]) {
+        await ShopPDataSource.transaction(async entityManager => {
+          await func(...args);
+        });
+      };
+    }
+    propDescriptor.value = addTransaction(target[propKey]);
   };
 }
