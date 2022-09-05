@@ -40,6 +40,7 @@ export default class UserMiddleware {
         data.password.toString(),
         RoleEnum.CUSTOMER
       );
+      console.log(result);
       if (result) {
         res.send(result);
       } else {

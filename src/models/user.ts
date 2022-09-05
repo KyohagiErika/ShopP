@@ -2,6 +2,7 @@ import { validate } from 'class-validator';
 import { ShopPDataSource } from '../data';
 import { User } from '../entities/user';
 import { UserRole } from '../entities/userRole';
+import { ModelService } from '../utils/decorators';
 import { StatusEnum, RoleEnum } from '../utils/shopp.enum';
 
 export default class UserModel {
@@ -49,7 +50,7 @@ export default class UserModel {
       return { error: error };
     }
   }
-
+  @ModelService()
   static async postNew(
     email: string,
     phone: string,
