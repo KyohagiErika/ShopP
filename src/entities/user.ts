@@ -13,7 +13,7 @@ import { UserRole } from "./userRole";
 import { Customer } from "./customer";
 import { StatusEnum } from "../utils/shopp.enum";
 
-@Entity({ name: "user" })
+@Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -33,7 +33,7 @@ export class User {
   password: string;
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: StatusEnum,
     default: StatusEnum.ACTIVE,
   })
@@ -46,7 +46,7 @@ export class User {
   @Column()
   lockedAt: Date;
 
-  @OneToMany(() => UserRole, (userRole) => userRole.user)
+  @OneToMany(() => UserRole, userRole => userRole.user)
   roles: UserRole[];
 
   @OneToOne(() => Customer, (customer) => customer.user)

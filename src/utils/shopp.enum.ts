@@ -6,19 +6,19 @@ export enum HttpStatusCode {
   FORBIDDEN = 403,
   NOT_FOUND = 404,
   INTERNAL_SERVER_ERROR = 500,
-  UNKNOW_ERROR = 520
+  UNKNOW_ERROR = 520,
 }
 
 export enum StatusEnum {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-  LOCKED = "LOCKED"
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  LOCKED = 'LOCKED',
 }
 
 export enum RoleEnum {
-  ADMIN = "ADMIN",
-  SHOP = "SHOP",
-  CUSTOMER = "CUSTOMER"
+  ADMIN = 'ADMIN',
+  SHOP = 'SHOP',
+  CUSTOMER = 'CUSTOMER',
 }
 
 export enum GenderEnum {
