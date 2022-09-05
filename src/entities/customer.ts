@@ -16,7 +16,7 @@ import { Cart } from "./cart";
 export class Customer {
   @PrimaryGeneratedColumn("uuid")
   id: string;
-
+ 
   @Column()
   @Length(1, 100)
   @IsNotEmpty()
