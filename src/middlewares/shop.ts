@@ -36,8 +36,8 @@ export default class ShopMiddleware {
     static async postNew (req: Request, res: Response) {
         const data = req.body;
         const userId = +req.params.userId
-        if (data.name && data.avata && userId && data.email &&  data.phone  && data.placeOfReceipt ) {
-            const result = await ShopModel.postNew(data.name.toString(), data.avata.toString(), userId, data.email.toString(), data.phone.toString(), data.placeOfReceipt.toString());
+        if (data.name && data.avatar && userId && data.email &&  data.phone  && data.placeOfReceipt ) {
+            const result = await ShopModel.postNew(data.name.toString(), data.avatar.toString(), userId, data.email.toString(), data.phone.toString(), data.placeOfReceipt.toString());
             if (result) {
                 res.send(result);
             } else {
@@ -52,8 +52,9 @@ export default class ShopMiddleware {
     static async edit  (req: Request, res: Response) {
         const data = req.query;
         const id = (req.params as unknown) as number;
-        if (id && data.name && data.avata && data.email &&  data.phone  && data.placeOfReceipt  ) {
-            const result = await ShopModel.edit(id.toString(), data.name.toString(), data.avata.toString(), data.email.toString(), data.phone.toString(),  data.placeOfReceipt.toString());
+        const avatar = (req.params as unknown) as number;
+        if (id && data.name && data.avatar && data.email &&  data.phone  && data.placeOfReceipt  ) {
+            const result = await ShopModel.edit(id.toString(), data.name.toString(), avatar, data.email.toString(), data.phone.toString(),  data.placeOfReceipt.toString());
             if (result) {
                 res.send(result);
             } else {

@@ -3,15 +3,17 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  OneToMany
+  OneToMany,
+  OneToOne
 } from "typeorm";
 
 import { Length, IsNotEmpty } from "class-validator";
 import bcrypt from "bcryptjs";
 import { UserRole } from "./userRole";
 import { StatusEnum} from "../utils/shopp.enum"
+import { Shop } from "./shop";
 
-@Entity({ name: "user" })
+@Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -41,11 +43,15 @@ export class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @Column({nullable: true})
   lockedAt: Date;
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   roles: UserRole[]
+
+  @OneToOne(() => Shop,(shop) => shop.user)
+  shop: Shop
+
 
   hashPassword() {
     this.password = bcrypt.hashSync(this.password, 8);

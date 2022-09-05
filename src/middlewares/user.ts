@@ -67,7 +67,7 @@ export default class UserMiddleware {
         if (id) {
             const result = await UserModel.delete(id);
             if (result) {
-                res.send("sucess delete");
+                res.send(result);
             } else {
                 res.status(400).send('Delete data failed!' + result);
             }

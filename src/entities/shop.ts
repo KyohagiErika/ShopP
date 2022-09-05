@@ -25,11 +25,10 @@ import {
 //   avata: LocalFile[]
 
   @Column()
-  avata: string;
+  avatar: number;
 
-  @OneToOne(() => User)
-  @JoinColumn()
-  @IsNotEmpty()
+  @OneToOne(() => User, (user) => user.shop)
+  @JoinColumn({name: 'user'})
   user: User;
  
 
@@ -49,7 +48,7 @@ import {
   star: number;
 
   @Column({ default: 0 })
-  follower: number;
+  followers: number;
 
 
   }

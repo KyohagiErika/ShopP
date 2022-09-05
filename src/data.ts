@@ -1,8 +1,7 @@
 import { AdvancedConsoleLogger, DataSource } from "typeorm";
 import { UserRole } from "./entities/userRole";
 import { User } from "./entities/user";
-import { Cart } from "./entities/cart";
-import { Customer } from "./entities/customer";
+import { Shop } from "./entities/shop";
 import ShopPConfig from "./utils/shopp.config";
 
 export const ShopPDataSource = new DataSource({
@@ -12,6 +11,6 @@ export const ShopPDataSource = new DataSource({
   username: ShopPConfig.DATABASE_USERNAME,
   password: ShopPConfig.DATABASE_PASSWORD,
   database: ShopPConfig.DATABASE_NAME,
-  entities: [UserRole, User, Customer, Cart],
-  logger: new AdvancedConsoleLogger('all')
+  entities: [UserRole, User, Shop],
+    logger: new AdvancedConsoleLogger('all')
 });

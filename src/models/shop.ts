@@ -13,7 +13,7 @@ export default class ShopModel {
     const shops = await shopRepository.find({
       relations: {
         user: true,
-        avata: true,
+        avatar: true,
         },
       select: {
         id: true,
@@ -22,7 +22,7 @@ export default class ShopModel {
         phone: true,
         placeOfReceipt: true,
         star: true,
-        follower: true,
+        followers: true,
       }, 
       where: {
         user:{status: StatusEnum.ACTIVE}
@@ -37,12 +37,12 @@ export default class ShopModel {
       const shop = await shopRepository.findOneOrFail({
         select: {
           name: true,
-          avata: true,
+          avatar: true,
           email: true,
           phone: true,
           placeOfReceipt: true,
           star: true,
-          follower: true,
+          followers: true,
         }, 
         where: {
           id: shopId,
@@ -55,11 +55,11 @@ export default class ShopModel {
     };
   }
 
-  static async postNew(name: string, avata: string, userId: number ,email: string, phone: string, placeOfReceipt: string) {
+  static async postNew(name: string, avatar: number, userId: number ,email: string, phone: string, placeOfReceipt: string) {
     //Get parameters from the body
     let shop = new Shop();
     shop.name = name;
-    shop.avata = avata;
+    shop.avatar = avatar;
     shop.email = email;
     shop.phone = phone;
     shop.placeOfReceipt = placeOfReceipt;
@@ -104,7 +104,7 @@ export default class ShopModel {
   };
 }
 
-  static async edit(id: string, name: string, avata: string, email: string, phone: string, placeOfReceipt: string) {
+  static async edit(id: string, name: string, avatar: number, email: string, phone: string, placeOfReceipt: string) {
     //Try to find user on database
     const shopRepository = ShopPDataSource.getRepository(Shop);
     let shop: Shop | undefined | null;
@@ -118,7 +118,7 @@ export default class ShopModel {
         if (shop) {
           //Validate the new values on model
           shop.name = name;
-          shop.avata = avata;
+          shop.avatar = avatar;
           shop.email = email;
           shop.phone = phone;
           shop.placeOfReceipt = placeOfReceipt;
