@@ -47,32 +47,32 @@ export default class UserMiddleware {
 
     @ControllerService()
     static async edit  (req: Request, res: Response) {
-        const data = req.query;
-        const id = (req.params as unknown) as number;
-        if (data.username && id && data.role) {
-            const result = await UserModel.edit(id, data.username.toString(), data.role.toString());
+        const data = req.body;
+        const id = +req.params.id;
+        if (data.email && id && data.phone) {
+            const result = await UserModel.edit(id, data.email.toString(), data.phone.toString());
             if (result) {
                 res.send(result);
             } else {
-                res.status(400).send('Insert data failed!');
+                res.status(400).send('Edit data failed!' + result);
             }
         } else {
-            res.status(400).send('Incorrect input data!');
+            res.status(400).send('Incorrect edit input data!');
         }
     }
 
     @ControllerService()
     static async delete (req: Request, res: Response) {
-        const id = +req.params.id;//parseInt(req.params);//(req.params as unknown) as number;
+        const id = +req.params.id;
         if (id) {
             const result = await UserModel.delete(id);
             if (result) {
-                res.send(result);
+                res.send("sucess delete");
             } else {
-                res.status(400).send('Delete data failed!' + id);
+                res.status(400).send('Delete data failed!' + result);
             }
         } else {
-            res.status(400).send('Incorrect id!'+id);
+            res.status(400).send('Incorrect id!');
         }
     }
 }

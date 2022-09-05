@@ -1,6 +1,7 @@
 import {
     Column,
     Entity,
+    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
 } from "typeorm"
@@ -14,6 +15,7 @@ export class UserRole {
     id: number;
 
     @ManyToOne(() => User, (user) => user.roles)
+    @JoinColumn({name: "user"})
     user: User
 
     @IsNotEmpty()
