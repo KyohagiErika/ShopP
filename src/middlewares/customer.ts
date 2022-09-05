@@ -51,16 +51,16 @@ export default class CustomerMiddleware {
   @ControllerService()
   static async edit(req: Request, res: Response) {
     const data = req.query;
-    const id = (req.params as unknown) as string;
-    if (data.id && id && data.name && data.placeOfDelivery &&data.dob &&data.gender) {
-      let gender:GenderEnum;
-      if(data.gender.toString().toUpperCase()==='FEMALE'){
+    const id = req.params;
+    if (id && data.name && data.placeOfDelivery && data.dob && data.gender) {
+      let gender: GenderEnum;
+      if (data.gender.toString().toUpperCase() === "FEMALE") {
         gender = GenderEnum.FEMALE;
       } else {
-        gender = GenderEnum.MALE
+        gender = GenderEnum.MALE;
       }
       const result = await CustomerModel.edit(
-        data.id.toString(),
+        id.id.toString(),
         data.name.toString(),
         gender,
         new Date(data.dob.toString()),
@@ -73,21 +73,6 @@ export default class CustomerMiddleware {
       }
     } else {
       res.status(400).send("Incorrect input data!");
-    }
-  }
-
-  @ControllerService()
-  static async delete(req: Request, res: Response) {
-    const id = req.params.id.toString(); //parseString(req.params);//(req.params as unknown) as number;
-    if (id) {
-      const result = await CustomerModel.delete(id);
-      if (result) {
-        res.send(result);
-      } else {
-        res.status(400).send("Delete data failed!" + id);
-      }
-    } else {
-      res.status(400).send("Incorrect id!" + id);
     }
   }
 }

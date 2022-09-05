@@ -1,4 +1,4 @@
-import { User } from './../entities/user';
+import { User } from "./../entities/user";
 import { Customer } from "./../entities/customer";
 import { validate } from "class-validator";
 import { ShopPDataSource } from "../data";
@@ -31,6 +31,9 @@ export default class CustomerModel {
     const customerRepository = ShopPDataSource.getRepository(Customer);
     try {
       const customer = await customerRepository.findOneOrFail({
+        relations: {
+          user: true,
+        },
         select: {
           id: true,
           name: true,
@@ -67,13 +70,15 @@ export default class CustomerModel {
     let user;
     try {
       user = userRepository.findOneOrFail({
-        where: { 
-          id: userId ,
-          status:StatusEnum.ACTIVE
-        }
+        where: {
+          id: userId,
+          status: StatusEnum.ACTIVE,
+        },
       });
-    } catch (e) {return e}
-    customer.user = await user
+    } catch (e) {
+      return e;
+    }
+    customer.user = await user;
     const errorsCustomer = await validate(customer);
     if (errorsCustomer.length > 0) {
       return errorsCustomer;
@@ -99,57 +104,34 @@ export default class CustomerModel {
   ) {
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
-      try {
-        let customer:Customer | null = await customerRepository.findOne({
-          where: {
-            id: id,
-            user: { status: StatusEnum.ACTIVE },
-          },
-        });
-        if (customer) {
-          customer.id = id;
-          customer.name = name;
-          customer.gender = gender;
-          customer.dob = dob;
-          customer.placeOfDelivery = placeOfDelivery;
-          const errors = await validate(customer);
-          if (errors.length > 0) {
-            return errors;
-          }
+    try {
+      let customer: Customer | null = await customerRepository.findOne({
+        where: {
+          id: id,
+          user: { status: StatusEnum.ACTIVE },
+        },
+      });
+      if (customer) {
+        customer.id = id;
+        customer.name = name;
+        customer.gender = gender;
+        customer.dob = dob;
+        customer.placeOfDelivery = placeOfDelivery;
+        const errors = await validate(customer);
+        if (errors.length > 0) {
+          return errors;
+        }
 
-          try {
-            await customerRepository.save(customer);
-          } catch (e) {
-            return e;
-          }
-        } else return false
-
-        return true;
-      } catch (error) {
-        return error;
-      }
-    
-  }
-  static async delete(id: string) {
-    const customerRepository = ShopPDataSource.getRepository(Customer);
-    
-      try {
-        let customer:Customer | null = await customerRepository.findOne({
-          where: {
-            id: id,
-            user: { status: StatusEnum.ACTIVE },
-          },
-        });
-        if (customer !== null) {
-          customer.user.status = StatusEnum.INACTIVE;
-          const errors = await validate(customer.user);
-          if (errors.length > 0) return errors;
-
+        try {
           await customerRepository.save(customer);
-          return true;
-        } return false
-      } catch (error) {
-        return error;
-      }
+        } catch (e) {
+          return e;
+        }
+      } else return false;
+
+      return true;
+    } catch (error) {
+      return error;
+    }
   }
 }

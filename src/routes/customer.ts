@@ -18,7 +18,4 @@ routes.post("/", CustomerMiddleware.postNew); //[checkJwt, checkRole(RoleEnum.AD
 //Edit one customer
 routes.post("/:id", CustomerMiddleware.edit);
 
-//Delete one customer
-routes.post("/delete/:id", CustomerMiddleware.delete); //[checkJwt, checkRole(RoleEnum.ADMIN)],
-
 export default routes;
