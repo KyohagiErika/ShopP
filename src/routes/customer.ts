@@ -19,3 +19,4 @@ routes.post("/", CustomerMiddleware.postNew); //[checkJwt, checkRole(RoleEnum.AD
 routes.post("/:id", CustomerMiddleware.edit);
 
 export default routes;
+ 

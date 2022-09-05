@@ -75,4 +75,4 @@ export default class CustomerMiddleware {
       res.status(400).send("Incorrect input data!");
     }
   }
-}
+} 

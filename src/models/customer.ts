@@ -94,7 +94,7 @@ export default class CustomerModel {
     //res.status(201).send("Customer created");
     return customer;
   }
-
+ 
   static async edit(
     id: string,
     name: string,
