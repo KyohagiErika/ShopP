@@ -50,11 +50,10 @@ export default class ShopMiddleware {
 
     @ControllerService()
     static async edit  (req: Request, res: Response) {
-        const data = req.query;
+        const data = req.body;
         const id = (req.params as unknown) as number;
-        const avatar = (req.params as unknown) as number;
         if (id && data.name && data.avatar && data.email &&  data.phone  && data.placeOfReceipt  ) {
-            const result = await ShopModel.edit(id.toString(), data.name.toString(), avatar, data.email.toString(), data.phone.toString(),  data.placeOfReceipt.toString());
+            const result = await ShopModel.edit(id.toString(), data.name.toString(), data.avatar.toString(), data.email.toString(), data.phone.toString(),  data.placeOfReceipt.toString());
             if (result) {
                 res.send(result);
             } else {

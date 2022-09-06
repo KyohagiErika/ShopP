@@ -44,7 +44,7 @@ import {
   @IsNotEmpty()
   placeOfReceipt: string;
 
-  @Column({ type: 'decimal', precision: 1, scale: 2, default: 0 })
+  @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
   star: number;
 
   @Column({ default: 0 })

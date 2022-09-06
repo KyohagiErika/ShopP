@@ -1,13 +1,13 @@
 import { Router } from "express";
 import auth from "./auth";
 import user from "./user";
-import customer from "./customer"
+import shop from "./shop";
 
 const routes = Router();
 
 routes.use("/auth", auth);
 routes.use("/user", user);
-routes.use("/customer",customer)
+routes.use("/shop",shop)
 
 routes.use(async (req, res) => {
     res.status(404).send('Not found!');
