@@ -54,4 +54,3 @@ npm run <cli>
 * `build` - build the project.
 * `start` - start the project.
 * `init-database` - synchronize the database with the entities.
-* `copy-dts` - Minh Tiến bổ sung chỗ này :)
