@@ -5,13 +5,13 @@ import {
   CreateDateColumn,
   OneToMany,
   OneToOne,
-} from "typeorm";
+} from 'typeorm';
 
-import { Length, IsNotEmpty } from "class-validator";
-import bcrypt from "bcryptjs";
-import { UserRole } from "./userRole";
-import { Customer } from "./customer";
-import { StatusEnum } from "../utils/shopp.enum";
+import { Length, IsNotEmpty } from 'class-validator';
+import bcrypt from 'bcryptjs';
+import { UserRole } from './userRole';
+import { Customer } from './customer';
+import { StatusEnum } from '../utils/shopp.enum';
 
 @Entity()
 export class User {
@@ -19,17 +19,12 @@ export class User {
   id: number;
 
   @Column()
-  @Length(4, 60)
-  @IsNotEmpty()
   email: string;
 
   @Column()
-  @Length(10)
-  @IsNotEmpty()
   phone: string;
 
   @Column()
-  @IsNotEmpty()
   password: string;
 
   @Column({
@@ -49,7 +44,7 @@ export class User {
   @OneToMany(() => UserRole, userRole => userRole.user)
   roles: UserRole[];
 
-  @OneToOne(() => Customer, (customer) => customer.user)
+  @OneToOne(() => Customer, customer => customer.user)
   customer: Customer;
 
   hashPassword() {

@@ -5,23 +5,21 @@ import {
   CreateDateColumn,
   OneToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from 'typeorm';
 
-import { Length, IsNotEmpty } from "class-validator";
-import { Customer } from "./customer";
+import { Length, IsNotEmpty } from 'class-validator';
+import { Customer } from './customer';
 
-@Entity({ name: "Cart" })
+@Entity()
 export class Cart {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
-    name: "products",
-    type: 'json'})
-  @IsNotEmpty()
+    type: 'json',
+  })
   products: object;
 
-  @OneToOne(() => Customer, (customer) => customer.cart)
-  @IsNotEmpty()
+  @OneToOne(() => Customer, customer => customer.cart)
   customer: Customer;
 }

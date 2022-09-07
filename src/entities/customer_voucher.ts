@@ -4,16 +4,15 @@ import {
   Column,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from 'typeorm';
 
-import { Length, IsNotEmpty } from "class-validator";
-import { Customer } from "./customer";
+import { Customer } from './customer';
 
-@Entity({name:'Customer_Voucher'})
+@Entity()
 export class Customer_Voucher {
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
 
-  @Column({name:'voucher'})
-  voucher:string
+  @Column()
+  voucher: string;
 }

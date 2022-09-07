@@ -1,8 +1,8 @@
-import { User } from "./../entities/user";
-import { Customer } from "./../entities/customer";
-import { validate } from "class-validator";
-import { ShopPDataSource } from "../data";
-import { StatusEnum, GenderEnum } from "../utils/shopp.enum";
+import { User } from './../entities/user';
+import { Customer } from './../entities/customer';
+import { validate } from 'class-validator';
+import { ShopPDataSource } from '../data';
+import { StatusEnum, GenderEnum } from '../utils/shopp.enum';
 
 export default class CustomerModel {
   static async listAll() {
@@ -94,7 +94,7 @@ export default class CustomerModel {
     //res.status(201).send("Customer created");
     return customer;
   }
- 
+
   static async edit(
     id: string,
     name: string,

@@ -5,29 +5,25 @@ import {
   JoinColumn,
   CreateDateColumn,
   OneToOne,
-} from "typeorm";
+} from 'typeorm';
 
-import { Length, IsNotEmpty } from "class-validator";
-import { User } from "./user";
-import { GenderEnum } from "../utils/shopp.enum";
-import { Cart } from "./cart";
+import { User } from './user';
+import { GenderEnum } from '../utils/shopp.enum';
+import { Cart } from './cart';
 
-@Entity({ name: "customer" })
+@Entity()
 export class Customer {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
-  
+
   @Column()
-  @Length(1, 100)
-  @IsNotEmpty()
   name: string;
 
   @Column()
-  avatar:number;
+  avatar: number;
 
   @Column({
-    name: "gender",
-    type: "enum",
+    type: 'enum',
     enum: GenderEnum,
     default: GenderEnum.MALE,
   })
@@ -37,17 +33,16 @@ export class Customer {
   @CreateDateColumn()
   dob: Date;
 
-  @OneToOne(() => User, (user) => user.customer)
-  @JoinColumn({ name: "user" })
+  @OneToOne(() => User, user => user.customer)
+  @JoinColumn({ name: 'user' })
   user: User;
 
   @Column()
-  @IsNotEmpty()
   placeOfDelivery: string;
 
-  @Column("json")
+  @Column('json')
   followingShops: string[];
 
-  @OneToOne(() => Cart, (cart) => cart.customer)
+  @OneToOne(() => Cart, cart => cart.customer)
   cart: Cart;
 }
