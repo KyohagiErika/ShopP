@@ -6,7 +6,6 @@ import {
     JoinColumn,
   } from "typeorm";
   
-  import { Length, IsNotEmpty } from "class-validator";
  // import { LocalFile } from "./localFile";
   import { User } from "./user";
 
@@ -16,32 +15,27 @@ import {
   id: string;
 
   @Column()
-  @Length(1, 60)
-  @IsNotEmpty()
   name: string;
 
 //   @OneToOne(() => LocalFile)
 //   @JoinColumn()
 //   avata: LocalFile[]
 
-  @Column()
+  @Column({nullable: true})
   avatar: number;
 
   @OneToOne(() => User, (user) => user.shop)
-  @JoinColumn({name: 'user'})
+  @JoinColumn()
   user: User;
  
 
   @Column()
-  @Length(4, 60)
   email: string;
 
   @Column()
-  @Length(10)
   phone: string;
 
   @Column()
-  @IsNotEmpty()
   placeOfReceipt: string;
 
   @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })

@@ -10,15 +10,15 @@ const routes = Router();
 routes.get("/list-all",  ShopMiddleware.listAll);//[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 // Get one user
-routes.get("/:id([0-9]+)",  ShopMiddleware.getOneById);//[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.get("/:id",  ShopMiddleware.getOneById);//[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 //Create a new user
-routes.post("/",  ShopMiddleware.postNew);//[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.post("/:userId([0-9]+)",  ShopMiddleware.postNew);//[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 //Edit one user
-routes.put("/:id([0-9]+)", [checkJwt, checkRole(RoleEnum.ADMIN)], ShopMiddleware.edit);
+routes.post("/:id", ShopMiddleware.edit);//[checkJwt], checkRole(RoleEnum.ADMIN);
 
 //Delete one user
-routes.put("/delete/:id([0-9]+)",  ShopMiddleware.delete);//[checkJwt, checkRole(RoleEnum.ADMIN)],
+//routes.post("/delete/:id",  ShopMiddleware.delete);//[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 export default routes;
