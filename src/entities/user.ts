@@ -6,7 +6,6 @@ import {
   OneToMany,
 } from 'typeorm';
 
-import { Length, IsNotEmpty } from 'class-validator';
 import bcrypt from 'bcryptjs';
 import { UserRole } from './userRole';
 import { StatusEnum } from '../utils/shopp.enum';
@@ -17,24 +16,19 @@ export class User {
   id: number;
 
   @Column()
-  @Length(4, 60)
-  @IsNotEmpty()
   email: string;
 
   @Column()
-  @Length(10)
-  @IsNotEmpty()
   phone: string;
 
   @Column()
-  @IsNotEmpty()
   password: string;
 
   @Column({
     type: 'enum',
     enum: StatusEnum,
     default: StatusEnum.ACTIVE,
-  })
+})
   status: StatusEnum;
 
   @Column()

@@ -50,7 +50,7 @@ export default class UserModel {
       return { error: error };
     }
   }
-  @ModelService()
+  //@ModelService()
   static async postNew(
     email: string,
     phone: string,

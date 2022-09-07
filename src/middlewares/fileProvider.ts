@@ -2,11 +2,12 @@ import  fs  from "fs";
 import multer from "multer";
 import { Request} from "express";
 import ShopPConfig from "../utils/shopp.config";
+import path from "path";
 
 const fileStorage = multer.diskStorage({
     destination : function (req: Request, file: any, callback: any) {
-        if(!fs.existsSync(__dirname+'/../../'+ShopPConfig.IMAGE_PATH)) {
-            fs.mkdirSync(__dirname+'/../../'+ShopPConfig.IMAGE_PATH, {recursive:true});
+        if(!fs.existsSync(path.join(path.dirname(path.dirname(__dirname)),ShopPConfig.IMAGE_PATH))) {
+            fs.mkdirSync(path.join(path.dirname(path.dirname(__dirname)),ShopPConfig.IMAGE_PATH), {recursive:true});
         }
         callback(null, ShopPConfig.IMAGE_PATH);
     },
