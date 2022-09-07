@@ -2,12 +2,13 @@ import { validate } from "class-validator";
 import { Router, Request, Response } from "express";
 import { ShopPDataSource } from "../data";
 import { LocalFile } from "../entities/localFile";
+import { HttpStatusCode } from "../utils/shopp.enum";
 
 export default class UserMiddleware { 
     static async uploadImage(req: Request, res: Response) {
         try {
             if (!req.file) {
-                return res.status(400).send({ message: "Please upload image" });
+                return res.status(HttpStatusCode.BAD_REQUEST).send({ message: "Please upload image" });
             }
             const file = req.file;
             let localFile: LocalFile = new LocalFile();
@@ -16,17 +17,17 @@ export default class UserMiddleware {
             localFile.path = file.path;
     
             const errors = await validate(localFile);
-            if (errors.length > 0) {res.status(400).send({ "errors": errors });}
+            if (errors.length > 0) {res.status(HttpStatusCode.BAD_REQUEST).send({ "errors": errors });}
     
             const localFileRepository = ShopPDataSource.getRepository(LocalFile);
             try {
                 await localFileRepository.save(localFile);
             } catch (e) {
-                return res.status(400).send({ "e": e });
+                return res.status(HttpStatusCode.BAD_REQUEST).send({ "e": e });
             }
-            return res.status(200).send({ message: 'Image uploaded successfully' });
+            return res.status(HttpStatusCode.OK).send({ message: 'Image uploaded successfully' });
         } catch (err) {
-            return res.status(400).send({ message: "Upload image failed!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).send({ message: "Upload image failed!" });
         }
     }
 
@@ -36,7 +37,7 @@ export default class UserMiddleware {
 
     if (!files || files == undefined) {
         const error = new Error('Please choose images');
-        return res.status(400).send({"error": error})
+        return res.status(HttpStatusCode.BAD_REQUEST).send({"error": error})
     }
     const localFileRepository = ShopPDataSource.getRepository(LocalFile);
     let localFile: LocalFile;
@@ -53,17 +54,17 @@ export default class UserMiddleware {
         try {
             await localFileRepository.save(localFile);
         } catch (e) {
-            return res.status(400).send({ "e": e });
+            return res.status(HttpStatusCode.BAD_REQUEST).send({ "e": e });
         }
         return
     })  
-    return res.status(200).send({ message: 'Images uploaded Successfully' });
+    return res.status(HttpStatusCode.OK).send({ message: 'Images uploaded Successfully' });
     }
 
     static async uploadVideo(req: Request, res: Response) {
         try {
             if (!req.file) {
-                return res.status(400).send({ message: "Please upload video" });
+                return res.status(HttpStatusCode.BAD_REQUEST).send({ message: "Please upload video" });
             }
             const file = req.file;
             let localFile: LocalFile = new LocalFile();
@@ -72,17 +73,17 @@ export default class UserMiddleware {
             localFile.path = file.path;
     
             const errors = await validate(localFile);
-            if (errors.length > 0) {res.status(400).send({ "errors": errors });}
+            if (errors.length > 0) {res.status(HttpStatusCode.BAD_REQUEST).send({ "errors": errors });}
     
             const localFileRepository = ShopPDataSource.getRepository(LocalFile);
             try {
                 await localFileRepository.save(localFile);
             } catch (e) {
-                return res.status(400).send({ "e": e });
+                return res.status(HttpStatusCode.BAD_REQUEST).send({ "e": e });
             }
-            return res.status(200).send({ message: 'Video uploaded Successfully' });
+            return res.status(HttpStatusCode.OK).send({ message: 'Video uploaded Successfully' });
         } catch (err) {
-            return res.status(400).send({ message: "Upload video failed!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).send({ message: "Upload video failed!" });
         }
     }
 }

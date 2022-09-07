@@ -1,88 +1,106 @@
 import { Request, Response } from 'express';
 import UserModel from '../models/user';
 import { ControllerService } from '../utils/decorators';
-import { RoleEnum } from '../utils/shopp.enum';
+import { HttpStatusCode, RoleEnum } from '../utils/shopp.enum';
 
 export default class UserMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
     const result = await UserModel.listAll();
     if (result) {
-      res.send(result);
+      res.status(HttpStatusCode.OK).send(result);
     } else {
-      res.status(400).send('Get user failed!');
+      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Get all users failed!' });
     }
   }
 
-  @ControllerService()
+  @ControllerService({
+    params: [{
+      name: 'id',
+      type: String
+    }]
+  })
   static async getOneById(req: Request, res: Response) {
-    const id = +req.params.id; //(req.params as unknown) as number;
-    if (id) {
-      const result = await UserModel.getOneById(id);
-      if (result) {
-        res.send(result);
-      } else {
-        res.status(400).send('Get user failed!' + id);
-      }
-      res.status(200);
+    const id = +req.params.id;
+    const result = await UserModel.getOneById(id);
+    if (result) {
+      res.status(HttpStatusCode.OK).send(result);
     } else {
-      res.status(400).send('Incorrect id! ' + id);
+      res.status(HttpStatusCode.BAD_REQUEST).send('Wrong userId!');
     }
   }
 
-  @ControllerService()
+  @ControllerService({
+    body: [{
+      name: 'email',
+      type: String,
+      validator: (propName: string, value: string) => {
+
+        return null;
+      }
+    } ,{
+      name: 'password',
+      type: String,
+      validator: (propName: string, value: string) => {
+
+        return null;
+      }
+    }, {
+      name: 'phone',
+      type: String,
+      validator: (propName: string, value: string) => {
+
+        return null;
+      }
+    }]
+  })
   static async postNew(req: Request, res: Response) {
     const data = req.body;
-    if (data.email && data.password && data.phone) {
-      const result = await UserModel.postNew(
-        data.email.toString(),
-        data.phone.toString(),
-        data.password.toString(),
-        RoleEnum.CUSTOMER
-      );
-      console.log(result);
-      if (result) {
-        res.send(result);
-      } else {
-        res.status(400).send('Post data failed!');
-      }
+    const result = await UserModel.postNew(data.email, data.phone, data.password, RoleEnum.CUSTOMER);
+    if (result === true) {
+      res.status(HttpStatusCode.OK).send({message: "Post new user successfully!"});
     } else {
-      res.status(400).send('Incorrect input data!');
+      res.status(HttpStatusCode.BAD_REQUEST).send(result);
     }
   }
 
-  @ControllerService()
+  @ControllerService({
+    body: [{
+      name: 'email',
+      type: String,
+      validator: (propName: string, value: string) => {
+
+        return null;
+      }
+    }, {
+      name: 'phone',
+      type: String,
+      validator: (propName: string, value: string) => {
+
+        return null;
+      }
+    }]
+  })
   static async edit(req: Request, res: Response) {
     const data = req.body;
     const id = +req.params.id;
-    if (data.email && id && data.phone) {
-      const result = await UserModel.edit(
-        id,
-        data.email.toString(),
-        data.phone.toString()
-      );
-      if (result) {
-        res.send(result);
-      } else {
-        res.status(400).send('Edit data failed!' + result);
-      }
+    const result = await UserModel.edit(id, data.email, data.phone);
+    if (result.affected == 1) {
+      res.status(HttpStatusCode.OK).send(result);
     } else {
-      res.status(400).send('Incorrect edit input data!');
+      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Edit data failed!' });
     }
+    //res.status(HttpStatusCode.OK).send(result);
   }
 
   @ControllerService()
   static async delete(req: Request, res: Response) {
     const id = +req.params.id;
-    if (id) {
-      const result = await UserModel.delete(id);
-      if (result) {
-        res.send(result);
-      } else {
-        res.status(400).send('Delete data failed!' + result);
-      }
+    const result = await UserModel.delete(id);
+    if (result === true) {
+      res.status(HttpStatusCode.OK).send(result);
     } else {
-      res.status(400).send('Incorrect id!');
+      res.status(HttpStatusCode.BAD_REQUEST).send({message: 'Delete data failed!'});
     }
   }
 }

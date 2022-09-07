@@ -27,7 +27,7 @@ interface ControllerServiceOption {
   body?: ApiProperty[];
 }
 
-interface ErrorElement {
+export interface ErrorElement {
   at: string;
   message: string;
 }
