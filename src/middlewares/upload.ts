@@ -6,7 +6,7 @@ import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
 import UploadModel from '../models/upload';
 
-export default class UserMiddleware {
+export default class UploadMiddleware {
   @ControllerService()
   static async uploadImage(req: Request, res: Response) {
     if (req.file != undefined) {
