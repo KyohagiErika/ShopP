@@ -66,6 +66,21 @@ export default class CustomerModel {
     // customer.placeOfDelivery = placeOfDelivery;
     const userRepository = ShopPDataSource.getRepository(User);
     const customerRepository = ShopPDataSource.getRepository(Customer);
+
+    let userID = userRepository.findOne({
+      select: {
+        id: true,
+      },
+      where: {
+        id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+
+    if (userID === null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'UserId doesnt exist');
+    }
+
     const customerList = customerRepository.find({
       where: {
         user: {
@@ -83,22 +98,18 @@ export default class CustomerModel {
       );
     }
 
-    let user = userRepository.findOneOrFail({
-      where: {
-        id: userId,
-        status: StatusEnum.ACTIVE,
-      },
-    });
-
-    if (user == null) {
-      new Response(HttpStatusCode.BAD_REQUEST, 'UserId doesnt exist');
-    }
     // let customer = new Customer()
     // customer.name = name
     // customer.gender = gender
     // customer.dob = dob
     // customer.placeOfDelivery = placeOfDelivery
     // customer.user =await user
+    let user = userRepository.findOneOrFail({
+      where: {
+        id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+    });
     let customer = await customerRepository.save({
       name,
       gender,
