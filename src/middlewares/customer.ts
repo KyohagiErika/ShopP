@@ -148,7 +148,6 @@ export default class CustomerMiddleware {
         name: 'placeOfDelivery',
         type: String,
         validator: (propName: string, value: string) => {
-
           return null;
         },
       },
@@ -158,9 +157,7 @@ export default class CustomerMiddleware {
     const data = req.query;
     const id = req.params.id;
 
-    
     if (id && data.name && data.placeOfDelivery && data.dob && data.gender) {
-      
       // resolve gender
       let gender: GenderEnum;
       if (data.gender.toString().toUpperCase() === 'FEMALE') {
