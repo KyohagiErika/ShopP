@@ -2,6 +2,7 @@ import CustomerModel from '../models/customer';
 import { Request, Response } from 'express';
 import { ControllerService } from '../utils/decorators';
 import { GenderEnum, HttpStatusCode } from '../utils/shopp.enum';
+// import Responses from '../utils/response';
 
 export default class CustomerMiddleware {
   @ControllerService()
@@ -102,6 +103,13 @@ export default class CustomerMiddleware {
         data.placeOfDelivery.toString(),
         userId
       );
+
+      if (result.getCode() === HttpStatusCode.CREATED) {
+      res.status(result.getCode()).send({message: result.getMessage(), data: result.getData()});
+    } else {
+      res.status(result.getCode()).send({message: result.getMessage()});
+    }
+
       if (result) {
         res.status(HttpStatusCode.OK).send(result);
       } else {

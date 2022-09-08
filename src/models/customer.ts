@@ -2,7 +2,8 @@ import { User } from './../entities/user';
 import { Customer } from './../entities/customer';
 import { validate } from 'class-validator';
 import { ShopPDataSource } from '../data';
-import { StatusEnum, GenderEnum } from '../utils/shopp.enum';
+import { StatusEnum, HttpStatusCode, GenderEnum } from '../utils/shopp.enum';
+import Response from '../utils/response';
 
 export default class CustomerModel {
   static async listAll() {
@@ -73,7 +74,12 @@ export default class CustomerModel {
         }
       }
     })
-    
+
+    // check userID used or not
+    if (customerList != null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Customer with this userId has already existed')
+    } 
+
     let user = userRepository.findOneOrFail({
       where: {
         id: userId,
