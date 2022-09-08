@@ -8,7 +8,6 @@ const userRepository = ShopPDataSource.getRepository(User);
 const userRoleRepository = ShopPDataSource.getRepository(UserRole);
 
 export default class UserModel {
-  static status: { status: StatusEnum };
   static async listAll() {
     const users = await userRepository.find({
       relations: {
