@@ -1,9 +1,9 @@
-import { validate } from 'class-validator';
 import { ShopPDataSource } from '../data';
 import { User } from '../entities/user';
 import { UserRole } from '../entities/userRole';
-import { StatusEnum, RoleEnum } from '../utils/shopp.enum';
+import { StatusEnum, RoleEnum, HttpStatusCode } from '../utils/shopp.enum';
 import { ErrorElement } from "../utils/decorators"
+import Response from '../utils/response';
 
 const userRepository = ShopPDataSource.getRepository(User);
 const userRoleRepository = ShopPDataSource.getRepository(UserRole);
@@ -31,7 +31,7 @@ export default class UserModel {
   }
 
   static async getOneById(userId: number) {
-    const user = await userRepository.findOneOrFail({
+    const user = await userRepository.findOne({
       select: {
         id: true,
         email: true,
@@ -56,13 +56,9 @@ export default class UserModel {
       }
     });
 
-    let err = new Array<ErrorElement>();
+    //let err = new Array<ErrorElement>();
     if (emailUser != null) {
-      err.push({
-        at: 'email',
-        message: `Email already exist.`,
-      });
-      return err;
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Email already exist.')
     } else {
       //Get parameters from the body
       let user = new User();
@@ -74,7 +70,7 @@ export default class UserModel {
       await userRepository.save(user);
       await userRoleRepository.save({ role: role, user: user });
 
-      return true;
+      return new Response(HttpStatusCode.CREATED, "Create new user successfully!", user);
     }
   }
 

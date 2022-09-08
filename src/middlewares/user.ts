@@ -57,10 +57,10 @@ export default class UserMiddleware {
   static async postNew(req: Request, res: Response) {
     const data = req.body;
     const result = await UserModel.postNew(data.email, data.phone, data.password, RoleEnum.CUSTOMER);
-    if (result === true) {
-      res.status(HttpStatusCode.OK).send({message: "Post new user successfully!"});
+    if (result.getCode() === HttpStatusCode.CREATED) {
+      res.status(result.getCode()).send({message: result.getMessage(), data: result.getData()});
     } else {
-      res.status(HttpStatusCode.BAD_REQUEST).send(result);
+      res.status(result.getCode()).send({message: result.getMessage()});
     }
   }
 
