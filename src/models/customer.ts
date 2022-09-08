@@ -24,12 +24,12 @@ export default class CustomerModel {
         user: { status: StatusEnum.ACTIVE },
       },
     });
-    return customers && customers.length > 0 ? customers : false;
+    return customers ? customers : false;
   }
 
   static async getOneById(customerId: string) {
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    try {
+    
       const customer = await customerRepository.findOneOrFail({
         relations: {
           user: true,
@@ -49,9 +49,6 @@ export default class CustomerModel {
         },
       });
       return customer ? customer : false;
-    } catch (error) {
-      return error;
-    }
   }
 
   static async postNew(
@@ -61,38 +58,31 @@ export default class CustomerModel {
     placeOfDelivery: string,
     userId: number
   ) {
-    let customer = new Customer();
-    customer.name = name;
-    customer.gender = gender;
-    customer.dob = dob;
-    customer.placeOfDelivery = placeOfDelivery;
+    // let customer = new Customer();
+    // customer.name = name;
+    // customer.gender = gender;
+    // customer.dob = dob;
+    // customer.placeOfDelivery = placeOfDelivery;
     const userRepository = ShopPDataSource.getRepository(User);
-    let user;
-    try {
-      user = userRepository.findOneOrFail({
-        where: {
-          id: userId,
-          status: StatusEnum.ACTIVE,
-        },
-      });
-    } catch (e) {
-      return e;
-    }
-    customer.user = await user;
-    const errorsCustomer = await validate(customer);
-    if (errorsCustomer.length > 0) {
-      return errorsCustomer;
-    }
+
+    let user = userRepository.findOneOrFail({
+      where: {
+        id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+
+    // customer.user = await user;
 
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    try {
-      await customerRepository.save(customer);
-    } catch (e) {
-      return e;
-    }
-    //If all ok, send 201 response
-    //res.status(201).send("Customer created");
-    return customer;
+    let customer = await customerRepository.save({
+      name,
+      gender,
+      dob,
+      placeOfDelivery,
+      user: await user
+    })
+    return customer ? customer : false;
   }
 
   static async edit(
@@ -104,34 +94,29 @@ export default class CustomerModel {
   ) {
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    try {
-      let customer: Customer | null = await customerRepository.findOne({
-        where: {
-          id: id,
-          user: { status: StatusEnum.ACTIVE },
+    // let customer: Customer | null = await customerRepository.findOne({
+    //     where: {
+    //       id: id,
+    //       user: { status: StatusEnum.ACTIVE },
+    //     },
+    //   });
+      // if (customer) {
+      //   customer.id = id;
+      //   customer.name = name;
+      //   customer.gender = gender;
+      //   customer.dob = dob;
+      //   customer.placeOfDelivery = placeOfDelivery;
+      const result = await customerRepository.update(
+        {
+          id,
+          user: {status: StatusEnum.ACTIVE}
         },
-      });
-      if (customer) {
-        customer.id = id;
-        customer.name = name;
-        customer.gender = gender;
-        customer.dob = dob;
-        customer.placeOfDelivery = placeOfDelivery;
-        const errors = await validate(customer);
-        if (errors.length > 0) {
-          return errors;
-        }
-
-        try {
-          await customerRepository.save(customer);
-        } catch (e) {
-          return e;
-        }
-      } else return false;
-
-      return true;
-    } catch (error) {
-      return error;
-    }
+        {
+          name,
+          gender,
+          dob,
+          placeOfDelivery
+        })
+    return result ? result : false;
   }
 }

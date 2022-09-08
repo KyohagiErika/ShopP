@@ -30,19 +30,18 @@ export class Customer {
   gender: GenderEnum;
 
   @Column()
-  @CreateDateColumn()
   dob: Date;
 
   @OneToOne(() => User, user => user.customer)
-  @JoinColumn({ name: 'user' })
+  @JoinColumn()
   user: User;
 
   @Column()
   placeOfDelivery: string;
 
-  @Column('json')
+  @Column('json',{nullable: true})
   followingShops: string[];
 
-  @OneToOne(() => Cart, cart => cart.customer)
-  cart: Cart;
+  // @OneToOne(() => Cart, cart => cart.customer)
+  // cart: Cart;
 }
