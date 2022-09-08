@@ -31,7 +31,7 @@ export default class CustomerModel {
   static async getOneById(customerId: string) {
     const customerRepository = ShopPDataSource.getRepository(Customer);
 
-    const customer = await customerRepository.findOneOrFail({
+    const customer = await customerRepository.findOne({
       relations: {
         user: true,
       },
@@ -70,15 +70,18 @@ export default class CustomerModel {
       where: {
         user: {
           id: userId,
-          status: StatusEnum.ACTIVE
-        }
-      }
-    })
+          status: StatusEnum.ACTIVE,
+        },
+      },
+    });
 
     // check userID used or not
     if (customerList != null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Customer with this userId has already existed')
-    } 
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Customer with this userId has already existed'
+      );
+    }
 
     let user = userRepository.findOneOrFail({
       where: {
@@ -86,19 +89,29 @@ export default class CustomerModel {
         status: StatusEnum.ACTIVE,
       },
     });
-    
-    if(user == null) {
-      new Response(HttpStatusCode.BAD_REQUEST, 'UserId doesnt exist'); 
-    }
 
-    let customer = await customerRepository.save({
+    if (user == null) {
+      new Response(HttpStatusCode.BAD_REQUEST, 'UserId doesnt exist');
+    }
+      // let customer = new Customer()
+      // customer.name = name
+      // customer.gender = gender
+      // customer.dob = dob
+      // customer.placeOfDelivery = placeOfDelivery
+      // customer.user =await user
+      let customer = await customerRepository.save({
       name,
       gender,
       dob,
       placeOfDelivery,
       user: await user,
     });
-    return new Response(HttpStatusCode.CREATED, "Create new customer successfully!", customer); 
+    return new Response(
+      HttpStatusCode.CREATED,
+      'Create new customer successfully!',
+      customer
+    );
+    
   }
 
   static async edit(
@@ -134,8 +147,11 @@ export default class CustomerModel {
         placeOfDelivery,
       }
     );
-    if(result == null) 
-      return new Response(HttpStatusCode.BAD_REQUEST, "Customer Id doesn't exist"); 
-    return new Response(HttpStatusCode.CREATED, "Edit customer successfully!"); 
+    if (result == null)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        "Customer Id doesn't exist"
+      );
+    return new Response(HttpStatusCode.CREATED, 'Edit customer successfully!');
   }
 }

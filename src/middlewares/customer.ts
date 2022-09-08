@@ -7,8 +7,11 @@ export default class CustomerMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
     const result = await CustomerModel.listAll();
-    if (result) res.status(HttpStatusCode.OK).send(result);
-    else res.status(HttpStatusCode.BAD_REQUEST).send('Get customer failed');
+    if (result) res.status(HttpStatusCode.OK).send({ data: result });
+    else
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get customer failed' });
   }
 
   @ControllerService({
@@ -24,14 +27,16 @@ export default class CustomerMiddleware {
     if (id) {
       const result = await CustomerModel.getOneById(id);
       if (result) {
-        res.status(HttpStatusCode.OK).send(result);
+        res.status(HttpStatusCode.OK).send({ data: result });
       } else {
         res
           .status(HttpStatusCode.BAD_REQUEST)
-          .send('Get customer failed!' + id);
+          .send({ message: 'Get customer failed!' + id });
       }
     } else {
-      res.status(HttpStatusCode.BAD_REQUEST).send('Incorrect id! ' + id);
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Incorrect id! ' + id });
     }
   }
 
@@ -93,7 +98,7 @@ export default class CustomerMiddleware {
     var dateReplace = data.dob.replace(/-/g, '/');
     var parts = dateReplace.split('/');
     var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
-    
+
     const result = await CustomerModel.postNew(
       data.name.toString(),
       data.gender,
@@ -103,11 +108,12 @@ export default class CustomerMiddleware {
     );
 
     if (result.getCode() === HttpStatusCode.CREATED) {
-    res.status(result.getCode()).send({message: result.getMessage(), data: result.getData()});
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
     } else {
-      res.status(result.getCode()).send({message: result.getMessage()});
+      res.status(result.getCode()).send({ message: result.getMessage() });
     }
-
   }
 
   @ControllerService({
@@ -175,7 +181,6 @@ export default class CustomerMiddleware {
       new Date(dateTrueFormat),
       data.placeOfDelivery.toString()
     );
-    res.status(result.getCode()).send({message: result.getMessage()})
-    
-    }
+    res.status(result.getCode()).send({ message: result.getMessage() });
+  }
 }
