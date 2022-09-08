@@ -28,7 +28,9 @@ ShopPDataSource.initialize()
     });
   })
   .catch(err => {
-    console.error('There are some errors while initialzing data source!');
+    console.error(
+      chalk.red('There are some errors while initialzing data source!')
+    );
     console.error('Detail:');
     console.log(err);
     process.exit(1);

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ShopPDataSource } from '../data';
 
 import { User } from '../entities/user';
-import { RoleEnum } from '../utils/shopp.enum';
+import { HttpStatusCode, RoleEnum } from '../utils/shopp.enum';
 import { UserRole } from '../entities/userRole';
 
 export const checkRole = (role: RoleEnum) => {
@@ -16,7 +16,9 @@ export const checkRole = (role: RoleEnum) => {
     try {
       user = await userRepository.findOneOrFail(id);
     } catch (id) {
-      res.status(401).send({ message: 'unauthorized error!' });
+      res
+        .status(HttpStatusCode.UNAUTHORIZATION)
+        .send({ message: 'Unauthorized error, user not exist!' });
     }
     if (user !== undefined) {
       //Check if array of authorized user roles includes the  role
@@ -24,7 +26,10 @@ export const checkRole = (role: RoleEnum) => {
       if (userRole !== undefined) {
         userRole.role = role;
         if (user.roles.indexOf(userRole) > -1) next();
-        else res.status(401).send({ message: 'unauthorized error!' });
+        else
+          res
+            .status(HttpStatusCode.UNAUTHORIZATION)
+            .send({ message: 'Unauthorized error, Role is invalid!' });
       }
     }
   };

@@ -17,7 +17,7 @@ routes.post(
 routes.post(
   '/image-multiple',
   uploadImage.array('images', 10),
-  UploadMiddleware.uploadVideo
+  UploadMiddleware.uploadMultipleImage
 );
 
 routes.post(
