@@ -1,5 +1,4 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { IsNotEmpty } from 'class-validator';
 import { User } from './user';
 import { RoleEnum } from '../utils/shopp.enum';
 
@@ -11,10 +10,9 @@ export class UserRole {
   @ManyToOne(() => User, user => user.roles)
   user: User;
 
-  @IsNotEmpty()
   @Column({
     type: 'enum',
     enum: RoleEnum,
-  })
+})
   role: RoleEnum;
 }

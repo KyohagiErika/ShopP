@@ -3,6 +3,7 @@ import { UserRole } from './entities/userRole';
 import { User } from './entities/user';
 import { Cart } from './entities/cart';
 import { Customer } from './entities/customer';
+import { LocalFile } from './entities/localFile';
 import ShopPConfig from './utils/shopp.config';
 
 export const ShopPDataSource = new DataSource({
@@ -12,6 +13,6 @@ export const ShopPDataSource = new DataSource({
   username: ShopPConfig.DATABASE_USERNAME,
   password: ShopPConfig.DATABASE_PASSWORD,
   database: ShopPConfig.DATABASE_NAME,
-  entities: [UserRole, User, Customer, Cart],
+  entities: [UserRole, User, Customer, Cart, LocalFile],
   logger: new AdvancedConsoleLogger('all'),
 });

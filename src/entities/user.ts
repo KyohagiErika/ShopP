@@ -7,7 +7,6 @@ import {
   OneToOne,
 } from 'typeorm';
 
-import { Length, IsNotEmpty } from 'class-validator';
 import bcrypt from 'bcryptjs';
 import { UserRole } from './userRole';
 import { Customer } from './customer';
@@ -31,14 +30,14 @@ export class User {
     type: 'enum',
     enum: StatusEnum,
     default: StatusEnum.ACTIVE,
-  })
+})
   status: StatusEnum;
 
   @Column()
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ nullable: true })
+  @Column({nullable: true})
   lockedAt: Date;
 
   @OneToMany(() => UserRole, userRole => userRole.user)
