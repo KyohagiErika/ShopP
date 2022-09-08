@@ -64,17 +64,26 @@ export default class CustomerModel {
     // customer.dob = dob;
     // customer.placeOfDelivery = placeOfDelivery;
     const userRepository = ShopPDataSource.getRepository(User);
-
+    const customerRepository = ShopPDataSource.getRepository(Customer);
+    const customerList = customerRepository.find({
+      where: {
+        user: {
+          id: userId,
+          status: StatusEnum.ACTIVE
+        }
+      }
+    })
+    
     let user = userRepository.findOneOrFail({
       where: {
         id: userId,
         status: StatusEnum.ACTIVE,
       },
     });
-
+    
     // customer.user = await user;
 
-    const customerRepository = ShopPDataSource.getRepository(Customer);
+    
     let customer = await customerRepository.save({
       name,
       gender,
