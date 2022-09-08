@@ -2,7 +2,7 @@ import { ShopPDataSource } from '../data';
 import { LocalFile } from '../entities/localFile';
 import { HttpStatusCode } from '../utils/shopp.enum';
 
-export default class AuthModel {
+export default class UploadModel {
   static async upload(file: Express.Multer.File) {
     let localFile: LocalFile = new LocalFile();
     localFile.filename = file.filename;
