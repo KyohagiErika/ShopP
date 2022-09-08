@@ -32,6 +32,9 @@ export default class UserModel {
 
   static async getOneById(userId: number) {
     const user = await userRepository.findOne({
+      relations: {
+        roles: true,
+      },
       select: {
         id: true,
         email: true,
@@ -99,7 +102,7 @@ export default class UserModel {
         status: StatusEnum.ACTIVE
       }
     });
-    if (emailUser != null && emailUser !== user) {
+    if (emailUser != null && emailUser.email != user.email) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Email already exist.');
     } 
 
@@ -109,7 +112,7 @@ export default class UserModel {
         status: StatusEnum.ACTIVE
       }
     });
-    if (phoneUser != null && phoneUser !== user) {
+    if (phoneUser != null && phoneUser.phone !== user.phone) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Phone already exist.');
     }
 

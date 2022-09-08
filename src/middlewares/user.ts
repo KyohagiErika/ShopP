@@ -80,13 +80,13 @@ export default class UserMiddleware {
     const data = req.body;
     const id = +req.params.id;
     const result = await UserModel.edit(id, data.email, data.phone);
-    res.status(result.getCode()).send({ message: result.getCode() });
+    res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
   @ControllerService()
   static async delete(req: Request, res: Response) {
     const id = +req.params.id;
     const result = await UserModel.delete(id);
-    res.status(result.getCode()).send({ message: result.getCode() });
+    res.status(result.getCode()).send({ message: result.getMessage() });
   }
 }
