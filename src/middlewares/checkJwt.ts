@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import config from '../utils/shopp.config';
+import { HttpStatusCode } from '../utils/shopp.enum';
 
 export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
   //Get the jwt token from the head
@@ -13,7 +14,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     res.locals.jwtPayload = jwtPayload;
   } catch (error) {
     //If token is not valid, respond with 401 (unauthorized)
-    res.status(401).send({message: 'unauthorized error!'});
+    res.status(HttpStatusCode.UNAUTHORIZATION).send({message: 'Unauthorized error, token is invalid!'});
     return;
   }
 
