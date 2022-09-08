@@ -74,7 +74,7 @@ export default class ShopModel {
     shop.placeOfReceipt = placeOfReceipt;
     shop.user = user
     
-      await shopRepository.save(shop);
+       await shopRepository.save(shop);
       
       return new Response(HttpStatusCode.CREATED, "Create new shop successfully!", shop);
       }
@@ -98,9 +98,9 @@ export default class ShopModel {
     if (shop == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Id not exist.')
     }else{
-          await shopRepository.update({id: id}, 
+      const shopEdit = await shopRepository.update({id: id}, 
             { name: name, avatar: avatar, email: email, phone: phone, placeOfReceipt: placeOfReceipt })
-          return new Response(HttpStatusCode.OK, "Update shop successfully!", shop);
+          return new Response(HttpStatusCode.OK, "Update shop successfully!", shopEdit);
 
     }
   }    

@@ -63,7 +63,7 @@ export default class ShopMiddleware {
             name: 'email',
             type: String,
             validator: (propName: string, value: string) => {
-                
+                if(!value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/) ) return propName;
                 return null;
             }
 
@@ -72,7 +72,7 @@ export default class ShopMiddleware {
             name: 'phone',
             type: String,
             validator: (propName: string, value: string) => {
-                
+                if(!value.match(/^\d{10}$/)) return propName;
                 return null;
             }
 
@@ -114,7 +114,7 @@ export default class ShopMiddleware {
             name: 'email',
             type: String,
             validator: (propName: string, value: string) => {
-                
+                if(!value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/) ) return propName;
                 return null;
             }
 
@@ -123,7 +123,7 @@ export default class ShopMiddleware {
             name: 'phone',
             type: String,
             validator: (propName: string, value: string) => {
-                
+                if(!value.match(/^\d{10}$/)) return propName;
                 return null;
             }
 
