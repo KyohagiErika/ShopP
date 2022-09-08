@@ -2,108 +2,50 @@ import { validate } from 'class-validator';
 import { Router, Request, Response } from 'express';
 import { ShopPDataSource } from '../data';
 import { LocalFile } from '../entities/localFile';
+import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
+import UploadModel from '../models/upload';
 
-export default class UserMiddleware {
+export default class UploadMiddleware {
+  @ControllerService()
   static async uploadImage(req: Request, res: Response) {
-    try {
-      if (!req.file) {
-        return res
-          .status(HttpStatusCode.BAD_REQUEST)
-          .send({ message: 'Please upload image' });
-      }
+    if (req.file != undefined) {
       const file = req.file;
-      let localFile: LocalFile = new LocalFile();
-      localFile.filename = file.filename;
-      localFile.mimetype = file.mimetype;
-      localFile.path = file.path;
-
-      const errors = await validate(localFile);
-      if (errors.length > 0) {
-        res.status(HttpStatusCode.BAD_REQUEST).send({ errors: errors });
-      }
-
-      const localFileRepository = ShopPDataSource.getRepository(LocalFile);
-      try {
-        await localFileRepository.save(localFile);
-      } catch (e) {
-        return res.status(HttpStatusCode.BAD_REQUEST).send({ e: e });
-      }
-      return res
+      await UploadModel.upload(file);
+      res
         .status(HttpStatusCode.OK)
         .send({ message: 'Image uploaded successfully' });
-    } catch (err) {
-      return res
+    } else
+      res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Upload image failed!' });
-    }
+        .send({ error: 'Please upload image' });
   }
 
+  @ControllerService()
   static async uploadMultipleImage(req: Request, res: Response) {
     const files = req.files;
-    //insert files into database
-
-    if (!files || files == undefined) {
-      const error = new Error('Please choose images');
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ error: error });
+    if (files == undefined) {
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ error: 'Please choose images' });
     }
-    const localFileRepository = ShopPDataSource.getRepository(LocalFile);
-    let localFile: LocalFile;
-
-    (files as Array<Express.Multer.File>).map(async file => {
-      localFile = new LocalFile();
-      localFile.filename = file.filename;
-      localFile.mimetype = file.mimetype;
-      localFile.path = file.path;
-
-      let errors = await validate(localFile);
-      if (errors.length > 0) {
-        return res.status(400).send({ errors: errors });
-      }
-
-      try {
-        await localFileRepository.save(localFile);
-      } catch (e) {
-        return res.status(HttpStatusCode.BAD_REQUEST).send({ e: e });
-      }
-      return;
-    });
+    await UploadModel.uploadMultiple(files);
     return res
       .status(HttpStatusCode.OK)
       .send({ message: 'Images uploaded Successfully' });
   }
 
+  @ControllerService()
   static async uploadVideo(req: Request, res: Response) {
-    try {
-      if (!req.file) {
-        return res
-          .status(HttpStatusCode.BAD_REQUEST)
-          .send({ message: 'Please upload video' });
-      }
+    if (req.file != undefined) {
       const file = req.file;
-      let localFile: LocalFile = new LocalFile();
-      localFile.filename = file.filename;
-      localFile.mimetype = file.mimetype;
-      localFile.path = file.path;
-
-      const errors = await validate(localFile);
-      if (errors.length > 0) {
-        res.status(HttpStatusCode.BAD_REQUEST).send({ errors: errors });
-      }
-
-      const localFileRepository = ShopPDataSource.getRepository(LocalFile);
-      try {
-        await localFileRepository.save(localFile);
-      } catch (e) {
-        return res.status(HttpStatusCode.BAD_REQUEST).send({ e: e });
-      }
-      return res
+      await UploadModel.upload(file);
+      res
         .status(HttpStatusCode.OK)
-        .send({ message: 'Video uploaded Successfully' });
-    } catch (err) {
-      return res
+        .send({ message: 'Video uploaded successfully' });
+    } else
+      res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Upload video failed!' });
-    }
+        .send({ error: 'Please upload video' });
   }
 }
