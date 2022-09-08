@@ -11,6 +11,7 @@ import bcrypt from 'bcryptjs';
 import { UserRole } from './userRole';
 import { Customer } from './customer';
 import { StatusEnum } from '../utils/shopp.enum';
+import { Shop } from './shop';
 
 @Entity()
 export class User {
@@ -42,6 +43,9 @@ export class User {
 
   @OneToMany(() => UserRole, userRole => userRole.user)
   roles: UserRole[];
+
+  @OneToOne(() => Shop, shop => shop.user)
+  shop: Shop;
 
   @OneToOne(() => Customer, customer => customer.user)
   customer: Customer;
