@@ -14,7 +14,9 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     res.locals.jwtPayload = jwtPayload;
   } catch (error) {
     //If token is not valid, respond with 401 (unauthorized)
-    res.status(HttpStatusCode.UNAUTHORIZATION).send({message: 'Unauthorized error, token is invalid!'});
+    res
+      .status(HttpStatusCode.UNAUTHORIZATION)
+      .send({ message: 'Unauthorized error, token is invalid!' });
     return;
   }
 
@@ -24,7 +26,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
   const newToken = jwt.sign({ userId, userEmail }, config.JWT_SECRET, {
     expiresIn: '1h',
   });
-  res.setHeader("auth", newToken);
+  res.setHeader('auth', newToken);
 
   //Call the next middleware or controller
   next();

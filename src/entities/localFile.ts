@@ -1,20 +1,16 @@
-import {
-    Column,
-    Entity,
-    PrimaryGeneratedColumn,
-} from "typeorm"
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class LocalFile {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    filename: string;
+  @Column()
+  filename: string;
 
-    @Column()
-    path: string;
+  @Column()
+  path: string;
 
-    @Column()
-    mimetype: string;
+  @Column()
+  mimetype: string;
 }
