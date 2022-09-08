@@ -23,7 +23,7 @@ export default class CustomerMiddleware {
     ],
   })
   static async getOneById(req: Request, res: Response) {
-    const id = req.params.id; //(req.params as unknown) as number;
+    const id = req.params.id;
     if (id) {
       const result = await CustomerModel.getOneById(id);
       if (result) {

@@ -59,11 +59,6 @@ export default class CustomerModel {
     placeOfDelivery: string,
     userId: number
   ) {
-    // let customer = new Customer();
-    // customer.name = name;
-    // customer.gender = gender;
-    // customer.dob = dob;
-    // customer.placeOfDelivery = placeOfDelivery;
     const userRepository = ShopPDataSource.getRepository(User);
     const customerRepository = ShopPDataSource.getRepository(Customer);
 
@@ -98,12 +93,6 @@ export default class CustomerModel {
       );
     }
 
-    // let customer = new Customer()
-    // customer.name = name
-    // customer.gender = gender
-    // customer.dob = dob
-    // customer.placeOfDelivery = placeOfDelivery
-    // customer.user =await user
     let user = userRepository.findOneOrFail({
       where: {
         id: userId,
@@ -131,6 +120,7 @@ export default class CustomerModel {
     dob: Date,
     placeOfDelivery: string
   ) {
+
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
     const customerId = await customerRepository.findOne({
@@ -146,8 +136,7 @@ export default class CustomerModel {
 
     const result = await customerRepository.update(
       {
-        id: id,
-        user: { status: StatusEnum.ACTIVE },
+        id,
       },
       {
         name,
@@ -156,7 +145,10 @@ export default class CustomerModel {
         placeOfDelivery,
       }
     );
-
-    return new Response(HttpStatusCode.CREATED, 'Edit customer successfully!');
+    if (result.affected == 1) {
+      return new Response(HttpStatusCode.OK, 'Edit customer successfully!');
+    } else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Edit customer failed !');
+    }
   }
 }
