@@ -55,52 +55,73 @@ export default class UserModel {
         status: StatusEnum.ACTIVE
       }
     });
-
-    //let err = new Array<ErrorElement>();
     if (emailUser != null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Email already exist.')
-    } else {
+    } 
+
+    const phoneUser: User | null = await userRepository.findOne({
+      where: {
+        phone: phone,
+        status: StatusEnum.ACTIVE
+      }
+    });
+    if (phoneUser != null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Phone already exist.')
+    } 
+
       //Get parameters from the body
       let user = new User();
       user.email = email;
       user.phone = phone;
       user.password = password;
-      user.hashPassword();;
+      user.hashPassword();
 
       await userRepository.save(user);
       await userRoleRepository.save({ role: role, user: user });
 
-      return new Response(HttpStatusCode.CREATED, "Create new user successfully!", user);
-    }
+      return new Response(HttpStatusCode.CREATED, "Create new user successfully!", user); 
   }
 
   static async edit(id: number, email: string, phone: string) {
+    const user: User | null = await userRepository.findOne({
+      where: {
+        id: id,
+        status: StatusEnum.ACTIVE
+      }
+    });
+    if (user == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'User not exist.');
+    } 
+
+    const emailUser: User | null = await userRepository.findOne({
+      where: {
+        email: email,
+        status: StatusEnum.ACTIVE
+      }
+    });
+    if (emailUser != null && emailUser !== user) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Email already exist.');
+    } 
+
+    const phoneUser: User | null = await userRepository.findOne({
+      where: {
+        phone: phone,
+        status: StatusEnum.ACTIVE
+      }
+    });
+    if (phoneUser != null && phoneUser !== user) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Phone already exist.');
+    }
 
     const result = await userRepository.update({
       id: id,
       status: StatusEnum.ACTIVE
     }, {email: email, phone: phone})
-    return result;
-
-    // const user: User | null = await userRepository.findOne({
-    //   where: {
-    //     id: id,
-    //     status: StatusEnum.ACTIVE
-    //   },
-    // });
-    // let err = new Array<ErrorElement>();
-    // if (user !== null) {
-    //   user.email = email;//validate email
-    //   user.phone = phone;//validate phone
-    //   await userRepository.save(user);
-    //   return true;
-    // }
-    // err.push({
-    //   at: 'id',
-    //   message: `User not exist.`,
-    // });
-    // return err;
-    //After all send a 204 (no content, but accepted) response
+    if (result.affected == 1) {
+      return new Response(HttpStatusCode.OK, 'Edit user successfully!')
+    } else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Edit user failed!')
+    }
   }
 
   static async delete(userId: number) {
@@ -110,17 +131,18 @@ export default class UserModel {
         status: StatusEnum.ACTIVE
       }
     });
-    if (user !== null) {
-      //Validate the new values on model
-      user.status = StatusEnum.INACTIVE;
-      await userRepository.save(user);
-      return true;
+    if (user == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'User not exist.');
+    } 
+
+    const result = await userRepository.update({
+      id: userId,
+      status: StatusEnum.ACTIVE
+    }, {status: StatusEnum.INACTIVE})
+    if (result.affected == 1) {
+      return new Response(HttpStatusCode.OK, 'Delete user successfully!')
+    } else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Delete user failed!')
     }
-    let err = new Array<ErrorElement>();
-    err.push({
-      at: 'id',
-      message: `User not exist.`,
-    });
-    return err;
   }
 }

@@ -8,25 +8,20 @@ export default class UserMiddleware {
   static async listAll(req: Request, res: Response) {
     const result = await UserModel.listAll();
     if (result) {
-      res.status(HttpStatusCode.OK).send(result);
+      res.status(HttpStatusCode.OK).send({data: result});
     } else {
       res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Get all users failed!' });
     }
   }
 
-  @ControllerService({
-    params: [{
-      name: 'id',
-      type: String
-    }]
-  })
+  @ControllerService()
   static async getOneById(req: Request, res: Response) {
     const id = +req.params.id;
     const result = await UserModel.getOneById(id);
     if (result) {
-      res.status(HttpStatusCode.OK).send(result);
+      res.status(HttpStatusCode.OK).send({data: result});
     } else {
-      res.status(HttpStatusCode.BAD_REQUEST).send('Wrong userId!');
+      res.status(HttpStatusCode.BAD_REQUEST).send({message: 'This user not exist!'});
     }
   }
 
@@ -85,22 +80,13 @@ export default class UserMiddleware {
     const data = req.body;
     const id = +req.params.id;
     const result = await UserModel.edit(id, data.email, data.phone);
-    if (result.affected == 1) {
-      res.status(HttpStatusCode.OK).send(result);
-    } else {
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Edit data failed!' });
-    }
-    //res.status(HttpStatusCode.OK).send(result);
+    res.status(result.getCode()).send({ message: result.getCode() });
   }
 
   @ControllerService()
   static async delete(req: Request, res: Response) {
     const id = +req.params.id;
     const result = await UserModel.delete(id);
-    if (result === true) {
-      res.status(HttpStatusCode.OK).send(result);
-    } else {
-      res.status(HttpStatusCode.BAD_REQUEST).send({message: 'Delete data failed!'});
-    }
+    res.status(result.getCode()).send({ message: result.getCode() });
   }
 }
