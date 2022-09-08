@@ -79,7 +79,7 @@ export default class CustomerModel {
     if (customerList != null) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        'Customer with this userId has already existed'
+        `Customer with userId ${userId} has already existed`
       );
     }
 
@@ -93,13 +93,13 @@ export default class CustomerModel {
     if (user == null) {
       new Response(HttpStatusCode.BAD_REQUEST, 'UserId doesnt exist');
     }
-      // let customer = new Customer()
-      // customer.name = name
-      // customer.gender = gender
-      // customer.dob = dob
-      // customer.placeOfDelivery = placeOfDelivery
-      // customer.user =await user
-      let customer = await customerRepository.save({
+    // let customer = new Customer()
+    // customer.name = name
+    // customer.gender = gender
+    // customer.dob = dob
+    // customer.placeOfDelivery = placeOfDelivery
+    // customer.user =await user
+    let customer = await customerRepository.save({
       name,
       gender,
       dob,
@@ -111,7 +111,6 @@ export default class CustomerModel {
       'Create new customer successfully!',
       customer
     );
-    
   }
 
   static async edit(
