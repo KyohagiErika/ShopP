@@ -49,79 +49,91 @@ export default class UserModel {
     return user ? user : false;
   }
 
-  static async postNew(email: string, phone: string, password: string, role: RoleEnum) {
+  static async postNew(
+    email: string,
+    phone: string,
+    password: string,
+    role: RoleEnum
+  ) {
     const emailUser: User | null = await userRepository.findOne({
       where: {
         email: email,
-        status: StatusEnum.ACTIVE
-      }
+        status: StatusEnum.ACTIVE,
+      },
     });
     if (emailUser != null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Email already exist.')
-    } 
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Email already exist.');
+    }
 
     const phoneUser: User | null = await userRepository.findOne({
       where: {
         phone: phone,
-        status: StatusEnum.ACTIVE
-      }
+        status: StatusEnum.ACTIVE,
+      },
     });
     if (phoneUser != null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Phone already exist.')
-    } 
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Phone already exist.');
+    }
 
-      //Get parameters from the body
-      let user = new User();
-      user.email = email;
-      user.phone = phone;
-      user.password = password;
-      user.hashPassword();
+    //Get parameters from the body
+    let user = new User();
+    user.email = email;
+    user.phone = phone;
+    user.password = password;
+    user.hashPassword();
 
-      await userRepository.save(user);
-      await userRoleRepository.save({ role: role, user: user });
+    await userRepository.save(user);
+    await userRoleRepository.save({ role: role, user: user });
 
-      return new Response(HttpStatusCode.CREATED, "Create new user successfully!", user); 
+    return new Response(
+      HttpStatusCode.CREATED,
+      'Create new user successfully!',
+      user
+    );
   }
 
   static async edit(id: number, email: string, phone: string) {
     const user: User | null = await userRepository.findOne({
       where: {
         id: id,
-        status: StatusEnum.ACTIVE
-      }
+        status: StatusEnum.ACTIVE,
+      },
     });
     if (user == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'User not exist.');
-    } 
+    }
 
     const emailUser: User | null = await userRepository.findOne({
       where: {
         email: email,
-        status: StatusEnum.ACTIVE
-      }
+        status: StatusEnum.ACTIVE,
+      },
     });
     if (emailUser != null && emailUser.email != user.email) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Email already exist.');
-    } 
+    }
 
     const phoneUser: User | null = await userRepository.findOne({
       where: {
         phone: phone,
-        status: StatusEnum.ACTIVE
-      }
+        status: StatusEnum.ACTIVE,
+      },
     });
     if (phoneUser != null && phoneUser.phone !== user.phone) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Phone already exist.');
     }
 
-    const result = await userRepository.update({
-      id: id,
-      status: StatusEnum.ACTIVE
-    }, {email: email, phone: phone})
+    const result = await userRepository.update(
+      {
+        id: id,
+        status: StatusEnum.ACTIVE,
+      },
+      { email: email, phone: phone }
+    );
     if (result.affected == 1) {
-      return new Response(HttpStatusCode.OK, 'Edit user successfully!')
+      return new Response(HttpStatusCode.OK, 'Edit user successfully!');
     } else {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Edit user failed!')
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Edit user failed!');
     }
   }
 
@@ -129,21 +141,24 @@ export default class UserModel {
     const user: User | null = await userRepository.findOne({
       where: {
         id: userId,
-        status: StatusEnum.ACTIVE
-      }
+        status: StatusEnum.ACTIVE,
+      },
     });
     if (user == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'User not exist.');
-    } 
+    }
 
-    const result = await userRepository.update({
-      id: userId,
-      status: StatusEnum.ACTIVE
-    }, {status: StatusEnum.INACTIVE})
+    const result = await userRepository.update(
+      {
+        id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+      { status: StatusEnum.INACTIVE }
+    );
     if (result.affected == 1) {
-      return new Response(HttpStatusCode.OK, 'Delete user successfully!')
+      return new Response(HttpStatusCode.OK, 'Delete user successfully!');
     } else {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Delete user failed!')
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Delete user failed!');
     }
   }
 }
