@@ -85,7 +85,6 @@ export default class CustomerModel {
 
     // check userID used or not
     if (userList?.customer !== null) {
-      console.log(userList);
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         `Customer with userId ${userId} has already existed`
