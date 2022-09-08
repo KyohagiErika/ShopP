@@ -2,14 +2,12 @@ import { ShopPDataSource } from '../data';
 import { User } from '../entities/user';
 import { UserRole } from '../entities/userRole';
 import { StatusEnum, RoleEnum, HttpStatusCode } from '../utils/shopp.enum';
-import { ErrorElement } from "../utils/decorators"
 import Response from '../utils/response';
 
 const userRepository = ShopPDataSource.getRepository(User);
 const userRoleRepository = ShopPDataSource.getRepository(UserRole);
 
 export default class UserModel {
-
   static async listAll() {
     const users = await userRepository.find({
       relations: {

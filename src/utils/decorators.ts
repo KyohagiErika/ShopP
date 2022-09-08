@@ -207,6 +207,7 @@ export function ModelService() {
       return async function (...args: any[]) {
         await ShopPDataSource.transaction(async entityManager => {
           await func(...args);
+          await entityManager.save
         });
       };
     }
