@@ -15,10 +15,9 @@ export default class CustomerMiddleware {
     params: [
       {
         name: 'id',
-        type: String
-      }
-      
-    ]
+        type: String,
+      },
+    ],
   })
   static async getOneById(req: Request, res: Response) {
     const id = req.params.id; //(req.params as unknown) as number;
@@ -27,24 +26,64 @@ export default class CustomerMiddleware {
       if (result) {
         res.status(HttpStatusCode.OK).send(result);
       } else {
-        res.status(HttpStatusCode.BAD_REQUEST).send('Get customer failed!' + id);
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send('Get customer failed!' + id);
       }
     } else {
       res.status(HttpStatusCode.BAD_REQUEST).send('Incorrect id! ' + id);
     }
   }
 
-  @ControllerService()
+  @ControllerService({
+    params: [
+      {
+        name: 'userId',
+        type: Number,
+      },
+    ],
+    body: [
+      {
+        name: 'name',
+        type: String,
+      },
+      {
+        name: 'gender',
+        type: String,
+        validator(propName, value: string) {
+          if (
+            value.toUpperCase() !== 'MALE' &&
+            value.toUpperCase() !== 'FEMALE'
+          )
+            return `${propName} is only MALE or FEMALE`;
+          return null;
+        },
+      },
+      {
+        name: 'dob',
+        type: Date,
+        validator(propName, value: Date) {
+          if(!value.getTime) return `${propName} is invalid`
+          return null;
+        },
+      },
+    ],
+  })
   static async postNew(req: Request, res: Response) {
-    const userid = +req.params
+    const userId = +req.params;
     const data = req.body;
+
+    // take date
+    var dateReplace = data.dob.replace(/-/g, '/');
+    var parts = dateReplace.split('/');
+    var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
     if (data.name && data.placeOfDelivery) {
       const result = await CustomerModel.postNew(
         data.name.toString(),
         data.gender,
-        data.dob,
+        new Date(dateTrueFormat),
         data.placeOfDelivery.toString(),
-        userid,
+        userId
       );
       if (result) {
         res.status(HttpStatusCode.OK).send(result);

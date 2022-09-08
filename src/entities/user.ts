@@ -38,7 +38,7 @@ export class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   lockedAt: Date;
 
   @OneToMany(() => UserRole, userRole => userRole.user)

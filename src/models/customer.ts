@@ -29,26 +29,26 @@ export default class CustomerModel {
 
   static async getOneById(customerId: string) {
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    
-      const customer = await customerRepository.findOneOrFail({
-        relations: {
-          user: true,
-        },
-        select: {
-          id: true,
-          name: true,
-          avatar: true,
-          gender: true,
-          dob: true,
-          placeOfDelivery: true,
-          followingShops: true,
-        },
-        where: {
-          id: customerId,
-          user: { status: StatusEnum.ACTIVE },
-        },
-      });
-      return customer ? customer : false;
+
+    const customer = await customerRepository.findOneOrFail({
+      relations: {
+        user: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        avatar: true,
+        gender: true,
+        dob: true,
+        placeOfDelivery: true,
+        followingShops: true,
+      },
+      where: {
+        id: customerId,
+        user: { status: StatusEnum.ACTIVE },
+      },
+    });
+    return customer ? customer : false;
   }
 
   static async postNew(
@@ -80,8 +80,8 @@ export default class CustomerModel {
       gender,
       dob,
       placeOfDelivery,
-      user: await user
-    })
+      user: await user,
+    });
     return customer ? customer : false;
   }
 
@@ -100,23 +100,24 @@ export default class CustomerModel {
     //       user: { status: StatusEnum.ACTIVE },
     //     },
     //   });
-      // if (customer) {
-      //   customer.id = id;
-      //   customer.name = name;
-      //   customer.gender = gender;
-      //   customer.dob = dob;
-      //   customer.placeOfDelivery = placeOfDelivery;
-      const result = await customerRepository.update(
-        {
-          id,
-          user: {status: StatusEnum.ACTIVE}
-        },
-        {
-          name,
-          gender,
-          dob,
-          placeOfDelivery
-        })
+    // if (customer) {
+    //   customer.id = id;
+    //   customer.name = name;
+    //   customer.gender = gender;
+    //   customer.dob = dob;
+    //   customer.placeOfDelivery = placeOfDelivery;
+    const result = await customerRepository.update(
+      {
+        id,
+        user: { status: StatusEnum.ACTIVE },
+      },
+      {
+        name,
+        gender,
+        dob,
+        placeOfDelivery,
+      }
+    );
     return result ? result : false;
   }
 }
