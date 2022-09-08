@@ -20,3 +20,8 @@ export enum RoleEnum {
   SHOP = 'SHOP',
   CUSTOMER = 'CUSTOMER',
 }
+
+export enum GenderEnum {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+}
