@@ -67,7 +67,7 @@ export default class CustomerModel {
     const userRepository = ShopPDataSource.getRepository(User);
     const customerRepository = ShopPDataSource.getRepository(Customer);
 
-    let userID = userRepository.findOne({
+    let userID = await userRepository.findOne({
       select: {
         id: true,
       },
@@ -133,21 +133,20 @@ export default class CustomerModel {
   ) {
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    // let customer: Customer | null = await customerRepository.findOne({
-    //     where: {
-    //       id: id,
-    //       user: { status: StatusEnum.ACTIVE },
-    //     },
-    //   });
-    // if (customer) {
-    //   customer.id = id;
-    //   customer.name = name;
-    //   customer.gender = gender;
-    //   customer.dob = dob;
-    //   customer.placeOfDelivery = placeOfDelivery;
+    const customerId = await customerRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (customerId === null)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        "Customer Id doesn't exist"
+      );
+
     const result = await customerRepository.update(
       {
-        id,
+        id: id,
         user: { status: StatusEnum.ACTIVE },
       },
       {
@@ -157,11 +156,7 @@ export default class CustomerModel {
         placeOfDelivery,
       }
     );
-    if (result == null)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        "Customer Id doesn't exist"
-      );
+
     return new Response(HttpStatusCode.CREATED, 'Edit customer successfully!');
   }
 }
