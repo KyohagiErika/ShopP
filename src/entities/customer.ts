@@ -19,7 +19,7 @@ export class Customer {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatar: number;
 
   @Column({
@@ -40,7 +40,7 @@ export class Customer {
   placeOfDelivery: string;
 
   @Column('json', { nullable: true })
-  followingShops: string[];
+  followingShops: string;
 
   // @OneToOne(() => Cart, cart => cart.customer)
   // cart: Cart;

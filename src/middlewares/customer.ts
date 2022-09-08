@@ -36,21 +36,27 @@ export default class CustomerMiddleware {
   }
 
   @ControllerService({
-    params: [
-      {
-        name: 'userId',
-        type: Number,
-      },
-    ],
+    // params: [
+    //   {
+    //     name: 'userId',
+    //     type: Number,
+    //     validator: (propName: string, value: string) => {
+    //       return null;
+    //     },
+    //   },
+    // ],
     body: [
       {
         name: 'name',
         type: String,
+        validator: (propName: string, value: string) => {
+          return null;
+        },
       },
       {
         name: 'gender',
         type: String,
-        validator(propName, value: string) {
+        validator: (propName: string, value: string) => {
           if (
             value.toUpperCase() !== 'MALE' &&
             value.toUpperCase() !== 'FEMALE'
@@ -61,31 +67,34 @@ export default class CustomerMiddleware {
       },
       {
         name: 'dob',
-        type: Date,
-        validator(propName, value: String) {
-          var dateReplace = value.replace(/-/g, '/'); 
+        type: String,
+        validator: (propName: string, value: string) => {
+          var dateReplace = value.replace(/-/g, '/');
           var parts = dateReplace.split('/');
           var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
-          if(!Date.parse(dateTrueFormat)) return `${propName} is invalid`
+          if (!Date.parse(dateTrueFormat)) return `${propName} is invalid`;
           return null;
-        }
+        },
       },
       {
         name: 'placeOfDelivery',
         type: String,
-
-      }
+        validator: (propName: string, value: string) => {
+          return null;
+        },
+      },
     ],
   })
   static async postNew(req: Request, res: Response) {
-    const userId = +req.params;
+    const userId = +req.params.userId;
+    console.log(userId);
     const data = req.body;
 
     // take date
     var dateReplace = data.dob.replace(/-/g, '/');
     var parts = dateReplace.split('/');
     var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
-    if (data.name && data.placeOfDelivery) {
+    if (data.name && data.placeOfDelivery && data.gender && dateTrueFormat) {
       const result = await CustomerModel.postNew(
         data.name.toString(),
         data.gender,
@@ -103,31 +112,82 @@ export default class CustomerMiddleware {
     }
   }
 
-  @ControllerService()
+  @ControllerService({
+    body: [
+      {
+        name: 'name',
+        type: String,
+        validator: (propName: string, value: string) => {
+          return null;
+        },
+      },
+      {
+        name: 'gender',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (
+            value.toUpperCase() !== 'MALE' &&
+            value.toUpperCase() !== 'FEMALE'
+          )
+            return `${propName} is only MALE or FEMALE`;
+          return null;
+        },
+      },
+      {
+        name: 'dob',
+        type: String,
+        validator: (propName: string, value: string) => {
+          var dateReplace = value.replace(/-/g, '/');
+          var parts = dateReplace.split('/');
+          var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
+          if (!Date.parse(dateTrueFormat)) return `${propName} is invalid`;
+          return null;
+        },
+      },
+      {
+        name: 'placeOfDelivery',
+        type: String,
+        validator: (propName: string, value: string) => {
+
+          return null;
+        },
+      },
+    ],
+  })
   static async edit(req: Request, res: Response) {
     const data = req.query;
-    const id = req.params;
+    const id = req.params.id;
+
+    
     if (id && data.name && data.placeOfDelivery && data.dob && data.gender) {
+      
+      // resolve gender
       let gender: GenderEnum;
       if (data.gender.toString().toUpperCase() === 'FEMALE') {
         gender = GenderEnum.FEMALE;
       } else {
         gender = GenderEnum.MALE;
       }
+
+      // resolve dob
+      var dateReplace = data.dob.toString().replace(/-/g, '/');
+      var parts = dateReplace.split('/');
+      var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
       const result = await CustomerModel.edit(
-        id.id.toString(),
+        id.toString(),
         data.name.toString(),
         gender,
-        new Date(data.dob.toString()),
+        new Date(dateTrueFormat),
         data.placeOfDelivery.toString()
       );
       if (result) {
-        res.send(result);
+        res.status(HttpStatusCode.OK).send(result);
       } else {
-        res.status(400).send('Insert data failed!');
+        res.status(HttpStatusCode.BAD_REQUEST).send('Insert data failed!');
       }
     } else {
-      res.status(400).send('Incorrect input data!');
+      res.status(HttpStatusCode.BAD_REQUEST).send('Incorrect input data!');
     }
   }
 }
