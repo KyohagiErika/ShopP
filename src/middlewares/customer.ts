@@ -62,11 +62,19 @@ export default class CustomerMiddleware {
       {
         name: 'dob',
         type: Date,
-        validator(propName, value: Date) {
-          if(!value.getTime) return `${propName} is invalid`
+        validator(propName, value: String) {
+          var dateReplace = value.replace(/-/g, '/'); 
+          var parts = dateReplace.split('/');
+          var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
+          if(!Date.parse(dateTrueFormat)) return `${propName} is invalid`
           return null;
-        },
+        }
       },
+      {
+        name: 'placeOfDelivery',
+        type: String,
+
+      }
     ],
   })
   static async postNew(req: Request, res: Response) {
