@@ -9,6 +9,7 @@ import {
 
 import bcrypt from 'bcryptjs';
 import { UserRole } from './userRole';
+import { Customer } from './customer';
 import { StatusEnum } from '../utils/shopp.enum';
 import { Shop } from './shop';
 
@@ -45,6 +46,9 @@ export class User {
 
   @OneToOne(() => Shop, shop => shop.user)
   shop: Shop;
+
+  @OneToOne(() => Customer, customer => customer.user)
+  customer: Customer;
 
   hashPassword() {
     this.password = bcrypt.hashSync(this.password, 8);
