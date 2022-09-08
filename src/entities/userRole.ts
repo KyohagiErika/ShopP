@@ -13,6 +13,6 @@ export class UserRole {
   @Column({
     type: 'enum',
     enum: RoleEnum,
-})
+  })
   role: RoleEnum;
 }

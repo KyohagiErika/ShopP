@@ -30,14 +30,14 @@ export class User {
     type: 'enum',
     enum: StatusEnum,
     default: StatusEnum.ACTIVE,
-})
+  })
   status: StatusEnum;
 
   @Column()
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   lockedAt: Date;
 
   @OneToMany(() => UserRole, userRole => userRole.user)
