@@ -76,17 +76,16 @@ export default class CustomerModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'UserId doesnt exist');
     }
 
-    const customerList = customerRepository.find({
+    const userList = await userRepository.findOne({
       where: {
-        user: {
-          id: userId,
-          status: StatusEnum.ACTIVE,
-        },
+        id: userId,
+        status: StatusEnum.ACTIVE,
       },
     });
 
     // check userID used or not
-    if (customerList != null) {
+    if (userList?.customer !== null) {
+      console.log(userList);
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         `Customer with userId ${userId} has already existed`
@@ -120,7 +119,6 @@ export default class CustomerModel {
     dob: Date,
     placeOfDelivery: string
   ) {
-
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
     const customerId = await customerRepository.findOne({
