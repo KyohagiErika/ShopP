@@ -62,11 +62,19 @@ export default class ShopMiddleware {
         {
             name: 'email',
             type: String,
+            validator: (propName: string, value: string) => {
+                
+                return null;
+            }
 
         },
         {
             name: 'phone',
             type: String,
+            validator: (propName: string, value: string) => {
+                
+                return null;
+            }
 
         },
         {
@@ -80,11 +88,11 @@ export default class ShopMiddleware {
         const data = req.body;
         const userId = +req.params.userId
         const result = await ShopModel.postNew(data.name.toString(), data.avatar.toString(), userId, data.email.toString(), data.phone.toString(), data.placeOfReceipt.toString());
-        if (result) {
-            res.status(HttpStatusCode.OK).send(result);
-        } else {
-            res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Post shop failed!' });
-        }
+        if (result.getCode() === HttpStatusCode.CREATED) {
+            res.status(result.getCode()).send({message: result.getMessage(), data: result.getData()});
+          } else {
+            res.status(result.getCode()).send({message: result.getMessage()});
+          }
     }
 
     @ControllerService({
@@ -106,7 +114,7 @@ export default class ShopMiddleware {
             name: 'email',
             type: String,
             validator: (propName: string, value: string) => {
-                if (value = '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$') return propName;
+                
                 return null;
             }
 
@@ -115,7 +123,7 @@ export default class ShopMiddleware {
             name: 'phone',
             type: String,
             validator: (propName: string, value: string) => {
-                if (value = '^((\\+91-?)|0)?[0-9]{10}$') return propName;
+                
                 return null;
             }
 
@@ -129,13 +137,13 @@ export default class ShopMiddleware {
     })
     static async edit(req: Request, res: Response) {
         const data = req.body;
-        const id = +req.params.id;// validator param
-        const result = await ShopModel.edit(id.toString(), data.name.toString(), data.avatar.toString(), data.email.toString(), data.phone.toString(), data.placeOfReceipt.toString());
-        if (result) {
-            res.status(HttpStatusCode.OK).send(result);
-        } else {
-            res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Edit shop failed!' });
-        }
+        const id = req.params.id;// validator param
+        const result = await ShopModel.edit(id, data.name.toString(), data.avatar.toString(), data.email.toString(), data.phone.toString(), data.placeOfReceipt.toString());
+        if (result.getCode() === HttpStatusCode.OK) {
+            res.status(result.getCode()).send({message: result.getMessage(), data: result.getData()});
+          } else {
+            res.status(result.getCode()).send({message: result.getMessage()});
+          }
     }
 
     // @ControllerService()

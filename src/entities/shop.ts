@@ -11,7 +11,7 @@ import {
 
   @Entity()
   export class Shop {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()

@@ -16,7 +16,7 @@ routes.get("/:id",  ShopMiddleware.getOneById);//[checkJwt, checkRole(RoleEnum.A
 routes.post("/:userId([0-9]+)",  ShopMiddleware.postNew);//[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 //Edit one user
-routes.post("/:id", ShopMiddleware.edit);//[checkJwt], checkRole(RoleEnum.ADMIN);
+routes.post("/edit/:id", ShopMiddleware.edit);//[checkJwt], checkRole(RoleEnum.ADMIN);
 
 //Delete one user
 //routes.post("/delete/:id",  ShopMiddleware.delete);//[checkJwt, checkRole(RoleEnum.ADMIN)],
