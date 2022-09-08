@@ -1,11 +1,8 @@
-import { validate } from "class-validator";
 import { ShopPDataSource } from "../data";
 import { User } from "../entities/user";
 import { Shop } from "../entities/shop";
-import { StatusEnum, RoleEnum, HttpStatusCode } from "../utils/shopp.enum";
+import { StatusEnum, HttpStatusCode } from "../utils/shopp.enum";
 import Response from '../utils/response'
-import user from "./user";
-import { Entity } from "typeorm";
 
 const shopRepository = ShopPDataSource.getRepository(Shop);
 
@@ -65,7 +62,6 @@ export default class ShopModel {
       if (user == null) {
         return new Response(HttpStatusCode.BAD_REQUEST, 'Id not exist.')
       } else {
-    //Get parameters from the body
     let shop = new Shop();
     shop.name = name;
     shop.avatar = avatar;
@@ -100,56 +96,13 @@ export default class ShopModel {
     }else{
       const shopEdit = await shopRepository.update({id: id}, 
             { name: name, avatar: avatar, email: email, phone: phone, placeOfReceipt: placeOfReceipt })
-          return new Response(HttpStatusCode.OK, "Update shop successfully!", shopEdit);
+      if(shopEdit.affected == 1){
+        return new Response(HttpStatusCode.OK, "Edit shop successfully!");
+      }else{
+        return new Response(HttpStatusCode.BAD_REQUEST, "Edit shop failed !");
+      }      
+          
 
     }
   }    
-    //Try to find user on database
-    // const shopRepository = ShopPDataSource.getRepository(Shop);
-    // let shop: Shop | undefined | null;
-    // if (shop !== undefined && shop !== null) {
-    //     shop = await shopRepository.findOne({ 
-    //       where: {
-    //         id: id,
-    //         user:{status: StatusEnum.ACTIVE}
-    //       } });
-    //     if (shop) {
-    //       //Validate the new values on model
-    //       shop.name = name;
-    //       shop.avatar = avatar;
-    //       shop.email = email;
-    //       shop.phone = phone;
-    //       shop.placeOfReceipt = placeOfReceipt;
-
-    //       //Try to safe, if fails, that means username already in use
-         
-    //         await shopRepository.save(shop);
-    //         return shop;
-    //     }
-    // };
-    // return true;
-
-
-  // static async delete(shopId: string) {
-  //   const shopRepository = ShopPDataSource.getRepository(Shop);
-  //   let shop: Shop | null | undefined;
-  //   if (shop !== null && shop !== undefined) {
-  //       shop = await shopRepository.findOne({ 
-  //         where: {
-  //           id: shopId,
-  //           user:{status: StatusEnum.ACTIVE}
-  //         } 
-  //       });
-  //       if(shop !== null) {
-  //         user.status = {status : StatusEnum.INACTIVE};
-
-  //         const errors = await validate(shop);
-  //         if(errors.length > 0) return errors;
-
-  //         await shopRepository.manager.save(shop)
-  //         return shop;
-  //       }
-  //   };
-  //   return true;
-  // };
 };

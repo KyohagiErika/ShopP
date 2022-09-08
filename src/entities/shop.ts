@@ -5,8 +5,6 @@ import {
     OneToOne,
     JoinColumn,
   } from "typeorm";
-  
- // import { LocalFile } from "./localFile";
   import { User } from "./user";
 
   @Entity()
@@ -16,10 +14,6 @@ import {
 
   @Column()
   name: string;
-
-//   @OneToOne(() => LocalFile)
-//   @JoinColumn()
-//   avata: LocalFile[]
 
   @Column({nullable: true})
   avatar: number;
