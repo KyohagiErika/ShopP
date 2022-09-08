@@ -87,9 +87,10 @@ export default class CustomerModel {
       },
     });
     
-    // customer.user = await user;
+    if(user == null) {
+      new Response(HttpStatusCode.BAD_REQUEST, 'UserId doesnt exist'); 
+    }
 
-    
     let customer = await customerRepository.save({
       name,
       gender,
@@ -97,7 +98,7 @@ export default class CustomerModel {
       placeOfDelivery,
       user: await user,
     });
-    return customer ? customer : false;
+    return new Response(HttpStatusCode.CREATED, "Create new customer successfully!", customer); 
   }
 
   static async edit(
@@ -133,6 +134,8 @@ export default class CustomerModel {
         placeOfDelivery,
       }
     );
-    return result ? result : false;
+    if(result == null) 
+      return new Response(HttpStatusCode.BAD_REQUEST, "Customer Id doesn't exist"); 
+    return new Response(HttpStatusCode.CREATED, "Edit customer successfully!"); 
   }
 }
