@@ -16,15 +16,15 @@ export const checkRole = (role: RoleEnum) => {
     try {
       user = await userRepository.findOneOrFail(id);
     } catch (id) {
-      res.status(401).send();
+      res.status(401).send({ message: 'unauthorized error!' });
     }
     if (user !== undefined) {
-      //Check if array of authorized roles includes the user's role
+      //Check if array of authorized user roles includes the  role
       let userRole: UserRole | undefined;
       if (userRole !== undefined) {
         userRole.role = role;
         if (user.roles.indexOf(userRole) > -1) next();
-        else res.status(401).send();
+        else res.status(401).send({ message: 'unauthorized error!' });
       }
     }
   };

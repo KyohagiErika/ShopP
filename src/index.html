@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>Home</title>
+  </head>
+  <body>
+    <p>This is a test upload file!</p>
+    <label for="image">Choose a image:</label>
+
+    <form
+      method="post"
+      enctype="multipart/form-data"
+      action="http://localhost:3000/upload/image"
+    >
+      <input type="file" id="image" name="image" />
+      <input type="submit" value="submit" id="submit" />
+    </form>
+
+    <label for="images">Choose many images:</label>
+
+    <form
+      method="post"
+      enctype="multipart/form-data"
+      action="http://localhost:3000/upload/image-multiple"
+    >
+      <input type="file" id="images" name="images" multiple />
+      <input type="submit" value="submit" id="submit" />
+    </form>
+
+    <label for="images">Choose a video:</label>
+
+    <form
+      method="post"
+      enctype="multipart/form-data"
+      action="http://localhost:3000/upload/video"
+    >
+      <input type="file" id="video" name="video" />
+      <input type="submit" value="submit" id="submit" />
+    </form>
+  </body>
+</html>
