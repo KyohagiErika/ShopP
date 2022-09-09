@@ -1,28 +1,16 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-  } from "typeorm";
-  
-  import { Length, IsNotEmpty } from "class-validator";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-  @Entity()
-  export class LocalFile {
+@Entity()
+export class LocalFile {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  @Length(4, 60)
-  @IsNotEmpty()
-  fileName: string;
+  filename: string;
 
   @Column()
-  @Length(1, 60)
-  @IsNotEmpty()
   path: string;
 
   @Column()
-  @Length(4, 60)
   mimetype: string;
-
 }

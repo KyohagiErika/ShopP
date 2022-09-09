@@ -1,27 +1,26 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    OneToOne,
-    JoinColumn,
-  } from "typeorm";
-  import { User } from "./user";
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import { User } from './user';
 
-  @Entity()
-  export class Shop {
+@Entity()
+export class Shop {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
   name: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   avatar: number;
 
-  @OneToOne(() => User, (user) => user.shop)
+  @OneToOne(() => User, user => user.shop)
   @JoinColumn()
   user: User;
- 
 
   @Column()
   email: string;
@@ -37,6 +36,4 @@ import {
 
   @Column({ default: 0 })
   followers: number;
-
-
-  }
+}

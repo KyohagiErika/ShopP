@@ -1,12 +1,14 @@
-import { validate } from "class-validator";
-import { ShopPDataSource } from "../data";
-import { User } from "../entities/user";
-import { UserRole } from "../entities/userRole";
-import { StatusEnum, RoleEnum } from "../utils/shopp.enum";
+import { ShopPDataSource } from '../data';
+import { User } from '../entities/user';
+import { UserRole } from '../entities/userRole';
+import { StatusEnum, RoleEnum, HttpStatusCode } from '../utils/shopp.enum';
+import Response from '../utils/response';
+
+const userRepository = ShopPDataSource.getRepository(User);
+const userRoleRepository = ShopPDataSource.getRepository(UserRole);
 
 export default class UserModel {
   static async listAll() {
-    const userRepository = ShopPDataSource.getRepository(User);
     const users = await userRepository.find({
       relations: {
         roles: true,
@@ -16,9 +18,9 @@ export default class UserModel {
         email: true,
         phone: true,
         roles: {
-          role: true
-        }
-      },//We dont want to send the passwords on response 
+          role: true,
+        },
+      },
       where: {
         status: StatusEnum.ACTIVE,
       },
@@ -27,27 +29,24 @@ export default class UserModel {
   }
 
   static async getOneById(userId: number) {
-    //Get the user from database
-    const userRepository = ShopPDataSource.getRepository(User);
-    try {
-      const user = await userRepository.findOneOrFail({
-        select: {
-          id: true,
-          email: true,
-          phone: true,
-          roles: {
-            role: true
-          }
-        }, //We dont want to send the password on response
-        where: {
-          id: userId,
-          status: StatusEnum.ACTIVE,
+    const user = await userRepository.findOne({
+      relations: {
+        roles: true,
+      },
+      select: {
+        id: true,
+        email: true,
+        phone: true,
+        roles: {
+          role: true,
         },
-      });
-      return user ? user : false;
-    } catch (error) {
-      return { "error": error };
-    };
+      },
+      where: {
+        id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    return user ? user : false;
   }
 
   static async postNew(
@@ -56,119 +55,110 @@ export default class UserModel {
     password: string,
     role: RoleEnum
   ) {
+    const emailUser: User | null = await userRepository.findOne({
+      where: {
+        email: email,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    if (emailUser != null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Email already exist.');
+    }
+
+    const phoneUser: User | null = await userRepository.findOne({
+      where: {
+        phone: phone,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    if (phoneUser != null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Phone already exist.');
+    }
+
     //Get parameters from the body
     let user = new User();
     user.email = email;
     user.phone = phone;
     user.password = password;
-    let userRole = new UserRole();
-    userRole.role = role;
-    userRole.user = user;
-
-    //Validade if the parameters are ok
-    const errorsUser = await validate(user);
-    if (errorsUser.length > 0) {
-      //res.status(400).send(errors);
-      return errorsUser;
-    }
-
-    const errorUserRole = await validate(userRole);
-    if (errorUserRole.length > 0) {
-      //res.status(400).send(errors);
-      return errorsUser;
-    }
-
-    //Hash the password, to securely store on DB
     user.hashPassword();
 
-    //Try to save. If fails, the username is already in use
-    const userRepository = ShopPDataSource.getRepository(User);
-    const userRoleRepository = ShopPDataSource.getRepository(UserRole);
-    try {
-      await userRepository.save(user);
-      await userRoleRepository.save(userRole);
-    } catch (e) {
-      return { "e": e };
-    }
-    //If all ok, send 201 response
-    //res.status(201).send("User created");
-    return user;
+    await userRepository.save(user);
+    await userRoleRepository.save({ role: role, user: user });
+
+    return new Response(
+      HttpStatusCode.CREATED,
+      'Create new user successfully!',
+      user
+    );
   }
 
   static async edit(id: number, email: string, phone: string) {
-    //Try to find user on database
-    const userRepository = ShopPDataSource.getRepository(User);
-      try {
-        const user : User | null = await userRepository.findOne({
-          where: {
-            id: id,
-            status: StatusEnum.ACTIVE
-          }
-        });
-        if (user !== null) {
-          //Validate the new values on model
-          user.email = email;
-          user.phone = phone;
-          const errors = await validate(user);
-          if (errors.length > 0) {
-            //res.status(400).send(errors);
-            return {"errors" : errors};
-          }
+    const user: User | null = await userRepository.findOne({
+      where: {
+        id: id,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    if (user == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'User not exist.');
+    }
 
-          //Try to safe, if fails, that means username already in use
-          try {
-            await userRepository.save(user);
-            return true;
-          } catch (e) {
-            return {"e" : e};
-          }
-        } 
-      return {"error": "Wrong id"};
-        //After all send a 204 (no content, but accepted) response
-        //res.status(204).send();
-        
-      } catch (error) {
-        //If not found, send a 404 response
-        //res.status(404).send("User not found");
-        return {"error" : error};
-    };
+    const emailUser: User | null = await userRepository.findOne({
+      where: {
+        email: email,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    if (emailUser != null && emailUser.email != user.email) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Email already exist.');
+    }
+
+    const phoneUser: User | null = await userRepository.findOne({
+      where: {
+        phone: phone,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    if (phoneUser != null && phoneUser.phone !== user.phone) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Phone already exist.');
+    }
+
+    const result = await userRepository.update(
+      {
+        id: id,
+        status: StatusEnum.ACTIVE,
+      },
+      { email: email, phone: phone }
+    );
+    if (result.affected == 1) {
+      return new Response(HttpStatusCode.OK, 'Edit user successfully!');
+    } else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Edit user failed!');
+    }
   }
 
   static async delete(userId: number) {
-    const userRepository = ShopPDataSource.getRepository(User);
-      try {
-        const user : User | null = await userRepository.findOne({
-          where: {
-            id: userId,
-            status: StatusEnum.ACTIVE
-          }
-        });
-        if (user !== null) {
-          //Validate the new values on model
-          user.status = StatusEnum.INACTIVE;
-          const errors = await validate(user);
-          if (errors.length > 0) {
-            //res.status(400).send(errors);
-            return {"errors" : errors};
-          }
+    const user: User | null = await userRepository.findOne({
+      where: {
+        id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    if (user == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'User not exist.');
+    }
 
-          //Try to safe, if fails, that means username already in use
-          try {
-            await userRepository.save(user);
-            return true;
-          } catch (e) {
-            return {"e" : e};
-          }
-        } 
-      return {"error": "Unavailabe user"};
-        //After all send a 204 (no content, but accepted) response
-        //res.status(204).send();
-        
-      } catch (error) {
-        //If not found, send a 404 response
-        //res.status(404).send("User not found");
-        return {"error" : error};
-    };
-    };
-  };
-
+    const result = await userRepository.update(
+      {
+        id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+      { status: StatusEnum.INACTIVE }
+    );
+    if (result.affected == 1) {
+      return new Response(HttpStatusCode.OK, 'Delete user successfully!');
+    } else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Delete user failed!');
+    }
+  }
+}

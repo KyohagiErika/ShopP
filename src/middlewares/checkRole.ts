@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from "express";
-import { ShopPDataSource } from "../data";
+import { Request, Response, NextFunction } from 'express';
+import { ShopPDataSource } from '../data';
 
-import { User } from "../entities/user";
-import { RoleEnum } from "../utils/shopp.enum";
-import { UserRole } from "../entities/userRole";
+import { User } from '../entities/user';
+import { HttpStatusCode, RoleEnum } from '../utils/shopp.enum';
+import { UserRole } from '../entities/userRole';
 
 export const checkRole = (role: RoleEnum) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -16,15 +16,20 @@ export const checkRole = (role: RoleEnum) => {
     try {
       user = await userRepository.findOneOrFail(id);
     } catch (id) {
-      res.status(401).send();
+      res
+        .status(HttpStatusCode.UNAUTHORIZATION)
+        .send({ message: 'Unauthorized error, user not exist!' });
     }
     if (user !== undefined) {
-      //Check if array of authorized roles includes the user's role
+      //Check if array of authorized user roles includes the  role
       let userRole: UserRole | undefined;
       if (userRole !== undefined) {
-        userRole.role = role
+        userRole.role = role;
         if (user.roles.indexOf(userRole) > -1) next();
-        else res.status(401).send();
+        else
+          res
+            .status(HttpStatusCode.UNAUTHORIZATION)
+            .send({ message: 'Unauthorized error, Role is invalid!' });
       }
     }
   };
