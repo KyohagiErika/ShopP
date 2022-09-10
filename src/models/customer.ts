@@ -59,6 +59,7 @@ export default class CustomerModel {
     placeOfDelivery: string,
     userId: number
   ) {
+    console.log(test)
     const userRepository = ShopPDataSource.getRepository(User);
     const customerRepository = ShopPDataSource.getRepository(Customer);
 
