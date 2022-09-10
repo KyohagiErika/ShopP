@@ -42,6 +42,6 @@ export class Customer {
   @Column('json', { nullable: true })
   followingShops: string;
 
-  // @OneToOne(() => Cart, cart => cart.customer)
-  // cart: Cart;
+  @OneToOne(() => Cart, cart => cart.customer)
+  cart: Cart;
 }

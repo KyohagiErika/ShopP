@@ -18,10 +18,10 @@ export class Cart {
   @Column({
     type: 'json',
   })
-  products: object;
+  products: string;
 
-  // @OneToOne(() => Customer, customer => customer.cart)
-  // customer: Customer;
+  @OneToOne(() => Customer, customer => customer.cart)
+  customer: Customer;
 
   
 }
