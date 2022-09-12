@@ -8,8 +8,8 @@ import {
   OneToMany,
 } from 'typeorm';
 
-import { GenderEnum,StatusEnum } from '../utils/shopp.enum';
-import {Event} from './event'
+import { GenderEnum, StatusEnum } from '../utils/shopp.enum';
+import { Event } from './event';
 
 @Entity()
 export class EventAdditionalInfo {
@@ -23,6 +23,5 @@ export class EventAdditionalInfo {
   value: string;
 
   @OneToMany(() => Event, event => event.additionalInfo)
-  event: Event[]
-
+  event: Event[];
 }

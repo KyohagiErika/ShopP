@@ -23,6 +23,4 @@ export class Cart {
   @OneToOne(() => Customer, customer => customer.cart)
   @JoinColumn()
   customer: Customer;
-
-  
 }

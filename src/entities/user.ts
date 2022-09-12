@@ -12,7 +12,7 @@ import { UserRole } from './userRole';
 import { Customer } from './customer';
 import { StatusEnum } from '../utils/shopp.enum';
 import { Shop } from './shop';
-import { Event } from './event'
+import { Event } from './event';
 
 @Entity()
 export class User {

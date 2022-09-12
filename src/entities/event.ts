@@ -32,31 +32,29 @@ export class Event {
   startingDate: Date;
 
   @Column()
-  endingDate: Date
+  endingDate: Date;
 
   @Column({
     type: 'enum',
     enum: RoleEnum,
-    default: RoleEnum.ADMIN
+    default: RoleEnum.ADMIN,
   })
-  roleCreater: RoleEnum
+  roleCreater: RoleEnum;
 
   @OneToOne(() => User, user => user.event)
   @JoinColumn()
-  createdBy: User
+  createdBy: User;
 
   @Column()
-  createdAt: Date
+  createdAt: Date;
 
   @Column({
     type: 'enum',
     enum: StatusEnum,
-    default: StatusEnum.ACTIVE
+    default: StatusEnum.ACTIVE,
   })
-  status: StatusEnum
+  status: StatusEnum;
 
   @ManyToOne(() => EventAdditionalInfo, createdBy => createdBy.event)
-  additionalInfo: EventAdditionalInfo
-
-  
+  additionalInfo: EventAdditionalInfo;
 }

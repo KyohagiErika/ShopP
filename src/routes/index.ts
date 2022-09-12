@@ -4,7 +4,7 @@ import user from './user';
 import upload from './upload';
 import shop from './shop';
 import customer from './customer';
-import cart from './cart'
+import cart from './cart';
 
 const routes = Router();
 
