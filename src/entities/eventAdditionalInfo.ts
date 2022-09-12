@@ -12,7 +12,7 @@ import { GenderEnum,StatusEnum } from '../utils/shopp.enum';
 import {Event} from './event'
 
 @Entity()
-export class Event_Additional_Info {
+export class EventAdditionalInfo {
   @PrimaryGeneratedColumn()
   id: number;
 

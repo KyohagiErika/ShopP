@@ -4,6 +4,7 @@ import user from './user';
 import upload from './upload';
 import shop from './shop';
 import customer from './customer';
+import cart from './cart'
 
 const routes = Router();
 
@@ -12,6 +13,7 @@ routes.use('/user', user);
 routes.use('/upload', upload);
 routes.use('/shop', shop);
 routes.use('/customer', customer);
+routes.use('/cart', cart);
 
 routes.use(async (req, res) => {
   res.status(404).send('Not found!');

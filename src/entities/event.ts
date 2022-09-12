@@ -9,8 +9,9 @@ import {
 } from 'typeorm';
 
 import { User } from './user';
-import { StatusEnum } from '../utils/shopp.enum';
-import { Event_Additional_Info } from './eventAdditionalInfo';
+import { RoleEnum, StatusEnum } from '../utils/shopp.enum';
+import { EventAdditionalInfo } from './eventAdditionalInfo';
+import { LocalFile } from './localFile';
 
 @Entity()
 export class Event {
@@ -23,8 +24,9 @@ export class Event {
   @Column({ nullable: true })
   content: string;
 
-  @Column()
-  banner: number;
+  @OneToOne(() => LocalFile, localFile => localFile.event)
+  @JoinColumn()
+  banner: LocalFile;
 
   @Column()
   startingDate: Date;
@@ -34,11 +36,12 @@ export class Event {
 
   @Column({
     type: 'enum',
-    enum: StatusEnum,
+    enum: RoleEnum,
+    default: RoleEnum.ADMIN
   })
-  roleCreater: StatusEnum
+  roleCreater: RoleEnum
 
-  @OneToOne(() => User, createdBy => createdBy.event)
+  @OneToOne(() => User, user => user.event)
   @JoinColumn()
   createdBy: User
 
@@ -48,9 +51,12 @@ export class Event {
   @Column({
     type: 'enum',
     enum: StatusEnum,
+    default: StatusEnum.ACTIVE
   })
   status: StatusEnum
 
-  @ManyToOne(() => Event_Additional_Info, createdBy => createdBy.event)
-  additionalInfo: Event_Additional_Info
+  @ManyToOne(() => EventAdditionalInfo, createdBy => createdBy.event)
+  additionalInfo: EventAdditionalInfo
+
+  
 }

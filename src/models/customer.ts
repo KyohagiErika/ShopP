@@ -102,7 +102,7 @@ export default class CustomerModel {
       gender,
       dob,
       placeOfDelivery,
-      user: await user,
+      user: await user
     });
     return new Response(
       HttpStatusCode.CREATED,
