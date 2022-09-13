@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import AuthMiddleware from '../middlewares/auth';
+import { checkRole } from '../middlewares/checkRole';
+import { RoleEnum } from '../utils/shopp.enum';
 
 const router = Router();
 //Login route
@@ -8,7 +10,7 @@ router.post('/login', AuthMiddleware.loginWithEmail);
 //Change my password
 router.post(
   '/change-password',
-  [AuthMiddleware.checkJwt],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   AuthMiddleware.changePassword
 );
 
