@@ -66,9 +66,7 @@ export default class AuthModel {
       );
   }
 
-  static async forgotPassword(
-    email: string
-  ) {
+  static async forgotPassword(email: string) {
     //Get user from the database
     const userRepository = ShopPDataSource.getRepository(User);
     let user: User | null = await userRepository.findOne({
@@ -79,8 +77,7 @@ export default class AuthModel {
     });
     if (user !== null) {
       //Send confirm code to user email
-      
-      
+
       userRepository.save(user);
       return new Response(HttpStatusCode.OK, '');
     } else

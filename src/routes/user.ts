@@ -7,7 +7,11 @@ import UserMiddleware from '../middlewares/user';
 const routes = Router(); //localhost:3000/user/123
 
 //Get all users
-routes.get('/list-all',[AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)], UserMiddleware.listAll); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.get(
+  '/list-all',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  UserMiddleware.listAll
+); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 // Get one user
 routes.get('/:id([0-9]+)', UserMiddleware.getOneById); //[checkJwt, checkRole(RoleEnum.ADMIN)],
