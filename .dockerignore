@@ -1,5 +1,4 @@
-.env.local
-src
+dist
 node_modules
 test
 .gitignore

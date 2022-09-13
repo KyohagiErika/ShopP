@@ -1,9 +1,9 @@
-FROM node:16.x.x
+FROM node:16.14.2
 WORKDIR /app
 COPY package.json .
 RUN npm install
 COPY . .
 COPY .env.local .env
 RUN npm run build
-CMD ["npm", "run", "start"]
+CMD [ "npm", "start" ]
 EXPOSE 3001
