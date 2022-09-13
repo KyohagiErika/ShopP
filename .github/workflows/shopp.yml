@@ -27,6 +27,6 @@ jobs:
         script: |
           cd ~/ShopP
           git pull
-          npm i
-          npm run build
-          npm start
+          docker compose down
+          docker build -no-cache -t shopp .
+          docker compose up -d
