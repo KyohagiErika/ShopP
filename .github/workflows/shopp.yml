@@ -27,6 +27,5 @@ jobs:
         script: |
           cd ~/ShopP
           git pull
-          docker compose down
           docker build -no-cache -t shopp .
           docker compose up -d
