@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ShopPDataSource } from '../data';
 
 import { User } from '../entities/user';
-import { HttpStatusCode, RoleEnum } from '../utils/shopp.enum';
+import { HttpStatusCode, RoleEnum, StatusEnum } from '../utils/shopp.enum';
 import { UserRole } from '../entities/userRole';
 
 export const checkRole = (role: RoleEnum) => {
@@ -12,25 +12,34 @@ export const checkRole = (role: RoleEnum) => {
 
     //Get user role from the database
     const userRepository = ShopPDataSource.getRepository(User);
-    let user: User | undefined;
-    try {
-      user = await userRepository.findOneOrFail(id);
-    } catch (id) {
+    let user: User | null = await userRepository.findOne({
+      relations: {
+        roles: true
+      },
+      select: {
+        roles: {
+          role: true,
+        }
+      },
+      where: {
+        id: id,
+        status: StatusEnum.ACTIVE,
+      }
+    });
+    if (user == null) {
       res
         .status(HttpStatusCode.UNAUTHORIZATION)
         .send({ message: 'Unauthorized error, user not exist!' });
-    }
-    if (user !== undefined) {
-      //Check if array of authorized user roles includes the  role
-      let userRole: UserRole | undefined;
-      if (userRole !== undefined) {
-        userRole.role = role;
-        if (user.roles.indexOf(userRole) > -1) next();
-        else
-          res
-            .status(HttpStatusCode.UNAUTHORIZATION)
-            .send({ message: 'Unauthorized error, Role is invalid!' });
-      }
+    } else {
+      // var flag = false;
+      // //Check if array of authorized user roles includes the  role
+      // user.roles.forEach(userRole => { if (userRole.role === role) { flag = true; return; } });
+
+      if (user.roles.map(userRole => userRole.role).includes(role)) next();
+      else
+        res
+          .status(HttpStatusCode.UNAUTHORIZATION)
+          .send({ message: 'Unauthorized error, Role is invalid!' });
     }
   };
 };

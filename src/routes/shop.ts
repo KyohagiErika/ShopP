@@ -7,7 +7,7 @@ routes.get('/list-all', ShopMiddleware.listAll); //[checkJwt, checkRole(RoleEnum
 
 routes.get('/:id', ShopMiddleware.getOneById); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
-routes.post('/new/:userId([0-9]+)', ShopMiddleware.postNew); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.post('/new/:user-id([0-9]+)', ShopMiddleware.postNew); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 routes.post('/edit/:id', ShopMiddleware.edit); //[checkJwt], checkRole(RoleEnum.ADMIN);
 

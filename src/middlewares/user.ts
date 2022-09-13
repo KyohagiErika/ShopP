@@ -36,7 +36,7 @@ export default class UserMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           const emailRegExp: RegExp =
-            /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+            /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
           if (!emailRegExp.test(value))
             return `${propName} must be valid email`;
           return null;
@@ -47,7 +47,7 @@ export default class UserMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           const pwdRegExp: RegExp =
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*(\-_+=`~\?\/])(?=.{8,})/;
           if (!pwdRegExp.test(value))
             return `${propName} must constain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
           return null;
@@ -58,7 +58,7 @@ export default class UserMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           const phoneRegExp: RegExp =
-            /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/;
+            /^(01|03|05|07|08|09)+([0-9]{8})\b/;
           if (!phoneRegExp.test(value))
             return `${propName} must be valid phone`;
           return null;
@@ -90,7 +90,7 @@ export default class UserMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           const emailRegExp: RegExp =
-            /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+            /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
           if (!emailRegExp.test(value))
             return `${propName} must be valid email`;
           return null;
@@ -101,7 +101,7 @@ export default class UserMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           const phoneRegExp: RegExp =
-            /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/;
+            /^(01|03|05|07|08|09)+([0-9]{8})\b/;
           if (!phoneRegExp.test(value))
             return `${propName} must be valid phone`;
           return null;

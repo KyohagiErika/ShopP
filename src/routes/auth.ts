@@ -9,6 +9,9 @@ router.post('/login', AuthMiddleware.loginWithEmail);
 //Change my password
 router.post('/change-password', [checkJwt], AuthMiddleware.changePassword);
 
+//Forgot password route
+router.post('/forgot-password', AuthMiddleware.forgotPassword)
+
 //router.post('/test', AuthMiddleware.test);
 
 export default router;

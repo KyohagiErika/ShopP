@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { ShopPDataSource } from '../data';
 import { validate } from 'class-validator';
 import { User } from '../entities/user';
@@ -41,7 +41,7 @@ class AuthMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           const emailRegExp: RegExp =
-            /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+            /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
           if (!emailRegExp.test(value))
             return `${propName} must be valid email`;
           return null;
@@ -60,7 +60,7 @@ class AuthMiddleware {
       },
     ],
   })
-  static async loginWithEmail(req: Request, res: Response) {
+  static async loginWithEmail(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
     const result = await AuthModel.loginWithEmail(data.email, data.password);
     if (result.getCode() === HttpStatusCode.OK) {
@@ -111,6 +111,31 @@ class AuthMiddleware {
       id,
       data.oldPassword,
       data.newPassword
+    );
+    res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+
+  @ControllerService({
+    body: [
+      {
+        name: 'email',
+        type: String,
+        validator: (propName: string, value: string) => {
+          const emailRegExp: RegExp =
+            /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+          if (!emailRegExp.test(value))
+            return `${propName} must be valid email`;
+          return null;
+        },
+      }
+    ]
+  })
+  static async forgotPassword(req: Request, res: Response) {
+    //Get parameters from the body
+    const data = req.body;
+
+    const result = await AuthModel.forgotPassword(
+      data.email
     );
     res.status(result.getCode()).send({ message: result.getMessage() });
   }

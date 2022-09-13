@@ -13,7 +13,7 @@ routes.get('/list-all', CustomerMiddleware.listAll); //[checkJwt, checkRole(Role
 routes.get('/:id', CustomerMiddleware.getOneById); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 //Create a new customer
-routes.post('/new/:userId([0-9]+)', CustomerMiddleware.postNew); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.post('/new/:user-id([0-9]+)', CustomerMiddleware.postNew); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 //Edit one customer
 routes.post('/:id', CustomerMiddleware.edit);
