@@ -6,3 +6,4 @@ COPY . .
 COPY .env.local .env
 RUN npm run build
 CMD ["npm", "run", "start"]
+EXPOSE 3001
