@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ProductImage } from './product_image';
 
 @Entity()
 export class LocalFile {
@@ -13,4 +20,7 @@ export class LocalFile {
 
   @Column()
   mimetype: string;
+
+  @OneToOne(() => ProductImage, productImage => productImage.id)
+  productImage: ProductImage;
 }
