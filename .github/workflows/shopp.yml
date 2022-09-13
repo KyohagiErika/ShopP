@@ -17,16 +17,16 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Deploy using ssh
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.DEPLOYMENT_KEY }}
-          port: 22
-          script: |
-            cd ~/ShopP
-            git pull
-            npm i
-            npm run build
-            npm start
+    - name: Deploy using ssh
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.DEPLOYMENT_KEY }}
+        port: 22
+        script: |
+          cd ~/ShopP
+          git pull
+          docker compose down
+          docker build -no-cache -t shopp .
+          docker compose up -d
