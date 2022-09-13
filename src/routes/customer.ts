@@ -1,13 +1,12 @@
 import { Router } from 'express';
-import { checkJwt } from '../middlewares/checkJwt';
-import { checkRole } from '../middlewares/checkRole';
+import AuthMiddleware from '../middlewares/auth';
 import { RoleEnum } from '../utils/shopp.enum';
 import CustomerMiddleware from '../middlewares/customer';
 
 const routes = Router();
 
 //Get all customers
-routes.get('/list-all', CustomerMiddleware.listAll); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.get('/list-all', CustomerMiddleware.listAll); //[AuthMiddleware.checkJwt, AuthMiddleware.checkRole(RoleEnum.ADMIN)],
 
 // Get one customer
 routes.get('/:id', CustomerMiddleware.getOneById); //[checkJwt, checkRole(RoleEnum.ADMIN)],

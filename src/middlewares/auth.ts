@@ -1,39 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
-import { ShopPDataSource } from '../data';
-import { validate } from 'class-validator';
-import { User } from '../entities/user';
-import config from '../utils/shopp.config';
+import jwt from 'jsonwebtoken';
 import { ControllerService } from '../utils/decorators';
-import { HttpStatusCode, StatusEnum } from '../utils/shopp.enum';
+import { HttpStatusCode } from '../utils/shopp.enum';
 import AuthModel from '../models/auth';
+import config from '../utils/shopp.config';
 
 class AuthMiddleware {
-  // @ControllerService({
-  //   deepWatch: false,
-  //   query: [
-  //     {
-  //       name: 'hello',
-  //     },
-  //   ],
-  //   body: [
-  //     {
-  //       name: 'test',
-  //       type: Number,
-  //       validator: (propertyName: string, value: number) => {
-  //         if (value < 10) {
-  //           return `${propertyName} must greater or equal to 10`;
-  //         }
-  //         return null;
-  //       },
-  //     },
-  //   ],
-  // })
-  // static async test(req: Request, res: Response) {
-  //   // throw new Error('test error');
-  //   res.send({ message: 'Success!' });
-  //   // res.send('asdasd');
-  // }
-
   @ControllerService({
     body: [
       {
@@ -60,7 +32,7 @@ class AuthMiddleware {
       },
     ],
   })
-  static async loginWithEmail(req: Request, res: Response, next: NextFunction) {
+  static async loginWithEmail(req: Request, res: Response) {
     const data = req.body;
     const result = await AuthModel.loginWithEmail(data.email, data.password);
     if (result.getCode() === HttpStatusCode.OK) {
@@ -138,6 +110,40 @@ class AuthMiddleware {
       data.email
     );
     res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+
+  @ControllerService()
+  static async checkJwt(req: Request, res: Response, next: NextFunction) {
+    //Get the jwt token from the head
+    const token = <string>req.headers['auth'];
+    if (token == "")
+      res
+        .status(HttpStatusCode.UNAUTHORIZATION)
+        .send({ message: 'Unauthorized error, Token is missing' });
+    let jwtPayload;
+
+    //Try to validate the token and get data
+    try {
+      jwtPayload = <any>jwt.verify(token, config.JWT_SECRET);
+      res.locals.jwtPayload = jwtPayload;
+    } catch (error) {
+      //If token is not valid, respond with 401 (unauthorized)
+      res
+        .status(HttpStatusCode.UNAUTHORIZATION)
+        .send({ message: 'Unauthorized error, token is invalid!' });
+      return;
+    }
+
+    //The token is valid for 1 hour
+    //We want to send a new token on every request
+    const { userId, userEmail } = jwtPayload;
+    const newToken = jwt.sign({ userId, userEmail }, config.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+    res.setHeader('auth', newToken);
+
+    //Call the next middleware or controller
+    next();
   }
 }
 export default AuthMiddleware;

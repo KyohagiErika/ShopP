@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { checkJwt } from '../middlewares/checkJwt';
+import AuthMiddleware from '../middlewares/auth';
 import { checkRole } from '../middlewares/checkRole';
 import { RoleEnum } from '../utils/shopp.enum';
 import UserMiddleware from '../middlewares/user';
@@ -7,7 +7,7 @@ import UserMiddleware from '../middlewares/user';
 const routes = Router(); //localhost:3000/user/123
 
 //Get all users
-routes.get('/list-all',[checkJwt, checkRole(RoleEnum.CUSTOMER)], UserMiddleware.listAll); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.get('/list-all',[AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)], UserMiddleware.listAll); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 // Get one user
 routes.get('/:id([0-9]+)', UserMiddleware.getOneById); //[checkJwt, checkRole(RoleEnum.ADMIN)],
