@@ -9,65 +9,79 @@ import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 
 export default class EventModel {
-  
   static async listAdminEvents() {
-    const eventRepository = ShopPDataSource.getRepository(Event)
-
-    const eventList = await eventRepository.find({
-      where: {
-        status: StatusEnum.ACTIVE
-      },
-      relations: ['additionalInfo']
-    })
-
-    if(eventList == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed')
-    }
-    return new Response(HttpStatusCode.OK, 'Show Events successfully', eventList)
-    
-  }
-
-  static async listShopEvents(userId: number) {
-    const eventRepository = ShopPDataSource.getRepository(Event)
+    const eventRepository = ShopPDataSource.getRepository(Event);
 
     const eventList = await eventRepository.find({
       where: {
         status: StatusEnum.ACTIVE,
-        createdBy: {id: userId}
       },
-      relations: ['additionalInfo']
-    })
+      relations: ['additionalInfo'],
+    });
 
-    if(eventList == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed')
+    if (eventList == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
     }
-    return new Response(HttpStatusCode.OK, 'Show Events successfully', eventList)
+    return new Response(
+      HttpStatusCode.OK,
+      'Show Events successfully',
+      eventList
+    );
   }
 
-  static async newEvent(userId: number ,name: string, content: string, bannerId:number, startingDate: Date, endingDate: Date, additionalInfo:EventAdditionalInfo[]) {
-    const eventRepository = ShopPDataSource.getRepository(Event)
-    const localFileRepository = ShopPDataSource.getRepository(LocalFile)
-    const userRoleRepository = ShopPDataSource.getRepository(UserRole)
+  static async listShopEvents(userId: number) {
+    const eventRepository = ShopPDataSource.getRepository(Event);
+
+    const eventList = await eventRepository.find({
+      where: {
+        status: StatusEnum.ACTIVE,
+        createdBy: { id: userId },
+      },
+      relations: ['additionalInfo'],
+    });
+
+    if (eventList == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
+    }
+    return new Response(
+      HttpStatusCode.OK,
+      'Show Events successfully',
+      eventList
+    );
+  }
+
+  static async newEvent(
+    userId: number,
+    name: string,
+    content: string,
+    bannerId: number,
+    startingDate: Date,
+    endingDate: Date,
+    additionalInfo: object,
+  ) {
+    const eventRepository = ShopPDataSource.getRepository(Event);
+    const localFileRepository = ShopPDataSource.getRepository(LocalFile);
+    const userRoleRepository = ShopPDataSource.getRepository(UserRole);
+    const additionalInfoRepository = ShopPDataSource.getRepository(EventAdditionalInfo)
 
     const banner = await localFileRepository.findOne({
       where: {
-        id: bannerId
-      }
-    })
+        id: bannerId,
+      },
+    });
 
-    if(banner == null) 
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!')
-    
+    if (banner == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
+
     const userRole = await userRoleRepository.findOne({
       where: {
-        user: {id: userId},
-        role: RoleEnum.ADMIN
-      }
-    })
-    let roleCreator: RoleEnum = RoleEnum.ADMIN
-    
-    if(userRole == null)
-      roleCreator = RoleEnum.SHOP
+        user: { id: userId },
+        role: RoleEnum.ADMIN,
+      },
+    });
+    let roleCreator: RoleEnum = RoleEnum.ADMIN;
+
+    if (userRole == null) roleCreator = RoleEnum.SHOP;
 
     const event = await eventRepository.save({
       name,
@@ -76,30 +90,59 @@ export default class EventModel {
       startingDate,
       endingDate,
       roleCreator,
-      additionalInfo
-    })
+    });
+    
+    let arrayEventAdditionalInfo: EventAdditionalInfo[] = []
+    let arrayKeys = Object.keys(additionalInfo)
+    let arrayValues = Object.values(additionalInfo)
 
-    return new Response(HttpStatusCode.CREATED, 'Create event successfully!', event)
+    for(let i = 0; i < arrayKeys.length; i++) {
+      const eventAdditionalInfo = await additionalInfoRepository.save({
+        key: arrayKeys[i],
+        value: arrayValues[i],
+        event
+      })
+
+      arrayEventAdditionalInfo.push(eventAdditionalInfo)
+    }
+
+    event.additionalInfo = arrayEventAdditionalInfo
+
+    return new Response(
+      HttpStatusCode.CREATED,
+      'Create event successfully!',
+      event
+    );
   }
 
-  static async editEvent(id: number, name: string, content: string, bannerId: number, startingDate: Date, endingDate: Date) {
-
-  }
+  static async editEvent(
+    id: number,
+    name: string,
+    content: string,
+    bannerId: number,
+    startingDate: Date,
+    endingDate: Date
+  ) {}
 
   static async deleteEvent(id: number) {
-    const eventRepository = ShopPDataSource.getRepository(Event)
+    const eventRepository = ShopPDataSource.getRepository(Event);
 
     const result = await eventRepository.update(
       {
         id,
-        status: StatusEnum.ACTIVE
-      },{
-      status: StatusEnum.INACTIVE
-    })
+        status: StatusEnum.ACTIVE,
+      },
+      {
+        status: StatusEnum.INACTIVE,
+      }
+    );
 
-    if(result.affected == 1) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Delete event successfully!')
+    if (result.affected == 1) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Delete event successfully!'
+      );
     }
-    return new Response(HttpStatusCode.OK, 'Delete event failed!')
+    return new Response(HttpStatusCode.OK, 'Delete event failed!');
   }
 }

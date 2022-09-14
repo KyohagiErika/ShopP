@@ -68,6 +68,9 @@ export default class UserMiddleware {
   })
   static async postNew(req: Request, res: Response) {
     const data = req.body;
+    // console.log(data)
+    // console.log(typeof data)
+    // console.log(data.email)
     const result = await UserModel.postNew(
       data.email,
       data.phone,
