@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   OneToOne,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
 
 import { GenderEnum, StatusEnum } from '../utils/shopp.enum';
@@ -22,6 +23,6 @@ export class EventAdditionalInfo {
   @Column()
   value: string;
 
-  @OneToMany(() => Event, event => event.additionalInfo)
-  event: Event[];
+  @ManyToOne(() => Event, event => event.additionalInfo)
+  event: Event;
 }

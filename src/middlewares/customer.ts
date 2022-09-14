@@ -94,6 +94,10 @@ export default class CustomerMiddleware {
     const userId = +req.params.userId;
     const data = req.body;
 
+    
+    console.log(data)
+
+
     // take date
     var dateReplace = data.dob.replace(/-/g, '/');
     var parts = dateReplace.split('/');

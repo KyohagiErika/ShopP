@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   OneToOne,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 
 import { User } from './user';
@@ -46,6 +47,7 @@ export class Event {
   createdBy: User;
 
   @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
   @Column({
@@ -55,6 +57,6 @@ export class Event {
   })
   status: StatusEnum;
 
-  @ManyToOne(() => EventAdditionalInfo, createdBy => createdBy.event)
-  additionalInfo: EventAdditionalInfo;
+  @OneToMany(() => EventAdditionalInfo, createdBy => createdBy.event)
+  additionalInfo: EventAdditionalInfo[];
 }
