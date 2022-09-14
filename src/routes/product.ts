@@ -7,19 +7,19 @@ routes.get('/list-all', ProductMiddleware.listAll); //[checkJwt, checkRole(RoleE
 
 routes.get('/getOneById/:id', ProductMiddleware.getOneById); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
-routes.get('/getOneByName/:name', ProductMiddleware.getOneByName);
+routes.get('/searchByName/:name', ProductMiddleware.searchByName);
 
 routes.get(
-  '/getOneByCategory/:categoryId([0-9]+)',
-  ProductMiddleware.getOneByCategory
+  '/searchByCategory/:categoryId([0-9]+)',
+  ProductMiddleware.searchByCategory
 );
 
 routes.get(
-  '/getOneByCategoryName/:name',
-  ProductMiddleware.getOneByCategoryName
+  '/searchByCategoryName/:name',
+  ProductMiddleware.searchByCategoryName
 );
 
-routes.get('/getOneByShop/:shopId', ProductMiddleware.getOneByShop);
+routes.get('/searchByShop/:shopId', ProductMiddleware.searchByShop);
 
 routes.post('/new/:shopId', ProductMiddleware.postNew); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 

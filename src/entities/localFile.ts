@@ -5,7 +5,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ProductImage } from './product_image';
+import { ProductImage } from './productImage';
 
 @Entity()
 export class LocalFile {

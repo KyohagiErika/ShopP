@@ -44,9 +44,9 @@ export default class ProductMiddleware {
       },
     ],
   })
-  static async getOneByName(req: Request, res: Response) {
+  static async searchByName(req: Request, res: Response) {
     const name = req.params.name;
-    const result = await ProductModel.getOneByName(name);
+    const result = await ProductModel.searchByName(name);
     if (result) {
       res.status(HttpStatusCode.OK).send(result);
     } else {
@@ -57,9 +57,9 @@ export default class ProductMiddleware {
   }
 
   @ControllerService()
-  static async getOneByCategory(req: Request, res: Response) {
+  static async searchByCategory(req: Request, res: Response) {
     const id = +req.params.categoryId;
-    const result = await ProductModel.getOneByCategory(id);
+    const result = await ProductModel.searchByCategory(id);
     if (result) {
       res.status(HttpStatusCode.OK).send(result);
     } else {
@@ -77,9 +77,9 @@ export default class ProductMiddleware {
       },
     ],
   })
-  static async getOneByCategoryName(req: Request, res: Response) {
+  static async searchByCategoryName(req: Request, res: Response) {
     const name = req.params.name;
-    const result = await ProductModel.getOneByCategoryName(name);
+    const result = await ProductModel.searchByCategoryName(name);
     if (result) {
       res.status(HttpStatusCode.OK).send(result);
     } else {
@@ -97,9 +97,9 @@ export default class ProductMiddleware {
       },
     ],
   })
-  static async getOneByShop(req: Request, res: Response) {
+  static async searchByShop(req: Request, res: Response) {
     const shopId = req.params.id;
-    const result = await ProductModel.getOneByShop(shopId);
+    const result = await ProductModel.searchByShop(shopId);
     if (result) {
       res.status(HttpStatusCode.OK).send(result);
     } else {

@@ -11,9 +11,9 @@ import {
 
 import { ProductEnum } from '../utils/shopp.enum';
 import { Category } from './category';
-import { PackagedProductSize } from './packaged_product_size';
-import { ProductAdditionalInfo } from './product_additional_info';
-import { ProductImage } from './product_image';
+import { PackagedProductSize } from './packagedProductSize';
+import { ProductAdditionalInfo } from './productAdditionalInfo';
+import { ProductImage } from './productImage';
 import { Shop } from './shop';
 
 @Entity()
@@ -63,7 +63,7 @@ export class Product {
     productAdditionalInfo => productAdditionalInfo.id
   )
   @JoinColumn()
-  productAdditionalInfo: ProductAdditionalInfo;
+  productAdditionalInfo: ProductAdditionalInfo[];
 
   @OneToOne(
     () => PackagedProductSize,
@@ -73,5 +73,5 @@ export class Product {
 
   @OneToMany(() => ProductImage, productImage => productImage.id)
   @JoinColumn()
-  productImage: ProductImage;
+  productImage: ProductImage[];
 }

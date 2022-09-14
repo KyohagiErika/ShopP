@@ -8,9 +8,9 @@ import ShopPConfig from './utils/shopp.config';
 import { Shop } from './entities/shop';
 import { Product } from './entities/product';
 import { Category } from './entities/category';
-import { PackagedProductSize } from './entities/packaged_product_size';
-import { ProductAdditionalInfo } from './entities/product_additional_info';
-import { ProductImage } from './entities/product_image';
+import { PackagedProductSize } from './entities/packagedProductSize';
+import { ProductAdditionalInfo } from './entities/productAdditionalInfo';
+import { ProductImage } from './entities/productImage';
 
 export const ShopPDataSource = new DataSource({
   type: 'mysql',

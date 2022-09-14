@@ -64,7 +64,7 @@ export default class ProductModel {
     return product ? product : false;
   }
 
-  static async getOneByName(name: string) {
+  static async searchByName(name: string) {
     const product = await productRepository.find({
       relations: {
         shop: true,
@@ -81,11 +81,11 @@ export default class ProductModel {
       },
       where: [
         {
-          name: name,
+          name: Like(`%${name}%`),
           status: ProductEnum.AVAILABLE,
         },
         {
-          name: name,
+          name: Like(`%${name}%`),
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],
@@ -93,7 +93,7 @@ export default class ProductModel {
     return product ? product : false;
   }
 
-  static async getOneByCategory(categoryId: number) {
+  static async searchByCategory(categoryId: number) {
     const product = await productRepository.find({
       relations: {
         shop: true,
@@ -122,7 +122,7 @@ export default class ProductModel {
     return product ? product : false;
   }
 
-  static async getOneByCategoryName(name: string) {
+  static async searchByCategoryName(name: string) {
     const product = await productRepository.find({
       relations: {
         shop: true,
@@ -140,12 +140,12 @@ export default class ProductModel {
 
       where: [
         {
-          category: { name: Like(name) },
+          category: { name: Like(`%${name}%`) },
           //category: {name: name},
           status: ProductEnum.AVAILABLE,
         },
         {
-          category: { name: Like(name) },
+          category: { name: Like(`%${name}%`) },
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],
@@ -153,7 +153,7 @@ export default class ProductModel {
     return product ? product : false;
   }
 
-  static async getOneByShop(shop: string) {
+  static async searchByShop(shop: string) {
     const product = await productRepository.find({
       relations: {
         shop: true,
