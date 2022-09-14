@@ -89,7 +89,7 @@ export default class EventModel {
       banner,
       startingDate,
       endingDate,
-      roleCreator,
+      roleCreator, 
     });
     
     let arrayEventAdditionalInfo: EventAdditionalInfo[] = []
