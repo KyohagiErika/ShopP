@@ -56,17 +56,30 @@ export default class ProductMiddleware {
     }
   }
 
+  @ControllerService()
+  static async getOneByCategory(req: Request, res: Response) {
+    const id = +req.params.categoryId;
+    const result = await ProductModel.getOneByCategory(id);
+    if (result) {
+      res.status(HttpStatusCode.OK).send(result);
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get Product failed!' });
+    }
+  }
+
   @ControllerService({
     params: [
       {
-        name: 'id',
+        name: 'name',
         type: String,
       },
     ],
   })
-  static async getOneByCategory(req: Request, res: Response) {
-    const id = +req.params.id;
-    const result = await ProductModel.getOneByCategory(id);
+  static async getOneByCategoryName(req: Request, res: Response) {
+    const name = req.params.name;
+    const result = await ProductModel.getOneByCategoryName(name);
     if (result) {
       res.status(HttpStatusCode.OK).send(result);
     } else {

@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+  app:
+    image: shopp
+    command: sh -c "npm run init-database && npm start"
+    ports:
+      - 3001:3001
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: shopp
+      MYSQL_USER: shopp
+      MYSQL_PASSWORD: Lethanhlong03
+    ports:
+      - 3306:3306

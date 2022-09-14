@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "mocha -r ts-node/register test/**/*.ts",
-    "init-database": "typeorm-ts-node-commonjs schema:sync --dataSource src/data.ts",
+    "init-database": "typeorm-ts-node-commonjs schema:sync -d ./src/data.ts",
     "format-code": "prettier --write ."
   },
   "author": "Le Thanh Long",

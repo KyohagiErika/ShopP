@@ -4,6 +4,7 @@ import { Shop } from '../entities/shop';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
+import { Like, MoreThanOrEqual } from 'typeorm';
 
 const productRepository = ShopPDataSource.getRepository(Product);
 
@@ -114,6 +115,37 @@ export default class ProductModel {
         },
         {
           category: { id: categoryId },
+          status: ProductEnum.OUT_OF_ORDER,
+        },
+      ],
+    });
+    return product ? product : false;
+  }
+
+  static async getOneByCategoryName(name: string) {
+    const product = await productRepository.find({
+      relations: {
+        shop: true,
+        category: true,
+      },
+      select: {
+        name: true,
+        detail: true,
+        amount: true,
+        createdAt: true,
+        status: true,
+        sold: true,
+        star: true,
+      },
+
+      where: [
+        {
+          category: { name: Like(name) },
+          //category: {name: name},
+          status: ProductEnum.AVAILABLE,
+        },
+        {
+          category: { name: Like(name) },
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],

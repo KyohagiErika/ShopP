@@ -5,13 +5,21 @@ const routes = Router();
 
 routes.get('/list-all', ProductMiddleware.listAll); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
-routes.get('/get/:id', ProductMiddleware.getOneById); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.get('/getOneById/:id', ProductMiddleware.getOneById); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
-routes.get('/get/:name', ProductMiddleware.getOneByName);
+routes.get('/getOneByName/:name', ProductMiddleware.getOneByName);
 
-routes.get('/get/:categoryId', ProductMiddleware.getOneByCategory);
+routes.get(
+  '/getOneByCategory/:categoryId([0-9]+)',
+  ProductMiddleware.getOneByCategory
+);
 
-routes.get('/get/:shopId', ProductMiddleware.getOneByShop);
+routes.get(
+  '/getOneByCategoryName/:name',
+  ProductMiddleware.getOneByCategoryName
+);
+
+routes.get('/getOneByShop/:shopId', ProductMiddleware.getOneByShop);
 
 routes.post('/new/:shopId', ProductMiddleware.postNew); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
