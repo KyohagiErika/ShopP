@@ -12,6 +12,7 @@ export default class UserModel {
     const users = await userRepository.find({
       relations: {
         roles: true,
+        customer: true,
       },
       select: {
         id: true,

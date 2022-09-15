@@ -63,8 +63,9 @@ export default class CustomerModel {
     const customerRepository = ShopPDataSource.getRepository(Customer);
 
     let userID = await userRepository.findOne({
-      select: {
-        id: true,
+      relations: {
+        customer: true,
+        roles: true,
       },
       where: {
         id: userId,
@@ -76,34 +77,23 @@ export default class CustomerModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'UserId doesnt exist');
     }
 
-    const userList = await userRepository.findOne({
-      where: {
-        id: userId,
-        status: StatusEnum.ACTIVE,
-      },
-    });
-
     // check userID used or not
-    if (userList?.customer !== null) {
+
+    if (userID.customer != undefined) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         `Customer with userId ${userId} has already existed`
       );
     }
 
-    let user = userRepository.findOneOrFail({
-      where: {
-        id: userId,
-        status: StatusEnum.ACTIVE,
-      },
-    });
     let customer = await customerRepository.save({
       name,
       gender,
       dob,
       placeOfDelivery,
-      user: await user,
+      user: userID,
     });
+
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',

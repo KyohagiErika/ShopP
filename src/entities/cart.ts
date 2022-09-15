@@ -5,9 +5,9 @@ import {
   CreateDateColumn,
   OneToOne,
   PrimaryGeneratedColumn,
+  JoinColumn,
 } from 'typeorm';
 
-import { Length, IsNotEmpty } from 'class-validator';
 import { Customer } from './customer';
 
 @Entity()
@@ -20,6 +20,7 @@ export class Cart {
   })
   products: object;
 
-  // @OneToOne(() => Customer, customer => customer.cart)
-  // customer: Customer;
+  @OneToOne(() => Customer, customer => customer.cart)
+  @JoinColumn()
+  customer: Customer;
 }

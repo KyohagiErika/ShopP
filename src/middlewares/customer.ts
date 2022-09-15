@@ -2,6 +2,7 @@ import CustomerModel from '../models/customer';
 import { Request, Response } from 'express';
 import { ControllerService } from '../utils/decorators';
 import { GenderEnum, HttpStatusCode } from '../utils/shopp.enum';
+import ConvertDate from '../utils/convertDate';
 
 export default class CustomerMiddleware {
   @ControllerService()
@@ -41,15 +42,6 @@ export default class CustomerMiddleware {
   }
 
   @ControllerService({
-    // params: [
-    //   {
-    //     name: 'userId',
-    //     type: Number,
-    //     validator: (propName: string, value: string) => {
-    //       return null;
-    //     },
-    //   },
-    // ],
     body: [
       {
         name: 'name',
@@ -60,13 +52,15 @@ export default class CustomerMiddleware {
       },
       {
         name: 'gender',
-        type: String,
+        type: String ,
         validator: (propName: string, value: string) => {
-          if (
-            value.toUpperCase() !== 'MALE' &&
-            value.toUpperCase() !== 'FEMALE'
-          )
-            return `${propName} is only MALE or FEMALE`;
+          if (value != null) {
+            if (
+              value.toUpperCase() !== 'MALE' &&
+              value.toUpperCase() !== 'FEMALE'
+            )
+              return `${propName} is only MALE or FEMALE`;
+          }
           return null;
         },
       },
@@ -74,10 +68,8 @@ export default class CustomerMiddleware {
         name: 'dob',
         type: String,
         validator: (propName: string, value: string) => {
-          var dateReplace = value.replace(/-/g, '/');
-          var parts = dateReplace.split('/');
-          var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
-          if (!Date.parse(dateTrueFormat)) return `${propName} is invalid`;
+          if (!Date.parse(ConvertDate(value)))
+            return `${propName} is invalid`;
           return null;
         },
       },
@@ -95,9 +87,8 @@ export default class CustomerMiddleware {
     const data = req.body;
 
     // take date
-    var dateReplace = data.dob.replace(/-/g, '/');
-    var parts = dateReplace.split('/');
-    var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+    var dateTrueFormat = ConvertDate(data.dob);
 
     const result = await CustomerModel.postNew(
       data.name.toString(),
@@ -141,10 +132,7 @@ export default class CustomerMiddleware {
         name: 'dob',
         type: String,
         validator: (propName: string, value: string) => {
-          var dateReplace = value.replace(/-/g, '/');
-          var parts = dateReplace.split('/');
-          var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
-          if (!Date.parse(dateTrueFormat)) return `${propName} is invalid`;
+          if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
           return null;
         },
       },
@@ -170,9 +158,7 @@ export default class CustomerMiddleware {
     }
 
     // resolve dob
-    var dateReplace = data.dob.toString().replace(/-/g, '/');
-    var parts = dateReplace.split('/');
-    var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    var dateTrueFormat = ConvertDate(data.dob);
 
     const result = await CustomerModel.edit(
       id.toString(),
