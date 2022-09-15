@@ -42,15 +42,6 @@ export default class CustomerMiddleware {
   }
 
   @ControllerService({
-    // params: [
-    //   {
-    //     name: 'userId',
-    //     type: Number,
-    //     validator: (propName: string, value: string) => {
-    //       return null;
-    //     },
-    //   },
-    // ],
     body: [
       {
         name: 'name',
@@ -61,21 +52,25 @@ export default class CustomerMiddleware {
       },
       {
         name: 'gender',
-        type: String,
+        // type: String ,
         validator: (propName: string, value: string) => {
-          if (
+          if(value != null) {
+            if (
             value.toUpperCase() !== 'MALE' &&
             value.toUpperCase() !== 'FEMALE'
           )
             return `${propName} is only MALE or FEMALE`;
+          }
           return null;
         },
       },
       {
         name: 'dob',
-        type: String,
+        // type: String,
         validator: (propName: string, value: string) => {
-          if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
+          if(value != null) {
+            if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
+          }
           return null;
         },
       },

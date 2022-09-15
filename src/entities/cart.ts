@@ -18,7 +18,7 @@ export class Cart {
   @Column({
     type: 'json',
   })
-  products: string;
+  products: object;
 
   @OneToOne(() => Customer, customer => customer.cart)
   @JoinColumn()

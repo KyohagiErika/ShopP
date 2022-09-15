@@ -29,7 +29,7 @@ export class Customer {
   })
   gender: GenderEnum;
 
-  @Column()
+  @Column({ nullable: true })
   dob: Date;
 
   @OneToOne(() => User, user => user.customer)

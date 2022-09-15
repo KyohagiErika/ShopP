@@ -69,14 +69,18 @@ export default class EventModel {
     const additionalInfoRepository =
       ShopPDataSource.getRepository(EventAdditionalInfo);
 
-    const banner = await localFileRepository.findOne({
-      where: {
-        id: bannerId,
-      },
-    });
+    let banner = null
+    if(bannerId != null) {
+      banner = await localFileRepository.findOne({
+        where: {
+          id: bannerId,
+        },
+      });
 
-    if (banner == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
+      if (banner == null)
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
+    }
+    
 
     const userRole = await userRoleRepository.findOne({
       where: {
@@ -87,26 +91,39 @@ export default class EventModel {
     let roleCreator: RoleEnum = RoleEnum.ADMIN;
 
     if (userRole == null) roleCreator = RoleEnum.SHOP;
-
-    const event = await eventRepository.save({
-      name,
-      content,
-      banner,
-      startingDate,
-      endingDate,
-      roleCreator,
-    });
-
-    let arrayEventAdditionalInfo: EventAdditionalInfo[] = [];
-    let arrayKeys = Object.keys(additionalInfo);
-    let arrayValues = Object.values(additionalInfo);
-
-    for (let i = 0; i < arrayKeys.length; i++) {
-      const eventAdditionalInfo = await additionalInfoRepository.save({
-        key: arrayKeys[i],
-        value: arrayValues[i],
-        event,
+    let event: Event
+    if(banner != null) {
+      event = await eventRepository.save({
+        name,
+        content,
+        banner,
+        startingDate,
+        endingDate,
+        roleCreator,
       });
+    } else {
+      event = await eventRepository.save({
+        name,
+        content,
+        startingDate,
+        endingDate,
+        roleCreator,
+      });
+    }
+    
+
+    // let arrayEventAdditionalInfo: EventAdditionalInfo[] = [];
+    if(additionalInfo != null) {
+      let arrayKeys = Object.keys(additionalInfo);
+      let arrayValues = Object.values(additionalInfo);
+
+      for (let i = 0; i < arrayKeys.length; i++) {
+        const eventAdditionalInfo = await additionalInfoRepository.save({
+          key: arrayKeys[i],
+          value: arrayValues[i],
+          event,
+        });
+      }
     }
 
     return new Response(
@@ -139,17 +156,25 @@ export default class EventModel {
       },
     });
 
+    
+
     if (event == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
 
-    const banner = await localFileRepository.findOne({
-      where: {
-        id: bannerId,
-      },
-    });
+    let banner = null
 
-    if (banner == null)
+    if(bannerId != null && bannerId != undefined) {
+      banner = await localFileRepository.findOne({
+        where: {
+          id: bannerId,
+        },
+      });
+
+      if (banner == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
+    }
+
+    
 
     let arrayEventAdditionalInfo: EventAdditionalInfo[] = [];
     let arrayKeys = Object.keys(additionalInfo);
@@ -164,17 +189,32 @@ export default class EventModel {
       arrayEventAdditionalInfo.push(eventAdditionalInfo);
     }
 
-    const result = await eventRepository.update(
-      { id },
-      {
-        name,
-        content,
-        banner,
-        startingDate,
-        endingDate,
-        additionalInfo: arrayEventAdditionalInfo,
-      }
-    );
+    let result
+    if(banner == null) {
+      result = await eventRepository.update(
+        { id },
+        {
+          name,
+          content,
+          startingDate,
+          endingDate,
+          additionalInfo: arrayEventAdditionalInfo,
+        }
+      );
+    } else {
+      result = await eventRepository.update(
+        { id },
+        {
+          name,
+          content,
+          banner,
+          startingDate,
+          endingDate,
+          additionalInfo: arrayEventAdditionalInfo,
+        }
+      );
+    }
+    
 
     if (result.affected != 0)
       return new Response(HttpStatusCode.OK, 'Edit Event successfully!');

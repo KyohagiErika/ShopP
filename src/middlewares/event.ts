@@ -57,6 +57,14 @@ export default class EventMiddleware {
           if(!Date.parse(ConvertDate(value))) return `${propName} is invalid`
           return null;
         }
+      },
+      {
+        name: 'additionalInfo',
+        validator: (propName: string, value: object) => {
+          if(typeof value != 'object' && value != null) 
+            return `${propName} must be an Object`
+          return null;
+        }
       }
     ],
   })
@@ -80,7 +88,41 @@ export default class EventMiddleware {
     else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
-  @ControllerService()
+  @ControllerService({
+    body: [
+      {
+        name: 'name',
+        type: String,
+        validator: (propName: string, value: string) => {
+          return null;
+        }
+      },
+      {
+        name: 'startingDate',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if(!Date.parse(ConvertDate(value))) return `${propName} is invalid`
+          return null;
+        }
+      },
+      {
+        name: 'endingDate',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if(!Date.parse(ConvertDate(value))) return `${propName} is invalid`
+          return null;
+        }
+      },
+      {
+        name: 'additionalInfo',
+        validator: (propName: string, value: object) => {
+          if(value != Object && value != null) 
+            return `${propName} must be an Object`
+          return null;
+        }
+      }
+    ],
+  })
   static async editEvent(req: Request, res: Response) {
     const id = +req.params.id
     const data = req.body
