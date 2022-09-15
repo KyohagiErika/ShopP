@@ -65,4 +65,25 @@ export default class AuthModel {
         'Unauthorized error, user not exist!'
       );
   }
+
+  static async forgotPassword(email: string) {
+    //Get user from the database
+    const userRepository = ShopPDataSource.getRepository(User);
+    let user: User | null = await userRepository.findOne({
+      where: {
+        email: email,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    if (user !== null) {
+      //Send confirm code to user email
+
+      userRepository.save(user);
+      return new Response(HttpStatusCode.OK, '');
+    } else
+      return new Response(
+        HttpStatusCode.UNAUTHORIZATION,
+        'Unauthorized error, user not exist!'
+      );
+  }
 }
