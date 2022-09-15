@@ -16,7 +16,9 @@ export default class EventModel {
       where: {
         status: StatusEnum.ACTIVE,
       },
-      relations: ['additionalInfo'],
+      relations: {
+        additionalInfo: true
+      }
     });
 
     if (eventList == null) {
@@ -37,7 +39,9 @@ export default class EventModel {
         status: StatusEnum.ACTIVE,
         createdBy: { id: userId },
       },
-      relations: ['additionalInfo'],
+      relations: {
+        additionalInfo: true
+      }
     });
 
     if (eventList == null) {

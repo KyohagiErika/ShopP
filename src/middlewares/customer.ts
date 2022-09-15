@@ -137,10 +137,7 @@ export default class CustomerMiddleware {
         name: 'dob',
         type: String,
         validator: (propName: string, value: string) => {
-          var dateReplace = value.replace(/-/g, '/');
-          var parts = dateReplace.split('/');
-          var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
-          if (!Date.parse(dateTrueFormat)) return `${propName} is invalid`;
+          if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
           return null;
         },
       },
@@ -166,9 +163,7 @@ export default class CustomerMiddleware {
     }
 
     // resolve dob
-    var dateReplace = data.dob.toString().replace(/-/g, '/');
-    var parts = dateReplace.split('/');
-    var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    var dateTrueFormat = ConvertDate(data.dob);
 
     const result = await CustomerModel.edit(
       id.toString(),
