@@ -33,17 +33,17 @@ export default class CartModel {
 
     const customer = await customerRepository.findOne({
       relations: {
-        cart: true
+        cart: true,
       },
       where: {
         id: customerId,
       },
     });
 
-    if(customer == null) {
+    if (customer == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, `Customer doesnt exist`);
     }
-    if (customer.cart !== null ) {
+    if (customer.cart !== null) {
       return new Response(HttpStatusCode.BAD_REQUEST, `Cart existed`);
     }
 

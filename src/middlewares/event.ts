@@ -40,32 +40,32 @@ export default class EventMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           return null;
-        }
+        },
       },
       {
         name: 'startingDate',
         type: String,
         validator: (propName: string, value: string) => {
-          if(!Date.parse(ConvertDate(value))) return `${propName} is invalid`
+          if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
           return null;
-        }
+        },
       },
       {
         name: 'endingDate',
         type: String,
         validator: (propName: string, value: string) => {
-          if(!Date.parse(ConvertDate(value))) return `${propName} is invalid`
+          if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
           return null;
-        }
+        },
       },
       {
         name: 'additionalInfo',
         validator: (propName: string, value: object) => {
-          if(typeof value != 'object' && value != null) 
-            return `${propName} must be an Object`
+          if (typeof value != 'object' && value != null)
+            return `${propName} must be an Object`;
           return null;
-        }
-      }
+        },
+      },
     ],
   })
   static async newEvent(req: Request, res: Response) {
@@ -95,38 +95,38 @@ export default class EventMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           return null;
-        }
+        },
       },
       {
         name: 'startingDate',
         type: String,
         validator: (propName: string, value: string) => {
-          if(!Date.parse(ConvertDate(value))) return `${propName} is invalid`
+          if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
           return null;
-        }
+        },
       },
       {
         name: 'endingDate',
         type: String,
         validator: (propName: string, value: string) => {
-          if(!Date.parse(ConvertDate(value))) return `${propName} is invalid`
+          if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
           return null;
-        }
+        },
       },
       {
         name: 'additionalInfo',
         validator: (propName: string, value: object) => {
-          if(value != Object && value != null) 
-            return `${propName} must be an Object`
+          if (value != Object && value != null)
+            return `${propName} must be an Object`;
           return null;
-        }
-      }
+        },
+      },
     ],
   })
   static async editEvent(req: Request, res: Response) {
-    const id = +req.params.id
-    const data = req.body
-    const additionalInfo = data.additionalInfo
+    const id = +req.params.id;
+    const data = req.body;
+    const additionalInfo = data.additionalInfo;
     const result = await EventModel.editEvent(
       id,
       data.name,
@@ -135,12 +135,10 @@ export default class EventMiddleware {
       new Date(ConvertDate(data.startingDate)),
       new Date(ConvertDate(data.endingDate)),
       additionalInfo
-    )
+    );
 
     if (result.getCode() == HttpStatusCode.OK)
-      res
-        .status(result.getCode())
-        .send({ message: result.getMessage() });
+      res.status(result.getCode()).send({ message: result.getMessage() });
     else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 

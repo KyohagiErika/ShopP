@@ -13,9 +13,9 @@ routes.get('/list-shop-events', EventMiddleware.listShopEvents);
 routes.post('/new/:userId([0-9]+)', EventMiddleware.listShopEvents);
 
 // edit an event
-routes.post('/:id([0-9]+)',EventMiddleware.editEvent)
+routes.post('/:id([0-9]+)', EventMiddleware.editEvent);
 
 // delete an event
-routes.post('/delete/:id([0-9]+)',EventMiddleware.deleteEvent)
+routes.post('/delete/:id([0-9]+)', EventMiddleware.deleteEvent);
 
 export default routes;

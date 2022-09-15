@@ -17,8 +17,8 @@ export default class EventModel {
         status: StatusEnum.ACTIVE,
       },
       relations: {
-        additionalInfo: true
-      }
+        additionalInfo: true,
+      },
     });
 
     if (eventList == null) {
@@ -40,8 +40,8 @@ export default class EventModel {
         createdBy: { id: userId },
       },
       relations: {
-        additionalInfo: true
-      }
+        additionalInfo: true,
+      },
     });
 
     if (eventList == null) {
@@ -69,8 +69,8 @@ export default class EventModel {
     const additionalInfoRepository =
       ShopPDataSource.getRepository(EventAdditionalInfo);
 
-    let banner = null
-    if(bannerId != null) {
+    let banner = null;
+    if (bannerId != null) {
       banner = await localFileRepository.findOne({
         where: {
           id: bannerId,
@@ -80,7 +80,6 @@ export default class EventModel {
       if (banner == null)
         return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
     }
-    
 
     const userRole = await userRoleRepository.findOne({
       where: {
@@ -91,8 +90,8 @@ export default class EventModel {
     let roleCreator: RoleEnum = RoleEnum.ADMIN;
 
     if (userRole == null) roleCreator = RoleEnum.SHOP;
-    let event: Event
-    if(banner != null) {
+    let event: Event;
+    if (banner != null) {
       event = await eventRepository.save({
         name,
         content,
@@ -110,10 +109,9 @@ export default class EventModel {
         roleCreator,
       });
     }
-    
 
     // let arrayEventAdditionalInfo: EventAdditionalInfo[] = [];
-    if(additionalInfo != null) {
+    if (additionalInfo != null) {
       let arrayKeys = Object.keys(additionalInfo);
       let arrayValues = Object.values(additionalInfo);
 
@@ -156,14 +154,12 @@ export default class EventModel {
       },
     });
 
-    
-
     if (event == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
 
-    let banner = null
+    let banner = null;
 
-    if(bannerId != null && bannerId != undefined) {
+    if (bannerId != null && bannerId != undefined) {
       banner = await localFileRepository.findOne({
         where: {
           id: bannerId,
@@ -171,10 +167,8 @@ export default class EventModel {
       });
 
       if (banner == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
     }
-
-    
 
     let arrayEventAdditionalInfo: EventAdditionalInfo[] = [];
     let arrayKeys = Object.keys(additionalInfo);
@@ -189,8 +183,8 @@ export default class EventModel {
       arrayEventAdditionalInfo.push(eventAdditionalInfo);
     }
 
-    let result
-    if(banner == null) {
+    let result;
+    if (banner == null) {
       result = await eventRepository.update(
         { id },
         {
@@ -214,7 +208,6 @@ export default class EventModel {
         }
       );
     }
-    
 
     if (result.affected != 0)
       return new Response(HttpStatusCode.OK, 'Edit Event successfully!');

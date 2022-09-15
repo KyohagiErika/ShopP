@@ -54,12 +54,12 @@ export default class CustomerMiddleware {
         name: 'gender',
         // type: String ,
         validator: (propName: string, value: string) => {
-          if(value != null) {
+          if (value != null) {
             if (
-            value.toUpperCase() !== 'MALE' &&
-            value.toUpperCase() !== 'FEMALE'
-          )
-            return `${propName} is only MALE or FEMALE`;
+              value.toUpperCase() !== 'MALE' &&
+              value.toUpperCase() !== 'FEMALE'
+            )
+              return `${propName} is only MALE or FEMALE`;
           }
           return null;
         },
@@ -68,8 +68,9 @@ export default class CustomerMiddleware {
         name: 'dob',
         // type: String,
         validator: (propName: string, value: string) => {
-          if(value != null) {
-            if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
+          if (value != null) {
+            if (!Date.parse(ConvertDate(value)))
+              return `${propName} is invalid`;
           }
           return null;
         },

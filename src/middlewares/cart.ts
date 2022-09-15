@@ -19,13 +19,13 @@ export default class CartMiddleware {
     body: [
       {
         name: 'products',
-        validator: (propName:string, value: object) => {
-          if( typeof value != 'object' && value != null) 
-            return `${propName} must be an Object`
+        validator: (propName: string, value: object) => {
+          if (typeof value != 'object' && value != null)
+            return `${propName} must be an Object`;
           return null;
-        }
-      }
-    ]
+        },
+      },
+    ],
   })
   static async postNew(req: Request, res: Response) {
     const data = req.body;
