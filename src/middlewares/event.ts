@@ -8,8 +8,8 @@ import ConvertDate from '../utils/convertDate';
 
 export default class EventMiddleware {
   @ControllerService()
-  static async listAdminEvents(req: Request, res: Response) {
-    const result = await EventModel.listAdminEvents();
+  static async listAll(req: Request, res: Response) {
+    const result = await EventModel.listAll();
 
     if (result.getCode() == HttpStatusCode.OK)
       res
@@ -60,7 +60,8 @@ export default class EventMiddleware {
       },
       {
         name: 'additionalInfo',
-        validator: (propName: string, value: object) => {
+        // type: Object,
+        validator: (propName: string, value) => {
           if (typeof value != 'object' && value != null)
             return `${propName} must be an Object`;
           return null;
@@ -72,6 +73,7 @@ export default class EventMiddleware {
     const userId = +req.params.userId;
     const data = req.body;
     const additionalInfo = data.additionalInfo;
+    console.log(additionalInfo)
     const result = await EventModel.newEvent(
       userId,
       data.name,
@@ -116,7 +118,7 @@ export default class EventMiddleware {
       {
         name: 'additionalInfo',
         validator: (propName: string, value: object) => {
-          if (value != Object && value != null)
+          if (typeof value != 'object' && value != null)
             return `${propName} must be an Object`;
           return null;
         },

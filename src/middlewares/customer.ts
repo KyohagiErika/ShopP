@@ -52,7 +52,7 @@ export default class CustomerMiddleware {
       },
       {
         name: 'gender',
-        // type: String ,
+        type: String ,
         validator: (propName: string, value: string) => {
           if (value != null) {
             if (
@@ -66,12 +66,10 @@ export default class CustomerMiddleware {
       },
       {
         name: 'dob',
-        // type: String,
+        type: String,
         validator: (propName: string, value: string) => {
-          if (value != null) {
-            if (!Date.parse(ConvertDate(value)))
-              return `${propName} is invalid`;
-          }
+          if (!Date.parse(ConvertDate(value)))
+            return `${propName} is invalid`;
           return null;
         },
       },
@@ -89,6 +87,7 @@ export default class CustomerMiddleware {
     const data = req.body;
 
     // take date
+
     var dateTrueFormat = ConvertDate(data.dob);
 
     const result = await CustomerModel.postNew(

@@ -9,7 +9,7 @@ import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 
 export default class EventModel {
-  static async listAdminEvents() {
+  static async listAll() {
     const eventRepository = ShopPDataSource.getRepository(Event);
 
     const eventList = await eventRepository.find({
@@ -18,6 +18,8 @@ export default class EventModel {
       },
       relations: {
         additionalInfo: true,
+        banner: true,
+        createdBy: true
       },
     });
 
@@ -41,10 +43,12 @@ export default class EventModel {
       },
       relations: {
         additionalInfo: true,
+        banner: true,
+        createdBy: true
       },
     });
 
-    if (eventList == null) {
+    if (eventList.length == 0) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
     }
     return new Response(
@@ -99,6 +103,7 @@ export default class EventModel {
     });
     let roleCreator: RoleEnum = RoleEnum.ADMIN;
 
+    console.log(userRole)
     if (userRole == null) roleCreator = RoleEnum.SHOP;
     let event: Event;
     if (banner != null) {
@@ -122,7 +127,6 @@ export default class EventModel {
       });
     }
 
-    // let arrayEventAdditionalInfo: EventAdditionalInfo[] = [];
     if (additionalInfo != null) {
       let arrayKeys = Object.keys(additionalInfo);
       let arrayValues = Object.values(additionalInfo);
@@ -181,6 +185,7 @@ export default class EventModel {
       if (banner == null)
         return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
     }
+    
 
     let arrayEventAdditionalInfo: EventAdditionalInfo[] = [];
     let arrayKeys = Object.keys(additionalInfo);

@@ -4,10 +4,10 @@ import EventMiddleware from '../middlewares/event';
 const routes = Router();
 
 // list events created by admin
-routes.get('/list-admin-events', EventMiddleware.listAdminEvents);
+routes.get('/list-all', EventMiddleware.listAll);
 
 // list events created by shop
-routes.get('/list-shop-events', EventMiddleware.listShopEvents);
+routes.get('/list-shop-events/:userId', EventMiddleware.listShopEvents);
 
 // create a new event
 routes.post('/new/:userId([0-9]+)', EventMiddleware.newEvent);
