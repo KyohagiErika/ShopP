@@ -7,8 +7,6 @@ on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: ['main']
-  pull_request:
-    branches: ['main']
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -29,6 +27,6 @@ jobs:
           port: 22
           script: |
             cd ~/ShopP
-            git pull
-            docker build -t shopp .
-            docker compose up -d
+            git pull origin main
+            docker compose --env-file .env.deploy build
+            docker compose --env-file .env.deploy up -d
