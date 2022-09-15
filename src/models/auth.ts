@@ -1,6 +1,7 @@
 import { ShopPDataSource } from '../data';
 import { User } from '../entities/user';
-import { HttpStatusCode, StatusEnum } from '../utils/shopp.enum';
+import { UserOtp } from '../entities/userOtp';
+import { HttpStatusCode, StatusEnum, OtpEnum } from '../utils/shopp.enum';
 import jwt from 'jsonwebtoken';
 import config from '../utils/shopp.config';
 import Response from '../utils/response';
@@ -66,6 +67,33 @@ export default class AuthModel {
       );
   }
 
+  static async resetPassword(
+    id: number,
+    password: string
+  ) {
+    //Get user from the database
+    const userRepository = ShopPDataSource.getRepository(User);
+    let user: User | null = await userRepository.findOne({
+      where: {
+        id: id,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    if (user !== null) {
+      //Validate the model (password lenght)
+      user.password = password;
+      //Hash the new password and save
+      user.hashPassword();
+      userRepository.save(user);
+
+      return new Response(HttpStatusCode.OK, 'Change password successfully!');
+    } else
+      return new Response(
+        HttpStatusCode.UNAUTHORIZATION,
+        'Unauthorized error, user not exist!'
+      );
+  }
+
   static async forgotPassword(
     email: string
   ) {
@@ -79,8 +107,8 @@ export default class AuthModel {
     });
     if (user !== null) {
       //Send confirm code to user email
-      
-      
+
+
       userRepository.save(user);
       return new Response(HttpStatusCode.OK, '');
     } else
@@ -89,4 +117,99 @@ export default class AuthModel {
         'Unauthorized error, user not exist!'
       );
   }
+
+  static async getUserOtp(
+    userId: number,
+    type: OtpEnum,
+    otp: string,
+  ) {
+    //Get user otp from the database
+    const UserOtpRepository = ShopPDataSource.getRepository(UserOtp);
+    let userOtp: UserOtp | null = await UserOtpRepository.findOne({
+      relations: {
+        user: true,
+      },
+      where: {
+        user: {
+          id: userId
+        },
+        type: type,
+        otp: otp
+      },
+    });
+    if (userOtp !== null) {
+      //Send confirm code to user email
+      return new Response(HttpStatusCode.OK, 'OTP was right', userOtp);
+    } else
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'OTP was not right!'
+      );
+  }
+
+  static async postUserOtp(
+    user: User,
+    type: OtpEnum,
+    otp: string,
+    otpExpiration: Date
+  ) {
+    //Get user otp from the database
+    const UserOtpRepository = ShopPDataSource.getRepository(UserOtp);
+    await UserOtpRepository.save({
+      user: user,
+      type: type,
+      otp: otp,
+      otpExpiration: otpExpiration
+    })
+  }
+
+  static async deleteUserOtp(
+    userId: number,
+    type: OtpEnum,
+    otp: string,
+  ) {
+    //Get user otp from the database
+    const UserOtpRepository = ShopPDataSource.getRepository(UserOtp);
+    let userOtp: UserOtp | null = await UserOtpRepository.findOne({
+      relations: {
+        user: true,
+      },
+      where: {
+        user: {
+          id: userId
+        },
+        type: type,
+        otp: otp
+      },
+    });
+    if (userOtp !== null) {
+      //Send confirm code to user email
+      UserOtpRepository.remove(userOtp);
+      return new Response(HttpStatusCode.OK, 'Delete OTP successfully', userOtp);
+    } else
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'OTP was not right!'
+      );
+  }
+
+  static async verifyOtp(
+    userId: number,
+    otp: string,
+    type: OtpEnum
+  ) {
+    //VERIFY GENERATED OTP
+    let result = await AuthModel.getUserOtp(userId, type, otp);
+    if (result.getCode() == HttpStatusCode.OK) {
+      let existOtp: UserOtp = result.getData();
+      const currentDate = new Date();
+      if (existOtp.otpExpiration > currentDate) {
+        return new Response(HttpStatusCode.OK, 'Verify OTP successfully!');
+      }
+      await AuthModel.deleteUserOtp(userId, OtpEnum.FORGET, otp);
+      return new Response(HttpStatusCode.UNAUTHORIZATION, 'OTP was expired!')
+    } else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'OTP was not right!');
+    }
+  };
 }

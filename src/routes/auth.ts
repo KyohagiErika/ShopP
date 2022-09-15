@@ -9,6 +9,12 @@ router.post('/login', AuthMiddleware.loginWithEmail);
 router.post('/change-password', [AuthMiddleware.checkJwt], AuthMiddleware.changePassword);
 
 //Forgot password route
-router.post('/forgot-password', AuthMiddleware.forgotPassword)
+router.post('/forgot-password', AuthMiddleware.forgotPassword);
+
+//Reset password route
+router.post('/reset-password', AuthMiddleware.resetPassword);
+
+//Verify OTP route
+router.post('/verify-otp', AuthMiddleware.verifyForgotPassword);
 
 export default router;

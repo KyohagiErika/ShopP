@@ -24,6 +24,7 @@
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
+    "nodemailer": "^6.7.8",
     "typeorm": "^0.3.7"
   },
   "devDependencies": {
@@ -36,6 +37,7 @@
     "@types/mocha": "^9.1.1",
     "@types/multer": "^1.4.7",
     "@types/mysql": "^2.15.21",
+    "@types/nodemailer": "^6.4.6",
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
     "mocha": "^10.0.0",

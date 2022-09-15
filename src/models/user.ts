@@ -49,6 +49,27 @@ export default class UserModel {
     return user ? user : false;
   }
 
+  static async getOneByEmail(userEmail: string) {
+    const user = await userRepository.findOne({
+      relations: {
+        customer: true,
+      },
+      select: {
+        id: true,
+        email: true,
+        phone: true,
+        customer: {
+          name: true,
+        }
+      },
+      where: {
+        email: userEmail,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    return user ? user : false;
+  }
+
   static async postNew(
     email: string,
     phone: string,
