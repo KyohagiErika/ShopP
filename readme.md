@@ -1,14 +1,20 @@
 # ShopP Project
 _Author_:
 * _Le Thanh Long_ - Project Leader
-* _Vo Minh Tien_ - Back-End Leader
 * _Pham Cong Minh_ - Front-End Leader
+* _Vo Minh Tien_ - Back-End Leader
 * _Thai Thi Ngoc Kim_ - Front-End Developer
 * _Bui Phan Long_ - Front-End Developer
 * _Nguyen Gia Linh_ - Back-End Developer
 * _Tran Van Tho_ - Back-End Developer
 
 _Created day_: 04/08/2022
+
+## Build with Docker
+```
+docker compose --env-file .env.deploy build
+docker compose --env-file .env.deploy up -d
+```
 
 ## How It Work?
 This is a `Typescript` web application server powered by [Express](https://expressjs.com/) framework.
