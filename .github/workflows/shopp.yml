@@ -27,6 +27,6 @@ jobs:
           port: 22
           script: |
             cd ~/ShopP
-            git pull
+            git pull origin main
             docker compose --env-file .env.deploy build
             docker compose --env-file .env.deploy up -d
