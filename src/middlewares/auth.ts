@@ -16,8 +16,7 @@ class AuthMiddleware {
         name: 'email',
         type: String,
         validator: (propName: string, value: string) => {
-          const emailRegExp: RegExp =
-            /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+          const emailRegExp: RegExp = /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
           if (!emailRegExp.test(value))
             return `${propName} must be valid email`;
           return null;
@@ -97,14 +96,13 @@ class AuthMiddleware {
         name: 'email',
         type: String,
         validator: (propName: string, value: string) => {
-          const emailRegExp: RegExp =
-            /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+          const emailRegExp: RegExp = /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
           if (!emailRegExp.test(value))
             return `${propName} must be valid email`;
           return null;
         },
-      }
-    ]
+      },
+    ],
   })
   static async forgotPassword(req: Request, res: Response) {
     //Get parameters from the body
@@ -243,7 +241,7 @@ class AuthMiddleware {
   static async checkJwt(req: Request, res: Response, next: NextFunction) {
     //Get the jwt token from the head
     const token = <string>req.headers['auth'];
-    if (token == "")
+    if (token == '')
       res
         .status(HttpStatusCode.UNAUTHORIZATION)
         .send({ message: 'Unauthorized error, Token is missing' });

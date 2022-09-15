@@ -1,18 +1,35 @@
 version: '3.7'
 
 services:
-  app:
-    image: shopp
-    command: sh -c "npm run init-database && npm start"
+  be:
+    container_name: shopp_be
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - sh
+      - -c
+      - "npm run init-database && npm start"
     ports:
-      - 3001:3001
+      - 3001:${PORT}
+    depends_on:
+      - mysql
+    networks:
+      - shopp
+    restart: always
 
   mysql:
+    container_name: ${DATABASE_HOST}
     image: mysql:5.7
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
-      MYSQL_DATABASE: shopp
-      MYSQL_USER: shopp
-      MYSQL_PASSWORD: Lethanhlong03
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE_NAME}
     ports:
-      - 3306:3306
+      - 3307:${DATABASE_PORT}
+    networks:
+      - shopp
+    restart: always
+
+networks:
+  shopp:
+    driver: bridge

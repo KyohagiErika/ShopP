@@ -35,8 +35,7 @@ export default class UserMiddleware {
         name: 'email',
         type: String,
         validator: (propName: string, value: string) => {
-          const emailRegExp: RegExp =
-            /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+          const emailRegExp: RegExp = /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
           if (!emailRegExp.test(value))
             return `${propName} must be valid email`;
           return null;
@@ -57,8 +56,7 @@ export default class UserMiddleware {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
-          const phoneRegExp: RegExp =
-            /^(01|03|05|07|08|09)+([0-9]{8})\b/;
+          const phoneRegExp: RegExp = /^(01|03|05|07|08|09)+([0-9]{8})\b/;
           if (!phoneRegExp.test(value))
             return `${propName} must be valid phone`;
           return null;
@@ -89,8 +87,7 @@ export default class UserMiddleware {
         name: 'email',
         type: String,
         validator: (propName: string, value: string) => {
-          const emailRegExp: RegExp =
-            /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+          const emailRegExp: RegExp = /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
           if (!emailRegExp.test(value))
             return `${propName} must be valid email`;
           return null;
@@ -100,8 +97,7 @@ export default class UserMiddleware {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
-          const phoneRegExp: RegExp =
-            /^(01|03|05|07|08|09)+([0-9]{8})\b/;
+          const phoneRegExp: RegExp = /^(01|03|05|07|08|09)+([0-9]{8})\b/;
           if (!phoneRegExp.test(value))
             return `${propName} must be valid phone`;
           return null;
