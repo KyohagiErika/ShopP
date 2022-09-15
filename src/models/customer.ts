@@ -65,7 +65,7 @@ export default class CustomerModel {
     let userID = await userRepository.findOne({
       relations: {
         customer: true,
-        roles: true
+        roles: true,
       },
       where: {
         id: userId,
@@ -78,7 +78,7 @@ export default class CustomerModel {
     }
 
     // check userID used or not
-    
+
     if (userID.customer != undefined) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
@@ -91,9 +91,9 @@ export default class CustomerModel {
       gender,
       dob,
       placeOfDelivery,
-      user: userID
+      user: userID,
     });
-    
+
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',

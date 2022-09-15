@@ -41,10 +41,18 @@ export default class EventMiddleware {
     ],
   })
   static async newEvent(req: Request, res: Response) {
-    const userId = +req.params.userId
+    const userId = +req.params.userId;
     const data = req.body;
-    const additionalInfo = data.additionalInfo
-    const result = await EventModel.newEvent(userId, data.name, data.content, data.bannerId, data.startingDate, data.endingDate, additionalInfo)
+    const additionalInfo = data.additionalInfo;
+    const result = await EventModel.newEvent(
+      userId,
+      data.name,
+      data.content,
+      data.bannerId,
+      data.startingDate,
+      data.endingDate,
+      additionalInfo
+    );
     if (result.getCode() == HttpStatusCode.CREATED)
       res
         .status(result.getCode())

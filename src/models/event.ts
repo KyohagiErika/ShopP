@@ -57,12 +57,13 @@ export default class EventModel {
     bannerId: number,
     startingDate: Date,
     endingDate: Date,
-    additionalInfo: object,
+    additionalInfo: object
   ) {
     const eventRepository = ShopPDataSource.getRepository(Event);
     const localFileRepository = ShopPDataSource.getRepository(LocalFile);
     const userRoleRepository = ShopPDataSource.getRepository(UserRole);
-    const additionalInfoRepository = ShopPDataSource.getRepository(EventAdditionalInfo)
+    const additionalInfoRepository =
+      ShopPDataSource.getRepository(EventAdditionalInfo);
 
     const banner = await localFileRepository.findOne({
       where: {
@@ -89,21 +90,21 @@ export default class EventModel {
       banner,
       startingDate,
       endingDate,
-      roleCreator, 
+      roleCreator,
     });
-    
-    let arrayEventAdditionalInfo: EventAdditionalInfo[] = []
-    let arrayKeys = Object.keys(additionalInfo)
-    let arrayValues = Object.values(additionalInfo)
 
-    for(let i = 0; i < arrayKeys.length; i++) {
+    let arrayEventAdditionalInfo: EventAdditionalInfo[] = [];
+    let arrayKeys = Object.keys(additionalInfo);
+    let arrayValues = Object.values(additionalInfo);
+
+    for (let i = 0; i < arrayKeys.length; i++) {
       const eventAdditionalInfo = await additionalInfoRepository.save({
         key: arrayKeys[i],
         value: arrayValues[i],
-        event
-      })
+        event,
+      });
     }
-    
+
     return new Response(
       HttpStatusCode.CREATED,
       'Create event successfully!',
@@ -122,18 +123,19 @@ export default class EventModel {
   ) {
     const eventRepository = ShopPDataSource.getRepository(Event);
     const localFileRepository = ShopPDataSource.getRepository(LocalFile);
-    const additionalInfoRepository = ShopPDataSource.getRepository(EventAdditionalInfo)
+    const additionalInfoRepository =
+      ShopPDataSource.getRepository(EventAdditionalInfo);
 
     const event = await eventRepository.findOne({
       relations: {
-        additionalInfo: true
+        additionalInfo: true,
       },
       where: {
-        id
-      }
-    })
+        id,
+      },
+    });
 
-    if(event == null) 
+    if (event == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
 
     const banner = await localFileRepository.findOne({
@@ -145,30 +147,32 @@ export default class EventModel {
     if (banner == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
 
+    let arrayEventAdditionalInfo: EventAdditionalInfo[] = [];
+    let arrayKeys = Object.keys(additionalInfo);
+    let arrayValues = Object.values(additionalInfo);
 
-    let arrayEventAdditionalInfo: EventAdditionalInfo[] = []
-    let arrayKeys = Object.keys(additionalInfo)
-    let arrayValues = Object.values(additionalInfo)
-    
-    for(let i = 0; i < arrayKeys.length; i++) {
+    for (let i = 0; i < arrayKeys.length; i++) {
       const eventAdditionalInfo = await additionalInfoRepository.save({
         key: arrayKeys[i],
         value: arrayValues[i],
         event,
-      }) 
-      arrayEventAdditionalInfo.push(eventAdditionalInfo)
+      });
+      arrayEventAdditionalInfo.push(eventAdditionalInfo);
     }
 
-    const result = await eventRepository.update({id}, {
-      name,
-      content,
-      banner,
-      startingDate,
-      endingDate,
-      additionalInfo: arrayEventAdditionalInfo
-    })
+    const result = await eventRepository.update(
+      { id },
+      {
+        name,
+        content,
+        banner,
+        startingDate,
+        endingDate,
+        additionalInfo: arrayEventAdditionalInfo,
+      }
+    );
 
-    if(result.affected != 0)
+    if (result.affected != 0)
       return new Response(HttpStatusCode.OK, 'Edit Event successfully!');
     return new Response(HttpStatusCode.BAD_REQUEST, 'Edit Event failed!');
   }
@@ -187,10 +191,7 @@ export default class EventModel {
     );
 
     if (result.affected == 1) {
-      return new Response(
-        HttpStatusCode.OK,
-        'Delete event successfully!'
-      );
+      return new Response(HttpStatusCode.OK, 'Delete event successfully!');
     }
     return new Response(HttpStatusCode.BAD_REQUEST, 'Delete event failed!');
   }

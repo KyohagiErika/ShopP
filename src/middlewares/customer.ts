@@ -75,8 +75,7 @@ export default class CustomerMiddleware {
         name: 'dob',
         type: String,
         validator: (propName: string, value: string) => {
-          if (!Date.parse(ConvertDate(value))) 
-            return `${propName} is invalid`;
+          if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
           return null;
         },
       },
