@@ -102,12 +102,8 @@ export default class EventModel {
         value: arrayValues[i],
         event
       })
-
-      arrayEventAdditionalInfo.push(eventAdditionalInfo)
     }
-
-    event.additionalInfo = arrayEventAdditionalInfo
-
+    
     return new Response(
       HttpStatusCode.CREATED,
       'Create event successfully!',
@@ -121,8 +117,61 @@ export default class EventModel {
     content: string,
     bannerId: number,
     startingDate: Date,
-    endingDate: Date
-  ) {}
+    endingDate: Date,
+    additionalInfo: object
+  ) {
+    const eventRepository = ShopPDataSource.getRepository(Event);
+    const localFileRepository = ShopPDataSource.getRepository(LocalFile);
+    const additionalInfoRepository = ShopPDataSource.getRepository(EventAdditionalInfo)
+
+    const event = await eventRepository.findOne({
+      relations: {
+        additionalInfo: true
+      },
+      where: {
+        id
+      }
+    })
+
+    if(event == null) 
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
+
+    const banner = await localFileRepository.findOne({
+      where: {
+        id: bannerId,
+      },
+    });
+
+    if (banner == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
+
+
+    let arrayEventAdditionalInfo: EventAdditionalInfo[] = []
+    let arrayKeys = Object.keys(additionalInfo)
+    let arrayValues = Object.values(additionalInfo)
+    
+    for(let i = 0; i < arrayKeys.length; i++) {
+      const eventAdditionalInfo = await additionalInfoRepository.save({
+        key: arrayKeys[i],
+        value: arrayValues[i],
+        event,
+      }) 
+      arrayEventAdditionalInfo.push(eventAdditionalInfo)
+    }
+
+    const result = await eventRepository.update({id}, {
+      name,
+      content,
+      banner,
+      startingDate,
+      endingDate,
+      additionalInfo: arrayEventAdditionalInfo
+    })
+
+    if(result.affected != 0)
+      return new Response(HttpStatusCode.OK, 'Edit Event successfully!');
+    return new Response(HttpStatusCode.BAD_REQUEST, 'Edit Event failed!');
+  }
 
   static async deleteEvent(id: number) {
     const eventRepository = ShopPDataSource.getRepository(Event);
@@ -139,10 +188,10 @@ export default class EventModel {
 
     if (result.affected == 1) {
       return new Response(
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.OK,
         'Delete event successfully!'
       );
     }
-    return new Response(HttpStatusCode.OK, 'Delete event failed!');
+    return new Response(HttpStatusCode.BAD_REQUEST, 'Delete event failed!');
   }
 }

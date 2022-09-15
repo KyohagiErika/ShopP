@@ -57,6 +57,6 @@ export class Event {
   })
   status: StatusEnum;
 
-  @OneToMany(() => EventAdditionalInfo, createdBy => createdBy.event)
+  @OneToMany(() => EventAdditionalInfo, eventAdditionalInfo => eventAdditionalInfo.event)
   additionalInfo: EventAdditionalInfo[];
 }
