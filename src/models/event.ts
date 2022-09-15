@@ -66,6 +66,7 @@ export default class EventModel {
     const eventRepository = ShopPDataSource.getRepository(Event);
     const localFileRepository = ShopPDataSource.getRepository(LocalFile);
     const userRoleRepository = ShopPDataSource.getRepository(UserRole);
+    const userRepository = ShopPDataSource.getRepository(User)
     const additionalInfoRepository =
       ShopPDataSource.getRepository(EventAdditionalInfo);
 
@@ -79,6 +80,15 @@ export default class EventModel {
 
       if (banner == null)
         return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
+    }
+
+    const user = await userRepository.findOne({
+      where: {
+        id: userId
+      }
+    })
+    if(user == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'User doesnt exist!');
     }
 
     const userRole = await userRoleRepository.findOne({
@@ -99,6 +109,7 @@ export default class EventModel {
         startingDate,
         endingDate,
         roleCreator,
+        createdBy: user
       });
     } else {
       event = await eventRepository.save({
@@ -107,6 +118,7 @@ export default class EventModel {
         startingDate,
         endingDate,
         roleCreator,
+        createdBy: user
       });
     }
 

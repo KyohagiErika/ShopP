@@ -77,8 +77,8 @@ export default class EventMiddleware {
       data.name,
       data.content,
       data.bannerId,
-      data.startingDate,
-      data.endingDate,
+      new Date(ConvertDate(data.startingDate)),
+      new Date(ConvertDate(data.endingDate)),
       additionalInfo
     );
     if (result.getCode() == HttpStatusCode.CREATED)

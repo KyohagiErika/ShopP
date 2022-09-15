@@ -10,7 +10,7 @@ routes.get('/list-admin-events', EventMiddleware.listAdminEvents);
 routes.get('/list-shop-events', EventMiddleware.listShopEvents);
 
 // create a new event
-routes.post('/new/:userId([0-9]+)', EventMiddleware.listShopEvents);
+routes.post('/new/:userId([0-9]+)', EventMiddleware.newEvent);
 
 // edit an event
 routes.post('/:id([0-9]+)', EventMiddleware.editEvent);
