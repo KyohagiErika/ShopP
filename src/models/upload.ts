@@ -1,6 +1,7 @@
 import { ShopPDataSource } from '../data';
 import { LocalFile } from '../entities/localFile';
-import { HttpStatusCode } from '../utils/shopp.enum';
+
+const localFileRepository = ShopPDataSource.getRepository(LocalFile);
 
 export default class UploadModel {
   static async upload(file: Express.Multer.File) {
@@ -9,7 +10,6 @@ export default class UploadModel {
     localFile.mimetype = file.mimetype;
     localFile.path = file.path;
 
-    const localFileRepository = ShopPDataSource.getRepository(LocalFile);
     await localFileRepository.save(localFile);
   }
 
@@ -26,7 +26,6 @@ export default class UploadModel {
       localFile.mimetype = file.mimetype;
       localFile.path = file.path;
 
-      const localFileRepository = ShopPDataSource.getRepository(LocalFile);
       await localFileRepository.save(localFile);
     });
   }

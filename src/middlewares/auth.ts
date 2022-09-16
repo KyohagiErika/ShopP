@@ -230,23 +230,24 @@ class AuthMiddleware {
       if (result.getCode() != HttpStatusCode.OK) res.status(result.getCode()).send({ message: result.getMessage() });
       else {
         const reset = await AuthModel.resetPassword(user.id, data.password);
-        if(reset.getCode() == HttpStatusCode.OK)
-        await AuthModel.deleteUserOtp(user.id, OtpEnum.FORGET, data.otp);
+        if (reset.getCode() == HttpStatusCode.OK)
+          await AuthModel.deleteUserOtp(user.id, OtpEnum.FORGET, data.otp);
         res.status(reset.getCode()).send({ message: reset.getMessage() });
       }
     }
   }
 
-  //@ControllerService()
   static async checkJwt(req: Request, res: Response, next: NextFunction) {
     //Get the jwt token from the head
-    const token = <string>req.headers['auth'];
+    let token = <string>req.header('Authorization');
     if (token == '')
       res
         .status(HttpStatusCode.UNAUTHORIZATION)
         .send({ message: 'Unauthorized error, Token is missing' });
     let jwtPayload;
-
+    console.log(token);
+    token = token?.replace('Bearer ', '');
+    console.log(token);
     //Try to validate the token and get data
     try {
       jwtPayload = <any>jwt.verify(token, config.JWT_SECRET);
@@ -265,7 +266,7 @@ class AuthMiddleware {
     const newToken = jwt.sign({ userId, userEmail }, config.JWT_SECRET, {
       expiresIn: '1h',
     });
-    res.setHeader('auth', newToken);
+    res.setHeader('Authorization', newToken);
 
     //Call the next middleware or controller
     next();

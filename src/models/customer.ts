@@ -2,7 +2,7 @@ import { User } from './../entities/user';
 import { Customer } from './../entities/customer';
 import { validate } from 'class-validator';
 import { ShopPDataSource } from '../data';
-import { StatusEnum, HttpStatusCode, GenderEnum } from '../utils/shopp.enum';
+import { StatusEnum, HttpStatusCode, GenderEnum, RoleEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 
 export default class CustomerModel {

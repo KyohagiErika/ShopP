@@ -66,14 +66,63 @@ export default class UserMiddleware {
   })
   static async postNew(req: Request, res: Response) {
     const data = req.body;
-    // console.log(data)
-    // console.log(typeof data)
-    // console.log(data.email)
     const result = await UserModel.postNew(
       data.email,
       data.phone,
       data.password,
       RoleEnum.CUSTOMER
+    );
+    if (result.getCode() === HttpStatusCode.CREATED) {
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    } else {
+      res.status(result.getCode()).send({ message: result.getMessage() });
+    }
+  }
+
+  @ControllerService({
+    body: [
+      {
+        name: 'email',
+        type: String,
+        validator: (propName: string, value: string) => {
+          const emailRegExp: RegExp = /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+          if (!emailRegExp.test(value))
+            return `${propName} must be valid email`;
+          return null;
+        },
+      },
+      {
+        name: 'password',
+        type: String,
+        validator: (propName: string, value: string) => {
+          const pwdRegExp: RegExp =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*(\-_+=`~\?\/])(?=.{8,})/;
+          if (!pwdRegExp.test(value))
+            return `${propName} must constain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
+          return null;
+        },
+      },
+      {
+        name: 'phone',
+        type: String,
+        validator: (propName: string, value: string) => {
+          const phoneRegExp: RegExp = /^(01|03|05|07|08|09)+([0-9]{8})\b/;
+          if (!phoneRegExp.test(value))
+            return `${propName} must be valid phone`;
+          return null;
+        },
+      },
+    ],
+  })
+  static async postNewAdmin(req: Request, res: Response) {
+    const data = req.body;
+    const result = await UserModel.postNew(
+      data.email,
+      data.phone,
+      data.password,
+      RoleEnum.ADMIN
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res

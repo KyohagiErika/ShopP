@@ -15,7 +15,7 @@ routes.get(
 routes.get('/:id', AuthMiddleware.checkJwt, ShopMiddleware.getOneById);
 
 routes.post(
-  '/new/:user-id([0-9]+)',
+  '/new/:userId([0-9]+)',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   ShopMiddleware.postNew
 );

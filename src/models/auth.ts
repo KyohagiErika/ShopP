@@ -6,10 +6,12 @@ import jwt from 'jsonwebtoken';
 import config from '../utils/shopp.config';
 import Response from '../utils/response';
 
+const userRepository = ShopPDataSource.getRepository(User);
+const UserOtpRepository = ShopPDataSource.getRepository(UserOtp);
+
 export default class AuthModel {
   static async loginWithEmail(email: string, password: string) {
     //Get user from database
-    const userRepository = ShopPDataSource.getRepository(User);
     const user: User | null = await userRepository.findOne({
       where: {
         email: email,
@@ -42,7 +44,6 @@ export default class AuthModel {
     newPassword: string
   ) {
     //Get user from the database
-    const userRepository = ShopPDataSource.getRepository(User);
     let user: User | null = await userRepository.findOne({
       where: {
         id: id,
@@ -72,7 +73,6 @@ export default class AuthModel {
     password: string
   ) {
     //Get user from the database
-    const userRepository = ShopPDataSource.getRepository(User);
     let user: User | null = await userRepository.findOne({
       where: {
         id: id,
@@ -98,7 +98,6 @@ export default class AuthModel {
     email: string
   ) {
     //Get user from the database
-    const userRepository = ShopPDataSource.getRepository(User);
     let user: User | null = await userRepository.findOne({
       where: {
         email: email,
@@ -124,7 +123,6 @@ export default class AuthModel {
     otp: string,
   ) {
     //Get user otp from the database
-    const UserOtpRepository = ShopPDataSource.getRepository(UserOtp);
     let userOtp: UserOtp | null = await UserOtpRepository.findOne({
       relations: {
         user: true,
@@ -154,7 +152,6 @@ export default class AuthModel {
     otpExpiration: Date
   ) {
     //Get user otp from the database
-    const UserOtpRepository = ShopPDataSource.getRepository(UserOtp);
     await UserOtpRepository.save({
       user: user,
       type: type,
@@ -169,7 +166,6 @@ export default class AuthModel {
     otp: string,
   ) {
     //Get user otp from the database
-    const UserOtpRepository = ShopPDataSource.getRepository(UserOtp);
     let userOtp: UserOtp | null = await UserOtpRepository.findOne({
       relations: {
         user: true,
