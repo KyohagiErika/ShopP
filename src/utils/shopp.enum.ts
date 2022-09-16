@@ -25,3 +25,13 @@ export enum GenderEnum {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
 }
+export enum OtpEnum {
+  FORGET = 'FORGET',
+  VERIFICATION = 'VERIFICATION',
+}
+
+export enum ProductEnum {
+  AVAILABLE = 'AVAILABLE',
+  OUT_OF_ORDER = 'OUT_OF_ORDER',
+  DELETED = 'DELETED',
+}

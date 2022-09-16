@@ -4,7 +4,9 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
+import { Product } from './product';
 import { User } from './user';
 
 @Entity()
@@ -21,6 +23,9 @@ export class Shop {
   @OneToOne(() => User, user => user.shop)
   @JoinColumn()
   user: User;
+
+  @OneToMany(() => Product, product => product.id)
+  products: Product[];
 
   @Column()
   email: string;

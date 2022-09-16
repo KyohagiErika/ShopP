@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import chalk from 'chalk';
 import { HttpStatusCode } from './shopp.enum';
 import { ShopPDataSource } from '../data';
@@ -8,6 +8,7 @@ type AsyncFunction = (...args: any[]) => Promise<any>;
 interface ApiProperty {
   name: string;
   type?: Function;
+  required?: boolean;
   /**
    * Validate function that takes the name of the property and its value to perform validations.
    * @param propertyName - name of the property.
@@ -39,7 +40,7 @@ export function ControllerService(options?: ControllerServiceOption) {
     propDescriptor: PropertyDescriptor
   ) {
     function addWatch(func: AsyncFunction) {
-      return async function (req: Request, res: Response) {
+      return async function (req: Request, res: Response, next?: NextFunction) {
         console.log(
           `[${chalk.green(new Date().toLocaleString())}][${chalk.bold(
             req.method
@@ -93,14 +94,14 @@ export function ControllerService(options?: ControllerServiceOption) {
       };
     }
     function addValidator(func: AsyncFunction) {
-      return async function (req: Request, res: Response) {
+      return async function (req: Request, res: Response, next?: NextFunction) {
         let ok = true;
         let err = new Array<ErrorElement>();
         const queryKeys = Object.keys(req.query);
         const paramKeys = Object.keys(req.params);
         const bodyKeys = Object.keys(req.body);
         options?.query?.forEach(ele => {
-          if (!queryKeys.includes(ele.name)) {
+          if (!queryKeys.includes(ele.name) && ele.required) {
             err.push({
               at: ele.name,
               message: `${ele.name} is missing.`,
@@ -129,7 +130,7 @@ export function ControllerService(options?: ControllerServiceOption) {
           }
         });
         options?.params?.forEach(ele => {
-          if (!paramKeys.includes(ele.name)) {
+          if (!paramKeys.includes(ele.name) && ele.required) {
             err.push({
               at: ele.name,
               message: `${ele.name} is missing.`,
@@ -158,7 +159,7 @@ export function ControllerService(options?: ControllerServiceOption) {
           }
         });
         options?.body?.forEach(ele => {
-          if (!bodyKeys.includes(ele.name)) {
+          if (!bodyKeys.includes(ele.name) && ele.required) {
             err.push({
               at: ele.name,
               message: `${ele.name} is missing.`,

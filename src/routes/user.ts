@@ -19,6 +19,9 @@ routes.get('/:id([0-9]+)', AuthMiddleware.checkJwt, UserMiddleware.getOneById);
 //Create a new user
 routes.post('/sign-up', UserMiddleware.postNew);
 
+//Create a new admin
+routes.post('/sign-up-admin', UserMiddleware.postNewAdmin);
+
 //Edit one user
 routes.post('/:id([0-9]+)', AuthMiddleware.checkJwt, UserMiddleware.edit);
 

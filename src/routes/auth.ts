@@ -17,4 +17,10 @@ router.post(
 //Forgot password route
 router.post('/forgot-password', AuthMiddleware.forgotPassword);
 
+//Reset password route
+router.post('/reset-password', AuthMiddleware.resetPassword);
+
+//Verify OTP route
+router.post('/verify-otp', AuthMiddleware.verifyForgotPassword);
+
 export default router;
