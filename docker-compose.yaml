@@ -3,13 +3,13 @@ version: '3.7'
 services:
   be:
     container_name: shopp_be
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     command:
       - sh
       - -c
-      - "npm run init-database && npm start"
+      - 'npm run init-database && npm start'
     ports:
       - 3001:${PORT}
     depends_on:
