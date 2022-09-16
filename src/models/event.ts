@@ -9,12 +9,13 @@ import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 
 export default class EventModel {
-  static async listAll() {
+  static async listAdminEvents(userId: number) {
     const eventRepository = ShopPDataSource.getRepository(Event);
 
-    const eventList = await eventRepository.find({
+    const adminEventList = await eventRepository.find({
       where: {
         status: StatusEnum.ACTIVE,
+        roleCreator: RoleEnum.ADMIN
       },
       relations: {
         additionalInfo: true,
@@ -23,13 +24,13 @@ export default class EventModel {
       },
     });
 
-    if (eventList == null) {
+    if (adminEventList == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
     }
     return new Response(
       HttpStatusCode.OK,
       'Show Events successfully',
-      eventList
+      adminEventList
     );
   }
 
@@ -186,8 +187,10 @@ export default class EventModel {
         return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
     }
     
-
-    let arrayEventAdditionalInfo: EventAdditionalInfo[] = [];
+    const addtionalInfoList = await additionalInfoRepository.delete({
+      event: {id}
+    })
+    
     let arrayKeys = Object.keys(additionalInfo);
     let arrayValues = Object.values(additionalInfo);
 
@@ -197,7 +200,6 @@ export default class EventModel {
         value: arrayValues[i],
         event,
       });
-      arrayEventAdditionalInfo.push(eventAdditionalInfo);
     }
 
     let result;
@@ -209,7 +211,6 @@ export default class EventModel {
           content,
           startingDate,
           endingDate,
-          additionalInfo: arrayEventAdditionalInfo,
         }
       );
     } else {
@@ -221,7 +222,6 @@ export default class EventModel {
           banner,
           startingDate,
           endingDate,
-          additionalInfo: arrayEventAdditionalInfo,
         }
       );
     }

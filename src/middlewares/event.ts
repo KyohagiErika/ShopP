@@ -9,7 +9,7 @@ import ConvertDate from '../utils/convertDate';
 export default class EventMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
-    const result = await EventModel.listAll();
+    const result = await EventModel.listAdminEvents(1);
 
     if (result.getCode() == HttpStatusCode.OK)
       res
