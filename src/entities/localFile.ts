@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Event } from './event';
 
 @Entity()
 export class LocalFile {
@@ -13,4 +14,7 @@ export class LocalFile {
 
   @Column()
   mimetype: string;
+
+  @OneToOne(() => Event, event => event.banner)
+  event: Event;
 }

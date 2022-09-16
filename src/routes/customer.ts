@@ -18,7 +18,7 @@ routes.get('/:id', AuthMiddleware.checkJwt, CustomerMiddleware.getOneById);
 
 //Create a new customer
 routes.post(
-  '/new/:user-id([0-9]+)',
+  '/new/:userId([0-9]+)',
   AuthMiddleware.checkJwt,
   CustomerMiddleware.postNew
 );

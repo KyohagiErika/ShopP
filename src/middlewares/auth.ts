@@ -116,7 +116,7 @@ class AuthMiddleware {
 
       const otp: string = generateOtp(6);
 
-      AuthModel.postUserOtp(user, OtpEnum.FORGET, otp, tokenExpiration);
+      await AuthModel.postUserOtp(user, OtpEnum.FORGET, otp, tokenExpiration);
 
       const emailTemplate = resetPasswordTemplate(
         otp,
