@@ -141,7 +141,6 @@ export default class ProductModel {
       where: [
         {
           category: { name: Like(`%${name}%`) },
-          //category: {name: name},
           status: ProductEnum.AVAILABLE,
         },
         {

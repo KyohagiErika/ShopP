@@ -41,6 +41,11 @@ export default class ProductMiddleware {
       {
         name: 'name',
         type: String,
+        validator: (propName: string, value: string) => {
+          if (value == null || value == ' ')
+            return `${propName} can not be null`;
+          return null;
+        },
       },
     ],
   })
