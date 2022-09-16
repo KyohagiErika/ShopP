@@ -1,6 +1,18 @@
 version: '3.7'
 
 services:
+  mysql:
+    container_name: ${DATABASE_HOST}
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE_NAME}
+    ports:
+      - 3307:${DATABASE_PORT}
+    networks:
+      - shopp
+    restart: always
+
   be:
     container_name: shopp_be
     build: 
@@ -14,18 +26,6 @@ services:
       - 3001:${PORT}
     depends_on:
       - mysql
-    networks:
-      - shopp
-    restart: always
-
-  mysql:
-    container_name: ${DATABASE_HOST}
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
-      MYSQL_DATABASE: ${DATABASE_NAME}
-    ports:
-      - 3307:${DATABASE_PORT}
     networks:
       - shopp
     restart: always
