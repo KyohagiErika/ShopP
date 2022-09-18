@@ -4,6 +4,7 @@ import { validate } from 'class-validator';
 import { ShopPDataSource } from '../data';
 import { StatusEnum, HttpStatusCode, GenderEnum, RoleEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
+import CartModel from './cart';
 
 export default class CustomerModel {
   static async listAll() {
@@ -42,7 +43,6 @@ export default class CustomerModel {
         gender: true,
         dob: true,
         placeOfDelivery: true,
-        followingShops: true,
       },
       where: {
         id: customerId,
@@ -85,15 +85,14 @@ export default class CustomerModel {
         `Customer with userId ${userId} has already existed`
       );
     }
-
     let customer = await customerRepository.save({
       name,
       gender,
       dob,
       placeOfDelivery,
       user: userID,
-    });
-
+    })
+    CartModel.postNew(customer.id, {})
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',
