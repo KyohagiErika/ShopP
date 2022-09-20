@@ -32,12 +32,12 @@ export default class CustomerMiddleware {
       } else {
         res
           .status(HttpStatusCode.BAD_REQUEST)
-          .send({ message: 'Get customer failed!' + id });
+          .send({ message: 'Get customer failed!'});
       }
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Incorrect id! ' + id });
+        .send({ message: 'Incorrect id! '});
     }
   }
 
