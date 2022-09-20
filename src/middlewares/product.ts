@@ -8,7 +8,7 @@ export default class ProductMiddleware {
   static async listAll(req: Request, res: Response) {
     const result = await ProductModel.listAll();
     if (result) {
-      res.status(HttpStatusCode.OK).send(result);
+      res.status(HttpStatusCode.OK).send({data: result});
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -28,7 +28,7 @@ export default class ProductMiddleware {
     const id = req.params.id;
     const result = await ProductModel.getOneById(id);
     if (result) {
-      res.status(HttpStatusCode.OK).send(result);
+      res.status(HttpStatusCode.OK).send({data: result});
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -41,11 +41,6 @@ export default class ProductMiddleware {
       {
         name: 'name',
         type: String,
-        validator: (propName: string, value: string) => {
-          if (value == null || value == ' ')
-            return `${propName} can not be null`;
-          return null;
-        },
       },
     ],
   })
@@ -53,7 +48,7 @@ export default class ProductMiddleware {
     const name = req.params.name;
     const result = await ProductModel.searchByName(name);
     if (result) {
-      res.status(HttpStatusCode.OK).send(result);
+      res.status(HttpStatusCode.OK).send({data: result});
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -66,7 +61,7 @@ export default class ProductMiddleware {
     const id = +req.params.categoryId;
     const result = await ProductModel.searchByCategory(id);
     if (result) {
-      res.status(HttpStatusCode.OK).send(result);
+      res.status(HttpStatusCode.OK).send({data: result});
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -86,7 +81,7 @@ export default class ProductMiddleware {
     const name = req.params.name;
     const result = await ProductModel.searchByCategoryName(name);
     if (result) {
-      res.status(HttpStatusCode.OK).send(result);
+      res.status(HttpStatusCode.OK).send({data: result});
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -106,7 +101,7 @@ export default class ProductMiddleware {
     const shopId = req.params.id;
     const result = await ProductModel.searchByShop(shopId);
     if (result) {
-      res.status(HttpStatusCode.OK).send(result);
+      res.status(HttpStatusCode.OK).send({data: result});
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)

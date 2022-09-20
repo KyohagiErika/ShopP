@@ -1,10 +1,12 @@
 import { ShopPDataSource } from '../data';
 import { User } from '../entities/user';
 import { Shop } from '../entities/shop';
-import { StatusEnum, HttpStatusCode } from '../utils/shopp.enum';
+import { StatusEnum, HttpStatusCode, RoleEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
+import { UserRole } from '../entities/userRole';
 
 const shopRepository = ShopPDataSource.getRepository(Shop);
+const userRoleRepository = ShopPDataSource.getRepository(UserRole);
 
 export default class ShopModel {
   static async listAll() {
@@ -58,8 +60,14 @@ export default class ShopModel {
   ) {
     const userRepository = ShopPDataSource.getRepository(User);
     const user = await userRepository.findOne({
+      relations: {
+        roles: true,
+      },
       select: {
         id: true,
+        roles: {
+          role: true,
+        }
       },
       where: {
         id: userId,
@@ -78,6 +86,7 @@ export default class ShopModel {
       shop.user = user;
 
       await shopRepository.save(shop);
+      await userRoleRepository.update({user: {id:userId}},{role: RoleEnum.SHOP});
 
       return new Response(
         HttpStatusCode.CREATED,
