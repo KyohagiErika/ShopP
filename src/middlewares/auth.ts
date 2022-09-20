@@ -245,9 +245,7 @@ class AuthMiddleware {
         .status(HttpStatusCode.UNAUTHORIZATION)
         .send({ message: 'Unauthorized error, Token is missing' });
     let jwtPayload;
-    console.log(token);
     token = token?.replace('Bearer ', '');
-    console.log(token);
     //Try to validate the token and get data
     try {
       jwtPayload = <any>jwt.verify(token, config.JWT_SECRET);
