@@ -47,6 +47,8 @@ export default class CustomerMiddleware {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
+          if(value.length == 0) 
+            return `${propName} must be filled in`;
           return null;
         },
       },
@@ -68,8 +70,10 @@ export default class CustomerMiddleware {
         name: 'dob',
         type: String,
         validator: (propName: string, value: string) => {
-          if (!Date.parse(ConvertDate(value)))
-            return `${propName} is invalid`;
+          if(value.length != 0) {
+            if (!Date.parse(ConvertDate(value)))
+              return `${propName} is invalid`;
+          }
           return null;
         },
       },
@@ -77,6 +81,8 @@ export default class CustomerMiddleware {
         name: 'placeOfDelivery',
         type: String,
         validator: (propName: string, value: string) => {
+          if(value.length == 0) 
+            return `${propName} must be filled in`;
           return null;
         },
       },
@@ -85,11 +91,8 @@ export default class CustomerMiddleware {
   static async postNew(req: Request, res: Response) {
     const userId = +req.params.userId;
     const data = req.body;
-
     // take date
-
     var dateTrueFormat = ConvertDate(data.dob);
-
     const result = await CustomerModel.postNew(
       data.name.toString(),
       data.gender,
@@ -97,7 +100,6 @@ export default class CustomerMiddleware {
       data.placeOfDelivery.toString(),
       userId
     );
-
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
         .status(result.getCode())
@@ -113,6 +115,8 @@ export default class CustomerMiddleware {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
+          if(value.length == 0) 
+            return `${propName} must be filled in`;
           return null;
         },
       },
@@ -132,7 +136,10 @@ export default class CustomerMiddleware {
         name: 'dob',
         type: String,
         validator: (propName: string, value: string) => {
-          if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
+          if(value.length !=0) {
+            if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
+          }
+          
           return null;
         },
       },
@@ -140,6 +147,8 @@ export default class CustomerMiddleware {
         name: 'placeOfDelivery',
         type: String,
         validator: (propName: string, value: string) => {
+          if(value.length == 0) 
+            return `${propName} must be filled in`;
           return null;
         },
       },
@@ -156,10 +165,8 @@ export default class CustomerMiddleware {
     } else {
       gender = GenderEnum.MALE;
     }
-
     // resolve dob
     var dateTrueFormat = ConvertDate(data.dob);
-
     const result = await CustomerModel.edit(
       id.toString(),
       data.name.toString(),
