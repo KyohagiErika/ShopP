@@ -1,5 +1,5 @@
 const resetPassword = function (otp: string, firstName: string) {
-    const html = `
+  const html = `
     <!DOCTYPE html>
 <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
@@ -155,15 +155,15 @@ const resetPassword = function (otp: string, firstName: string) {
 </body>
 
 </html>`;
-    const text = `
+  const text = `
         Reset Password, You recently requested to reset your password for your node-typescript-boilerplate account. Copy and paste it for reset password:
         ${otp}
 
 If you did not requested a password reset, please ignore this email or reply to let us know. This password reset is only valid for the next 2 hours.`;
-    return {
-        html: html,
-        text: text,
-    };
+  return {
+    html: html,
+    text: text,
+  };
 };
 
 export default resetPassword;

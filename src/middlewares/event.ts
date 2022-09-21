@@ -37,8 +37,7 @@ export default class EventMiddleware {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value.length == 0) 
-            return `${propName} must be filled in`;
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
@@ -99,8 +98,7 @@ export default class EventMiddleware {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value.length == 0) 
-            return `${propName} must be filled in`;
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },

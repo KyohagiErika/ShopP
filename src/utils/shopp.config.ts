@@ -11,7 +11,7 @@ export default class ShopPConfig {
   static DATABASE_NAME = process.env.DATABASE_NAME || 'shopp';
   static JWT_SECRET = process.env.JWT_SECRET || '@QEGTUI';
   static IMAGE_PATH = process.env.IMAGE_PATH || 'public/uploads/';
-  static SMTP_USERNAME = process.env.SMTP_USERNAME ;
-  static SMTP_PASSWORD = process.env.SMTP_PASSWORD ;
-  static SMTP_SENDER = process.env.SMTP_SENDER ;
+  static SMTP_USERNAME = process.env.SMTP_USERNAME;
+  static SMTP_PASSWORD = process.env.SMTP_PASSWORD;
+  static SMTP_SENDER = process.env.SMTP_SENDER;
 }

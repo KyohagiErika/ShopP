@@ -80,7 +80,7 @@ export default class CustomerModel {
     let userID = await userRepository.findOne({
       relations: {
         customer: true,
-        roles: true,
+        role: true,
       },
       where: {
         id: userId,

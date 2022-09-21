@@ -269,7 +269,7 @@ export default class ProductModel {
         { id: id },
         {
           name: name,
-          category: category, //,{ id: categoryId }
+          category: category,
           detail: detail,
           amount: amount,
           status: status,
