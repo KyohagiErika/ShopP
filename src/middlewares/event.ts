@@ -76,13 +76,21 @@ export default class EventMiddleware {
   static async newEvent(req: Request, res: Response) {
     const userId = +req.params.userId;
     const data = req.body;
+    const startingDate = new Date(ConvertDate(data.startingDate));
+    const endingDate = new Date(ConvertDate(data.endingDate));
+    if (startingDate > endingDate) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'startingDate must be smaller than endingDate!' });
+      return;
+    }
     const result = await EventModel.newEvent(
       userId,
       data.name,
       data.content,
       data.bannerId,
-      new Date(ConvertDate(data.startingDate)),
-      new Date(ConvertDate(data.endingDate)),
+      startingDate,
+      endingDate,
       JSON.parse(data.additionalInfo)
     );
     if (result.getCode() == HttpStatusCode.CREATED)
@@ -138,14 +146,22 @@ export default class EventMiddleware {
     const id = +req.params.id;
     const data = req.body;
     const userId = +res.locals.userId
+    const startingDate = new Date(ConvertDate(data.startingDate));
+    const endingDate = new Date(ConvertDate(data.endingDate));
+    if(startingDate > endingDate) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'startingDate must be smaller than endingDate!' });
+      return;
+    }
     const result = await EventModel.editEvent(
       userId,
       id,
       data.name,
       data.content,
       data.bannerId,
-      new Date(ConvertDate(data.startingDate)),
-      new Date(ConvertDate(data.endingDate)),
+      startingDate,
+      endingDate,
       JSON.parse(data.additionalInfo)
     );
     if (result.getCode() == HttpStatusCode.OK)

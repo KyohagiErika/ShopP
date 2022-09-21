@@ -21,6 +21,16 @@ export default class EventModel {
         banner: true,
         createdBy: true,
       },
+      select: {
+        id: true,
+        name: true,
+        content: true,
+        startingDate: true,
+        endingDate: true,
+        roleCreator: true,
+        createdBy: { id: true, email: true, phone: true },
+        additionalInfo: { key: true, value: true },
+      },
     });
     if (adminEventList == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
@@ -43,6 +53,16 @@ export default class EventModel {
         additionalInfo: true,
         banner: true,
         createdBy: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        content: true,
+        startingDate: true,
+        endingDate: true,
+        roleCreator: true,
+        createdBy: { id: true, email: true, phone: true },
+        additionalInfo: {key: true, value: true}
       },
     });
     if (eventList.length == 0) {
@@ -91,13 +111,6 @@ export default class EventModel {
     if (user == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'User doesnt exist!');
     }
-    // const userRole = await userRoleRepository.findOne({
-    //   where: {
-    //     user: { id: userId },
-    //     role: RoleEnum.ADMIN,
-    //   },
-    // });
-    
     let roleCreator: RoleEnum ;
     if(user.role.role == RoleEnum.ADMIN)
       roleCreator = RoleEnum.ADMIN
@@ -125,21 +138,41 @@ export default class EventModel {
         createdBy: user,
       });
     }
-    if (additionalInfo != null) {
-      let arrayKeys = Object.keys(additionalInfo);
-      let arrayValues = Object.values(additionalInfo);
-      for (let i = 0; i < arrayKeys.length; i++) {
-        const eventAdditionalInfo = await additionalInfoRepository.save({
-          key: arrayKeys[i],
-          value: arrayValues[i],
-          event,
-        });
-      }
+    let arrayKeys = Object.keys(additionalInfo);
+    let arrayValues = Object.values(additionalInfo);
+    for (let i = 0; i < arrayKeys.length; i++) {
+      const eventAdditionalInfo = await additionalInfoRepository.save({
+        key: arrayKeys[i],
+        value: arrayValues[i],
+        event,
+      });
     }
+    console.log(event.additionalInfo)
     return new Response(
       HttpStatusCode.CREATED,
       'Create event successfully!',
-      event
+      // event
+      // select: {
+      //         id: true,
+      //         name: true,
+      //         content: true,
+      //         startingDate: true,
+      //         endingDate: true,
+      //         roleCreator: true,
+      //         createdBy: { id: true, email: true, phone: true },
+      //         additionalInfo: {key: true, value: true}
+      //       },
+      {
+        id: event.id,
+        name: event.name,
+        content: event.content,
+        startingDate: event.startingDate,
+        endingDate: event.endingDate,
+        roleCreator: event.roleCreator,
+        createdBy: {
+          id: event.createdBy
+        },
+      }
     );
   }
 
