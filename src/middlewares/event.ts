@@ -24,7 +24,6 @@ export default class EventMiddleware {
   static async listShopEvents(req: Request, res: Response) {
     const userId = +req.params.userId;
     const result = await EventModel.listShopEvents(userId);
-
     if (result.getCode() == HttpStatusCode.OK)
       res
         .status(result.getCode())
@@ -61,10 +60,15 @@ export default class EventMiddleware {
       },
       {
         name: 'additionalInfo',
-        // type: Object,
-        validator: (propName: string, value) => {
-          if (typeof value != 'object')
-            return `${propName} must be an Object`;
+        type: String,
+        validator: (propName: string, value: string) => {
+          if(value.length != 0) {
+            try {
+              JSON.parse(value)
+            } catch(e) {
+              return `${propName} must be an Object`
+            }
+          }
           return null;
         },
       },
@@ -73,8 +77,6 @@ export default class EventMiddleware {
   static async newEvent(req: Request, res: Response) {
     const userId = +req.params.userId;
     const data = req.body;
-    const additionalInfo = data.additionalInfo;
-    console.log(additionalInfo)
     const result = await EventModel.newEvent(
       userId,
       data.name,
@@ -82,7 +84,7 @@ export default class EventMiddleware {
       data.bannerId,
       new Date(ConvertDate(data.startingDate)),
       new Date(ConvertDate(data.endingDate)),
-      additionalInfo
+      JSON.parse(data.additionalInfo)
     );
     if (result.getCode() == HttpStatusCode.CREATED)
       res
@@ -120,9 +122,15 @@ export default class EventMiddleware {
       },
       {
         name: 'additionalInfo',
-        validator: (propName: string, value: object) => {
-          if (typeof value != 'object')
-            return `${propName} must be an Object`;
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (value.length != 0) {
+            try {
+              JSON.parse(value);
+            } catch (e) {
+              return `${propName} must be an Object`;
+            }
+          }
           return null;
         },
       },
@@ -131,15 +139,16 @@ export default class EventMiddleware {
   static async editEvent(req: Request, res: Response) {
     const id = +req.params.id;
     const data = req.body;
-    const additionalInfo = data.additionalInfo;
+    const userId = +res.locals.userId
     const result = await EventModel.editEvent(
+      userId,
       id,
       data.name,
       data.content,
       data.bannerId,
       new Date(ConvertDate(data.startingDate)),
       new Date(ConvertDate(data.endingDate)),
-      additionalInfo
+      JSON.parse(data.additionalInfo)
     );
     if (result.getCode() == HttpStatusCode.OK)
       res.status(result.getCode()).send({ message: result.getMessage() });

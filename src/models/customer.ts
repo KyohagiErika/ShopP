@@ -2,7 +2,12 @@ import { User } from './../entities/user';
 import { Customer } from './../entities/customer';
 import { validate } from 'class-validator';
 import { ShopPDataSource } from '../data';
-import { StatusEnum, HttpStatusCode, GenderEnum, RoleEnum } from '../utils/shopp.enum';
+import {
+  StatusEnum,
+  HttpStatusCode,
+  GenderEnum,
+  RoleEnum,
+} from '../utils/shopp.enum';
 import Response from '../utils/response';
 import CartModel from './cart';
 
@@ -51,8 +56,8 @@ export default class CustomerModel {
         user: {
           id: true,
           email: true,
-          phone: true
-        }
+          phone: true,
+        },
       },
       where: {
         id: customerId,
@@ -82,13 +87,10 @@ export default class CustomerModel {
         status: StatusEnum.ACTIVE,
       },
     });
-
     if (userID === null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'UserId doesnt exist');
     }
-
     // check userID used or not
-
     if (userID.customer != undefined) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
@@ -101,12 +103,23 @@ export default class CustomerModel {
       dob,
       placeOfDelivery,
       user: userID,
-    })
-    CartModel.postNew(customer.id, {})
+    });
+    CartModel.postNew(customer.id, {});
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',
-      customer
+      {
+        id: customer.id,
+        name: customer.name,
+        gender: customer.gender,
+        dob: customer.dob,
+        placeOfDelivery: customer.placeOfDelivery,
+        user: {
+          id: userID.id,
+          email: userID.email,
+          phone: userID.phone,
+        },
+      }
     );
   }
 

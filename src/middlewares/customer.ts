@@ -157,20 +157,12 @@ export default class CustomerMiddleware {
   static async edit(req: Request, res: Response) {
     const data = req.body;
     const id = req.params.id;
-
-    // resolve gender
-    let gender: GenderEnum;
-    if (data.gender.toString().toUpperCase() === 'FEMALE') {
-      gender = GenderEnum.FEMALE;
-    } else {
-      gender = GenderEnum.MALE;
-    }
     // resolve dob
     var dateTrueFormat = ConvertDate(data.dob);
     const result = await CustomerModel.edit(
       id.toString(),
       data.name.toString(),
-      gender,
+      data.gender,
       new Date(dateTrueFormat),
       data.placeOfDelivery.toString()
     );

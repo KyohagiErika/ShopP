@@ -81,6 +81,9 @@ export default class EventModel {
         return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
     }
     const user = await userRepository.findOne({
+      relations: {
+        roles: true
+      },
       where: {
         id: userId
       }
@@ -88,14 +91,19 @@ export default class EventModel {
     if(user == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'User doesnt exist!');
     }
-    const userRole = await userRoleRepository.findOne({
-      where: {
-        user: { id: userId },
-        role: RoleEnum.ADMIN,
-      },
-    });
-    let roleCreator: RoleEnum = RoleEnum.ADMIN;
-    if (userRole == null) roleCreator = RoleEnum.SHOP;
+    // const userRole = await userRoleRepository.findOne({
+    //   where: {
+    //     user: { id: userId },
+    //     role: RoleEnum.ADMIN,
+    //   },
+    // });
+    
+    let roleCreator: RoleEnum ;
+    if(user.roles.map(userRole => userRole.role).includes(RoleEnum.ADMIN))
+      roleCreator = RoleEnum.ADMIN
+    else if(user.roles.map(userRole => userRole.role).includes(RoleEnum.SHOP))
+      roleCreator = RoleEnum.SHOP
+    else return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized role. Only shop or admin can create events!');
     let event: Event;
     if (banner != null) {
       event = await eventRepository.save({
@@ -136,6 +144,7 @@ export default class EventModel {
   }
 
   static async editEvent(
+    userId: number,
     id: number,
     name: string,
     content: string,
@@ -151,15 +160,20 @@ export default class EventModel {
     const event = await eventRepository.findOne({
       relations: {
         additionalInfo: true,
+        createdBy: true
       },
       where: {
         id,
+        status: StatusEnum.ACTIVE
       },
     });
+    // console.log(event)
     if (event == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
+    if(event.createdBy.id != userId)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized user!');
     let banner = null;
-    if (bannerId != null && bannerId != undefined) {
+    if (bannerId != null && bannerId != undefined && bannerId.toString().length!=0) {
       banner = await localFileRepository.findOne({
         where: {
           id: bannerId,
