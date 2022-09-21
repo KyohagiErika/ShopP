@@ -25,6 +25,11 @@ export default class CustomerModel {
         gender: true,
         dob: true,
         placeOfDelivery: true,
+        user: {
+          id: true,
+          email: true,
+          phone: true,
+        },
         // not need following shops
       },
       where: {
@@ -48,6 +53,11 @@ export default class CustomerModel {
         gender: true,
         dob: true,
         placeOfDelivery: true,
+        user: {
+          id: true,
+          email: true,
+          phone: true
+        }
       },
       where: {
         id: customerId,

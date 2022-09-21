@@ -284,8 +284,8 @@ class AuthMiddleware {
 
     //The token is valid for 1 hour
     //We want to send a new token on every request
-    const { userId, userEmail } = jwtPayload;
-    const newToken = jwt.sign({ userId, userEmail }, config.JWT_SECRET, {
+    const { userId, email } = jwtPayload;
+    const newToken = jwt.sign({ userId, email }, config.JWT_SECRET, {
       expiresIn: '1h',
     });
     res.setHeader('Authentication', 'Bearer ' + newToken);
