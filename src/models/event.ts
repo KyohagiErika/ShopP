@@ -82,7 +82,7 @@ export default class EventModel {
     }
     const user = await userRepository.findOne({
       relations: {
-        roles: true
+        role: true
       },
       where: {
         id: userId,
@@ -99,9 +99,9 @@ export default class EventModel {
     // });
     
     let roleCreator: RoleEnum ;
-    if(user.roles.map(userRole => userRole.role).includes(RoleEnum.ADMIN))
+    if(user.role.role == RoleEnum.ADMIN)
       roleCreator = RoleEnum.ADMIN
-    else if(user.roles.map(userRole => userRole.role).includes(RoleEnum.SHOP))
+    else if(user.role.role == RoleEnum.SHOP)
       roleCreator = RoleEnum.SHOP
     else return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized role. Only shop or admin can create events!');
     let event: Event;
