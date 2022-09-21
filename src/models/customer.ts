@@ -2,7 +2,12 @@ import { User } from './../entities/user';
 import { Customer } from './../entities/customer';
 import { validate } from 'class-validator';
 import { ShopPDataSource } from '../data';
-import { StatusEnum, HttpStatusCode, GenderEnum, RoleEnum } from '../utils/shopp.enum';
+import {
+  StatusEnum,
+  HttpStatusCode,
+  GenderEnum,
+  RoleEnum,
+} from '../utils/shopp.enum';
 import Response from '../utils/response';
 import CartModel from './cart';
 
@@ -65,7 +70,7 @@ export default class CustomerModel {
     let userID = await userRepository.findOne({
       relations: {
         customer: true,
-        roles: true,
+        role: true,
       },
       where: {
         id: userId,
@@ -91,8 +96,8 @@ export default class CustomerModel {
       dob,
       placeOfDelivery,
       user: userID,
-    })
-    CartModel.postNew(customer.id, {})
+    });
+    CartModel.postNew(customer.id, {});
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',

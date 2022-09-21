@@ -38,8 +38,7 @@ export default class EventMiddleware {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value.length == 0) 
-            return `${propName} must be filled in`;
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
@@ -63,8 +62,7 @@ export default class EventMiddleware {
         name: 'additionalInfo',
         // type: Object,
         validator: (propName: string, value) => {
-          if (typeof value != 'object')
-            return `${propName} must be an Object`;
+          if (typeof value != 'object') return `${propName} must be an Object`;
           return null;
         },
       },
@@ -74,7 +72,7 @@ export default class EventMiddleware {
     const userId = +req.params.userId;
     const data = req.body;
     const additionalInfo = data.additionalInfo;
-    console.log(additionalInfo)
+    console.log(additionalInfo);
     const result = await EventModel.newEvent(
       userId,
       data.name,
@@ -97,8 +95,7 @@ export default class EventMiddleware {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value.length == 0) 
-            return `${propName} must be filled in`;
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
@@ -121,8 +118,7 @@ export default class EventMiddleware {
       {
         name: 'additionalInfo',
         validator: (propName: string, value: object) => {
-          if (typeof value != 'object')
-            return `${propName} must be an Object`;
+          if (typeof value != 'object') return `${propName} must be an Object`;
           return null;
         },
       },

@@ -16,9 +16,9 @@ export enum StatusEnum {
 }
 
 export enum RoleEnum {
-  ADMIN = 'ADMIN',
-  SHOP = 'SHOP',
-  CUSTOMER = 'CUSTOMER',
+  ADMIN = 2,
+  SHOP = 1,
+  CUSTOMER = 0,
 }
 
 export enum GenderEnum {

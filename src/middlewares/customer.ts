@@ -47,14 +47,13 @@ export default class CustomerMiddleware {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value.length == 0) 
-            return `${propName} must be filled in`;
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
       {
         name: 'gender',
-        type: String ,
+        type: String,
         validator: (propName: string, value: string) => {
           if (value != null) {
             if (
@@ -70,7 +69,7 @@ export default class CustomerMiddleware {
         name: 'dob',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value.length != 0) {
+          if (value.length != 0) {
             if (!Date.parse(ConvertDate(value)))
               return `${propName} is invalid`;
           }
@@ -81,8 +80,7 @@ export default class CustomerMiddleware {
         name: 'placeOfDelivery',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value.length == 0) 
-            return `${propName} must be filled in`;
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
@@ -115,8 +113,7 @@ export default class CustomerMiddleware {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value.length == 0) 
-            return `${propName} must be filled in`;
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
@@ -136,10 +133,11 @@ export default class CustomerMiddleware {
         name: 'dob',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value.length !=0) {
-            if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
+          if (value.length != 0) {
+            if (!Date.parse(ConvertDate(value)))
+              return `${propName} is invalid`;
           }
-          
+
           return null;
         },
       },
@@ -147,8 +145,7 @@ export default class CustomerMiddleware {
         name: 'placeOfDelivery',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value.length == 0) 
-            return `${propName} must be filled in`;
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },

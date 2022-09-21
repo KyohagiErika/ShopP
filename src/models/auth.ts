@@ -68,10 +68,7 @@ export default class AuthModel {
       );
   }
 
-  static async resetPassword(
-    id: number,
-    password: string
-  ) {
+  static async resetPassword(id: number, password: string) {
     //Get user from the database
     let user: User | null = await userRepository.findOne({
       where: {
@@ -94,9 +91,7 @@ export default class AuthModel {
       );
   }
 
-  static async forgotPassword(
-    email: string
-  ) {
+  static async forgotPassword(email: string) {
     //Get user from the database
     let user: User | null = await userRepository.findOne({
       where: {
@@ -107,7 +102,6 @@ export default class AuthModel {
     if (user !== null) {
       //Send confirm code to user email
 
-
       userRepository.save(user);
       return new Response(HttpStatusCode.OK, '');
     } else
@@ -117,11 +111,7 @@ export default class AuthModel {
       );
   }
 
-  static async getUserOtp(
-    userId: number,
-    type: OtpEnum,
-    otp: string,
-  ) {
+  static async getUserOtp(userId: number, type: OtpEnum, otp: string) {
     //Get user otp from the database
     let userOtp: UserOtp | null = await UserOtpRepository.findOne({
       relations: {
@@ -129,20 +119,17 @@ export default class AuthModel {
       },
       where: {
         user: {
-          id: userId
+          id: userId,
         },
         type: type,
-        otp: otp
+        otp: otp,
       },
     });
     if (userOtp !== null) {
       //Send confirm code to user email
       return new Response(HttpStatusCode.OK, 'OTP was right', userOtp);
     } else
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'OTP was not right!'
-      );
+      return new Response(HttpStatusCode.BAD_REQUEST, 'OTP was not right!');
   }
 
   static async postUserOtp(
@@ -156,15 +143,11 @@ export default class AuthModel {
       user: user,
       type: type,
       otp: otp,
-      otpExpiration: otpExpiration
-    })
+      otpExpiration: otpExpiration,
+    });
   }
 
-  static async deleteUserOtp(
-    userId: number,
-    type: OtpEnum,
-    otp: string,
-  ) {
+  static async deleteUserOtp(userId: number, type: OtpEnum, otp: string) {
     //Get user otp from the database
     let userOtp: UserOtp | null = await UserOtpRepository.findOne({
       relations: {
@@ -172,28 +155,25 @@ export default class AuthModel {
       },
       where: {
         user: {
-          id: userId
+          id: userId,
         },
         type: type,
-        otp: otp
+        otp: otp,
       },
     });
     if (userOtp !== null) {
       //Send confirm code to user email
       UserOtpRepository.remove(userOtp);
-      return new Response(HttpStatusCode.OK, 'Delete OTP successfully', userOtp);
-    } else
       return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'OTP was not right!'
+        HttpStatusCode.OK,
+        'Delete OTP successfully',
+        userOtp
       );
+    } else
+      return new Response(HttpStatusCode.BAD_REQUEST, 'OTP was not right!');
   }
 
-  static async verifyOtp(
-    userId: number,
-    otp: string,
-    type: OtpEnum
-  ) {
+  static async verifyOtp(userId: number, otp: string, type: OtpEnum) {
     //VERIFY GENERATED OTP
     let result = await AuthModel.getUserOtp(userId, type, otp);
     if (result.getCode() == HttpStatusCode.OK) {
@@ -203,9 +183,9 @@ export default class AuthModel {
         return new Response(HttpStatusCode.OK, 'Verify OTP successfully!');
       }
       await AuthModel.deleteUserOtp(userId, OtpEnum.FORGET, otp);
-      return new Response(HttpStatusCode.UNAUTHORIZATION, 'OTP was expired!')
+      return new Response(HttpStatusCode.UNAUTHORIZATION, 'OTP was expired!');
     } else {
       return new Response(HttpStatusCode.BAD_REQUEST, 'OTP was not right!');
     }
-  };
+  }
 }

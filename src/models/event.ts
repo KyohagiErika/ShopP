@@ -14,12 +14,12 @@ export default class EventModel {
     const adminEventList = await eventRepository.find({
       where: {
         status: StatusEnum.ACTIVE,
-        roleCreator: RoleEnum.ADMIN
+        roleCreator: RoleEnum.ADMIN,
       },
       relations: {
         additionalInfo: true,
         banner: true,
-        createdBy: true
+        createdBy: true,
       },
     });
     if (adminEventList == null) {
@@ -42,7 +42,7 @@ export default class EventModel {
       relations: {
         additionalInfo: true,
         banner: true,
-        createdBy: true
+        createdBy: true,
       },
     });
     if (eventList.length == 0) {
@@ -67,7 +67,7 @@ export default class EventModel {
     const eventRepository = ShopPDataSource.getRepository(Event);
     const localFileRepository = ShopPDataSource.getRepository(LocalFile);
     const userRoleRepository = ShopPDataSource.getRepository(UserRole);
-    const userRepository = ShopPDataSource.getRepository(User)
+    const userRepository = ShopPDataSource.getRepository(User);
     const additionalInfoRepository =
       ShopPDataSource.getRepository(EventAdditionalInfo);
     let banner = null;
@@ -82,10 +82,10 @@ export default class EventModel {
     }
     const user = await userRepository.findOne({
       where: {
-        id: userId
-      }
-    })
-    if(user == null) {
+        id: userId,
+      },
+    });
+    if (user == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'User doesnt exist!');
     }
     const userRole = await userRoleRepository.findOne({
@@ -105,7 +105,7 @@ export default class EventModel {
         startingDate,
         endingDate,
         roleCreator,
-        createdBy: user
+        createdBy: user,
       });
     } else {
       event = await eventRepository.save({
@@ -114,7 +114,7 @@ export default class EventModel {
         startingDate,
         endingDate,
         roleCreator,
-        createdBy: user
+        createdBy: user,
       });
     }
     if (additionalInfo != null) {
@@ -169,8 +169,8 @@ export default class EventModel {
         return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
     }
     const addtionalInfoList = await additionalInfoRepository.delete({
-      event: {id}
-    })
+      event: { id },
+    });
     let arrayKeys = Object.keys(additionalInfo);
     let arrayValues = Object.values(additionalInfo);
     for (let i = 0; i < arrayKeys.length; i++) {

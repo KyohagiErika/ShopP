@@ -24,10 +24,22 @@ routes.get(
 
 routes.get('/searchByShop/:shopId', ProductMiddleware.searchByShop);
 
-routes.post('/new/:shopId',[AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)], ProductMiddleware.postNew); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.post(
+  '/new/:shopId',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  ProductMiddleware.postNew
+); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
-routes.post('/edit/:id', [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)], ProductMiddleware.edit);
+routes.post(
+  '/edit/:id',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  ProductMiddleware.edit
+);
 
-routes.post('/delete/:id', [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)], ProductMiddleware.delete); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.post(
+  '/delete/:id',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  ProductMiddleware.delete
+); //[checkJwt, checkRole(RoleEnum.ADMIN)],
 
 export default routes;

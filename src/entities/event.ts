@@ -38,7 +38,7 @@ export class Event {
   @Column({
     type: 'enum',
     enum: RoleEnum,
-    default: RoleEnum.ADMIN
+    default: RoleEnum.ADMIN,
   })
   roleCreator: RoleEnum;
 
