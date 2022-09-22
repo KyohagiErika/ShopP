@@ -9,7 +9,12 @@ import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 
 export default class EventModel {
-  static async listAdminEvents(userId: number) {
+  static async listAdminEvents(user: User) {
+    if (user.role.role != RoleEnum.ADMIN)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only admin!'
+      );
     const eventRepository = ShopPDataSource.getRepository(Event);
     const adminEventList = await eventRepository.find({
       where: {
@@ -42,32 +47,61 @@ export default class EventModel {
     );
   }
 
-  static async listShopEvents(userId: number) {
+  static async listShopEvents(user: User) {
     const eventRepository = ShopPDataSource.getRepository(Event);
-    const eventList = await eventRepository.find({
-      where: {
-        status: StatusEnum.ACTIVE,
-        createdBy: { id: userId },
-      },
-      relations: {
-        additionalInfo: true,
-        banner: true,
-        createdBy: true,
-      },
-      select: {
-        id: true,
-        name: true,
-        content: true,
-        startingDate: true,
-        endingDate: true,
-        roleCreator: true,
-        createdBy: { id: true, email: true, phone: true },
-        additionalInfo: {key: true, value: true}
-      },
-    });
-    if (eventList.length == 0) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
+    let eventList;
+    if (user.role.role == RoleEnum.SHOP) {
+      eventList = await eventRepository.find({
+        where: {
+          status: StatusEnum.ACTIVE,
+          createdBy: { id: user.id },
+          roleCreator: RoleEnum.SHOP
+        },
+        relations: {
+          additionalInfo: true,
+          banner: true,
+          createdBy: true,
+        },
+        select: {
+          id: true,
+          name: true,
+          content: true,
+          startingDate: true,
+          endingDate: true,
+          roleCreator: true,
+          createdBy: { id: true, email: true, phone: true },
+          additionalInfo: { key: true, value: true },
+        },
+      });
     }
+    else if(user.role.role == RoleEnum.ADMIN) {
+      eventList = await eventRepository.find({
+        where: {
+          status: StatusEnum.ACTIVE,
+          roleCreator: RoleEnum.SHOP,
+        },
+        relations: {
+          additionalInfo: true,
+          banner: true,
+          createdBy: true,
+        },
+        select: {
+          id: true,
+          name: true,
+          content: true,
+          startingDate: true,
+          endingDate: true,
+          roleCreator: true,
+          createdBy: { id: true, email: true, phone: true },
+          additionalInfo: { key: true, value: true },
+        },
+      });
+    }
+    else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized role. Only admin or shop!');
+    }
+    if (eventList.length == 0)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
     return new Response(
       HttpStatusCode.OK,
       'Show Events successfully',
@@ -75,8 +109,12 @@ export default class EventModel {
     );
   }
 
+  static async findEventById() {
+    
+  }
+
   static async newEvent(
-    userId: number,
+    user: User,
     name: string,
     content: string,
     bannerId: number,
@@ -84,14 +122,21 @@ export default class EventModel {
     endingDate: Date,
     additionalInfo: object
   ) {
+    if (user.role.role == RoleEnum.CUSTOMER)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only shop or admin!'
+      );
     const eventRepository = ShopPDataSource.getRepository(Event);
     const localFileRepository = ShopPDataSource.getRepository(LocalFile);
-    const userRoleRepository = ShopPDataSource.getRepository(UserRole);
-    const userRepository = ShopPDataSource.getRepository(User);
     const additionalInfoRepository =
       ShopPDataSource.getRepository(EventAdditionalInfo);
     let banner = null;
-    if (bannerId != null) {
+    if (
+      bannerId != null &&
+      bannerId != undefined &&
+      bannerId.toString().length != 0
+    ) {
       banner = await localFileRepository.findOne({
         where: {
           id: bannerId,
@@ -100,23 +145,7 @@ export default class EventModel {
       if (banner == null)
         return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
     }
-    const user = await userRepository.findOne({
-      relations: {
-        role: true
-      },
-      where: {
-        id: userId,
-      },
-    });
-    if (user == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'User doesnt exist!');
-    }
-    let roleCreator: RoleEnum ;
-    if(user.role.role == RoleEnum.ADMIN)
-      roleCreator = RoleEnum.ADMIN
-    else if(user.role.role == RoleEnum.SHOP)
-      roleCreator = RoleEnum.SHOP
-    else return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized role. Only shop or admin can create events!');
+    
     let event: Event;
     if (banner != null) {
       event = await eventRepository.save({
@@ -125,7 +154,7 @@ export default class EventModel {
         banner,
         startingDate,
         endingDate,
-        roleCreator,
+        roleCreator: user.role.role,
         createdBy: user,
       });
     } else {
@@ -134,7 +163,7 @@ export default class EventModel {
         content,
         startingDate,
         endingDate,
-        roleCreator,
+        roleCreator: user.role.role,
         createdBy: user,
       });
     }
@@ -147,21 +176,9 @@ export default class EventModel {
         event,
       });
     }
-    console.log(event.additionalInfo)
     return new Response(
       HttpStatusCode.CREATED,
       'Create event successfully!',
-      // event
-      // select: {
-      //         id: true,
-      //         name: true,
-      //         content: true,
-      //         startingDate: true,
-      //         endingDate: true,
-      //         roleCreator: true,
-      //         createdBy: { id: true, email: true, phone: true },
-      //         additionalInfo: {key: true, value: true}
-      //       },
       {
         id: event.id,
         name: event.name,
@@ -170,14 +187,17 @@ export default class EventModel {
         endingDate: event.endingDate,
         roleCreator: event.roleCreator,
         createdBy: {
-          id: event.createdBy
+          id: event.createdBy.id,
+          phone: event.createdBy.phone,
+          email: event.createdBy.email,
         },
+        additionalInfo: additionalInfo
       }
     );
   }
 
   static async editEvent(
-    userId: number,
+    user: User,
     id: number,
     name: string,
     content: string,
@@ -186,6 +206,11 @@ export default class EventModel {
     endingDate: Date,
     additionalInfo: object
   ) {
+    if (user.role.role == RoleEnum.CUSTOMER)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only shop or admin!'
+      );
     const eventRepository = ShopPDataSource.getRepository(Event);
     const localFileRepository = ShopPDataSource.getRepository(LocalFile);
     const additionalInfoRepository =
@@ -193,20 +218,23 @@ export default class EventModel {
     const event = await eventRepository.findOne({
       relations: {
         additionalInfo: true,
-        createdBy: true
+        createdBy: true,
       },
       where: {
         id,
-        status: StatusEnum.ACTIVE
+        status: StatusEnum.ACTIVE,
       },
     });
-    // console.log(event)
     if (event == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
-    if(event.createdBy.id != userId)
+    if (event.createdBy.id != user.role.role)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized user!');
     let banner = null;
-    if (bannerId != null && bannerId != undefined && bannerId.toString().length!=0) {
+    if (
+      bannerId != null &&
+      bannerId != undefined &&
+      bannerId.toString().length != 0
+    ) {
       banner = await localFileRepository.findOne({
         where: {
           id: bannerId,
@@ -215,7 +243,7 @@ export default class EventModel {
       if (banner == null)
         return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
     }
-    const addtionalInfoList = await additionalInfoRepository.delete({
+    await additionalInfoRepository.delete({
       event: { id },
     });
     let arrayKeys = Object.keys(additionalInfo);
@@ -255,12 +283,30 @@ export default class EventModel {
     return new Response(HttpStatusCode.BAD_REQUEST, 'Edit Event failed!');
   }
 
-  static async deleteEvent(id: number) {
+  static async deleteEvent(id: number,user: User) {
+    if (user.role.role == RoleEnum.CUSTOMER)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only shop or admin!'
+      );
     const eventRepository = ShopPDataSource.getRepository(Event);
+    const event = await eventRepository.findOne({
+      relations: {
+        createdBy: true
+      },
+      where: {
+        id
+      }
+    })
+    if(event == null) 
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
+    if(event.createdBy.id != user.id) 
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized user!');
+    if(event.status == StatusEnum.INACTIVE)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'event has been already deleted!');
     const result = await eventRepository.update(
       {
         id,
-        status: StatusEnum.ACTIVE,
       },
       {
         status: StatusEnum.INACTIVE,

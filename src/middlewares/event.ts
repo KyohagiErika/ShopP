@@ -1,3 +1,4 @@
+import { User } from './../entities/user';
 import { EventAdditionalInfo } from './../entities/eventAdditionalInfo';
 import { HttpStatusCode } from './../utils/shopp.enum';
 import { Request, Response } from 'express';
@@ -9,7 +10,7 @@ import ConvertDate from '../utils/convertDate';
 export default class EventMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
-    const result = await EventModel.listAdminEvents(1);
+    const result = await EventModel.listAdminEvents(res.locals.user);
     if (result.getCode() == HttpStatusCode.OK)
       res
         .status(result.getCode())
@@ -22,8 +23,7 @@ export default class EventMiddleware {
 
   @ControllerService()
   static async listShopEvents(req: Request, res: Response) {
-    const userId = +req.params.userId;
-    const result = await EventModel.listShopEvents(userId);
+    const result = await EventModel.listShopEvents(res.locals.user);
     if (result.getCode() == HttpStatusCode.OK)
       res
         .status(result.getCode())
@@ -74,7 +74,6 @@ export default class EventMiddleware {
     ],
   })
   static async newEvent(req: Request, res: Response) {
-    const userId = +req.params.userId;
     const data = req.body;
     const startingDate = new Date(ConvertDate(data.startingDate));
     const endingDate = new Date(ConvertDate(data.endingDate));
@@ -85,7 +84,7 @@ export default class EventMiddleware {
       return;
     }
     const result = await EventModel.newEvent(
-      userId,
+      res.locals.user,
       data.name,
       data.content,
       data.bannerId,
@@ -145,9 +144,9 @@ export default class EventMiddleware {
   static async editEvent(req: Request, res: Response) {
     const id = +req.params.id;
     const data = req.body;
-    const userId = +res.locals.userId
     const startingDate = new Date(ConvertDate(data.startingDate));
     const endingDate = new Date(ConvertDate(data.endingDate));
+    // handle starting date and ending date
     if(startingDate > endingDate) {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -155,7 +154,7 @@ export default class EventMiddleware {
       return;
     }
     const result = await EventModel.editEvent(
-      userId,
+      res.locals.user,
       id,
       data.name,
       data.content,
@@ -172,7 +171,7 @@ export default class EventMiddleware {
   @ControllerService()
   static async deleteEvent(req: Request, res: Response) {
     const id = +req.params.id;
-    const result = await EventModel.deleteEvent(id);
+    const result = await EventModel.deleteEvent(id, res.locals.user);
     if (result.getCode() == HttpStatusCode.OK)
       res.status(result.getCode()).send({ message: result.getMessage() });
     else res.status(result.getCode()).send({ message: result.getMessage() });
