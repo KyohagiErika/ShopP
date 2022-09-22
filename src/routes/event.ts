@@ -15,9 +15,12 @@ routes.get('/list-shop-events/:userId', [AuthMiddleware.checkJwt, checkRole(Role
 routes.post('/new/:userId([0-9]+)', [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)], EventMiddleware.newEvent);
 
 // edit an event
-routes.post('/:id([0-9]+)', EventMiddleware.editEvent);
+routes.post('/:id([0-9]+)', [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)], EventMiddleware.editEvent);
 
 // delete an event
-routes.post('/delete/:id([0-9]+)', EventMiddleware.deleteEvent);
+routes.post('/delete/:id([0-9]+)', [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)], EventMiddleware.deleteEvent);
+
+// find an event
+routes.get('/:id([0-9]+)', [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)], EventMiddleware.findEventById);
 
 export default routes;

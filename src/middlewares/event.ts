@@ -35,7 +35,7 @@ export default class EventMiddleware {
     params: [
       {
         name: 'id',
-        type: String,
+        type: Number,
       },
     ],
   })
