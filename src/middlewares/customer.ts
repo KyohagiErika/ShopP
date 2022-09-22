@@ -1,3 +1,4 @@
+import { User } from './../entities/user';
 import CustomerModel from '../models/customer';
 import { Request, Response } from 'express';
 import { ControllerService } from '../utils/decorators';
@@ -25,19 +26,13 @@ export default class CustomerMiddleware {
   })
   static async getOneById(req: Request, res: Response) {
     const id = req.params.id;
-    if (id) {
-      const result = await CustomerModel.getOneById(id);
-      if (result) {
-        res.status(HttpStatusCode.OK).send({ data: result });
-      } else {
-        res
-          .status(HttpStatusCode.BAD_REQUEST)
-          .send({ message: 'Get customer failed!'});
-      }
+    const result = await CustomerModel.getOneById(id, res.locals.user);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Incorrect id! '});
+        .send({ message: 'Unavailable customer!' });
     }
   }
 
@@ -87,7 +82,7 @@ export default class CustomerMiddleware {
     ],
   })
   static async postNew(req: Request, res: Response) {
-    const userId = +req.params.userId;
+    // console.log(res.locals.user)
     const data = req.body;
     // take date
     var dateTrueFormat = ConvertDate(data.dob);
@@ -96,7 +91,7 @@ export default class CustomerMiddleware {
       data.gender,
       new Date(dateTrueFormat),
       data.placeOfDelivery.toString(),
-      userId
+      res.locals.user
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
@@ -157,11 +152,11 @@ export default class CustomerMiddleware {
     // resolve dob
     var dateTrueFormat = ConvertDate(data.dob);
     const result = await CustomerModel.edit(
-      id.toString(),
-      data.name.toString(),
+      data.name,
       data.gender,
       new Date(dateTrueFormat),
-      data.placeOfDelivery.toString()
+      data.placeOfDelivery,
+      res.locals.user
     );
     res.status(result.getCode()).send({ message: result.getMessage() });
   }

@@ -33,6 +33,8 @@ export default class UserModel {
     const user = await userRepository.findOne({
       relations: {
         role: true,
+        customer: true,
+        shop: true
       },
       select: {
         id: true,
@@ -47,6 +49,7 @@ export default class UserModel {
         status: StatusEnum.ACTIVE,
       },
     });
+    console.log(user?.customer)
     return user ? user : false;
   }
 
