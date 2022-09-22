@@ -117,7 +117,7 @@ export default class EventModel {
     const event = await eventRepository.findOne({
       where: {
         status: StatusEnum.ACTIVE,
-        id
+        id,
       },
       relations: {
         additionalInfo: true,
@@ -134,17 +134,13 @@ export default class EventModel {
         additionalInfo: { key: true, value: true },
       },
     });
-    if(event == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!')
-    if(user.role.role == RoleEnum.SHOP) {
-      if(event.createdBy.id != user.id)
+    if (event == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
+    if (user.role.role == RoleEnum.SHOP) {
+      if (event.createdBy.id != user.id)
         return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
     }
-    return new Response(
-      HttpStatusCode.OK,
-      'Show Event successfully!',
-      event
-    );
+    return new Response(HttpStatusCode.OK, 'Show Event successfully!', event);
   }
 
   static async newEvent(

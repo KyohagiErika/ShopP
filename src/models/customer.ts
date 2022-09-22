@@ -44,7 +44,10 @@ export default class CustomerModel {
     let customer;
     const customerRepository = ShopPDataSource.getRepository(Customer);
     // check role of user
-    if(user.role.role == RoleEnum.CUSTOMER || user.role.role == RoleEnum.SHOP) {
+    if (
+      user.role.role == RoleEnum.CUSTOMER ||
+      user.role.role == RoleEnum.SHOP
+    ) {
       if (customerPayload.id != customerId) {
         customer = await customerRepository.findOne({
           relations: {
@@ -86,8 +89,8 @@ export default class CustomerModel {
           user: {
             id: true,
             email: true,
-            phone: true
-          }
+            phone: true,
+          },
         },
         where: {
           id: customerId,
@@ -151,11 +154,11 @@ export default class CustomerModel {
     if (user.customer == null)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        "User has not have customer yet!"
+        'User has not have customer yet!'
       );
     const result = await customerRepository.update(
       {
-        id: user.customer.id
+        id: user.customer.id,
       },
       {
         name,
