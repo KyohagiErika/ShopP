@@ -24,7 +24,7 @@ export class LocalFile {
 
   @OneToOne(() => Event, event => event.banner)
   event: Event;
-  
+
   @OneToOne(() => ProductImage, productImage => productImage.id)
   productImage: ProductImage;
 }

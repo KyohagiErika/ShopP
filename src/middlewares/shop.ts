@@ -164,7 +164,7 @@ export default class ShopMiddleware {
     if (result.getCode() === HttpStatusCode.OK) {
       res
         .status(result.getCode())
-        .send({ message: result.getMessage(), data: result.getData()  });
+        .send({ message: result.getMessage(), data: result.getData() });
     } else {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }

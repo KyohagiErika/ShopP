@@ -5,7 +5,7 @@ import upload from './upload';
 import shop from './shop';
 import customer from './customer';
 import cart from './cart';
-import event from './event'
+import event from './event';
 import product from './product';
 import category from './category';
 import productAdditionalInfo from './productAdditionalInfo'

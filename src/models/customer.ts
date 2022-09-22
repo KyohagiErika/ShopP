@@ -2,8 +2,14 @@ import { User } from './../entities/user';
 import { Customer } from './../entities/customer';
 import { validate } from 'class-validator';
 import { ShopPDataSource } from '../data';
-import { StatusEnum, HttpStatusCode, GenderEnum, RoleEnum } from '../utils/shopp.enum';
+import {
+  StatusEnum,
+  HttpStatusCode,
+  GenderEnum,
+  RoleEnum,
+} from '../utils/shopp.enum';
 import Response from '../utils/response';
+import CartModel from './cart';
 
 export default class CustomerModel {
   static async listAll() {
@@ -19,6 +25,11 @@ export default class CustomerModel {
         gender: true,
         dob: true,
         placeOfDelivery: true,
+        user: {
+          id: true,
+          email: true,
+          phone: true,
+        },
         // not need following shops
       },
       where: {
@@ -42,7 +53,11 @@ export default class CustomerModel {
         gender: true,
         dob: true,
         placeOfDelivery: true,
-        followingShops: true,
+        user: {
+          id: true,
+          email: true,
+          phone: true
+        }
       },
       where: {
         id: customerId,
@@ -65,7 +80,7 @@ export default class CustomerModel {
     let userID = await userRepository.findOne({
       relations: {
         customer: true,
-        roles: true,
+        role: true,
       },
       where: {
         id: userId,
@@ -85,7 +100,6 @@ export default class CustomerModel {
         `Customer with userId ${userId} has already existed`
       );
     }
-
     let customer = await customerRepository.save({
       name,
       gender,
@@ -93,7 +107,7 @@ export default class CustomerModel {
       placeOfDelivery,
       user: userID,
     });
-
+    CartModel.postNew(customer.id, {});
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',

@@ -42,8 +42,8 @@ export class User {
   @Column({ nullable: true })
   lockedAt: Date;
 
-  @OneToMany(() => UserRole, userRole => userRole.user)
-  roles: UserRole[];
+  @OneToOne(() => UserRole, userRole => userRole.user)
+  role: UserRole;
 
   @OneToOne(() => Shop, shop => shop.user)
   shop: Shop;

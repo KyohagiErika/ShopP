@@ -9,8 +9,7 @@ import ConvertDate from '../utils/convertDate';
 export default class EventMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
-    const result = await EventModel.listAll();
-
+    const result = await EventModel.listAdminEvents(1);
     if (result.getCode() == HttpStatusCode.OK)
       res
         .status(result.getCode())
@@ -39,6 +38,7 @@ export default class EventMiddleware {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
@@ -62,8 +62,7 @@ export default class EventMiddleware {
         name: 'additionalInfo',
         // type: Object,
         validator: (propName: string, value) => {
-          if (typeof value != 'object' && value != null)
-            return `${propName} must be an Object`;
+          if (typeof value != 'object') return `${propName} must be an Object`;
           return null;
         },
       },
@@ -73,7 +72,7 @@ export default class EventMiddleware {
     const userId = +req.params.userId;
     const data = req.body;
     const additionalInfo = data.additionalInfo;
-    console.log(additionalInfo)
+    console.log(additionalInfo);
     const result = await EventModel.newEvent(
       userId,
       data.name,
@@ -96,6 +95,7 @@ export default class EventMiddleware {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
@@ -118,8 +118,7 @@ export default class EventMiddleware {
       {
         name: 'additionalInfo',
         validator: (propName: string, value: object) => {
-          if (typeof value != 'object' && value != null)
-            return `${propName} must be an Object`;
+          if (typeof value != 'object') return `${propName} must be an Object`;
           return null;
         },
       },
@@ -138,7 +137,6 @@ export default class EventMiddleware {
       new Date(ConvertDate(data.endingDate)),
       additionalInfo
     );
-
     if (result.getCode() == HttpStatusCode.OK)
       res.status(result.getCode()).send({ message: result.getMessage() });
     else res.status(result.getCode()).send({ message: result.getMessage() });

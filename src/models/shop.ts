@@ -83,10 +83,19 @@ export default class ShopModel {
   ) {
     const userRepository = ShopPDataSource.getRepository(User);
     const user = await userRepository.findOne({
+      relations: {
+        role: true,
+      },
+      select: {
+        id: true,
+        role: {
+          role: true,
+        },
+      },
       where: {
         id: userId,
         status: StatusEnum.ACTIVE,
-        roles: {role: RoleEnum.CUSTOMER},
+        //roles: {role: RoleEnum.CUSTOMER},
       },
     });
     if (user == null) {
@@ -101,7 +110,10 @@ export default class ShopModel {
       shop.user = user;
 
       await shopRepository.save(shop);
-      await userRoleRepository.update({user: {id:userId}},{role: RoleEnum.SHOP});
+      await userRoleRepository.update(
+        { user: { id: userId } },
+        { role: RoleEnum.SHOP }
+      );
 
       return new Response(
         HttpStatusCode.CREATED,
@@ -123,7 +135,8 @@ export default class ShopModel {
       
       where: {
         id: id,
-        user: { status: StatusEnum.ACTIVE, roles: {role: RoleEnum.SHOP}},
+        user: { status: StatusEnum.ACTIVE, //roles: {role: RoleEnum.SHOP}
+      },
       }
     });
     if (shop == null) {
