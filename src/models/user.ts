@@ -33,14 +33,13 @@ export default class UserModel {
     const user = await userRepository.findOne({
       relations: {
         role: true,
+        shop: true,
+        customer: true
       },
       select: {
         id: true,
         email: true,
-        phone: true,
-        role: {
-          role: true,
-        },
+        phone: true
       },
       where: {
         id: userId,
