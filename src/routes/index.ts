@@ -8,6 +8,7 @@ import cart from './cart';
 import event from './event'
 import product from './product';
 import category from './category';
+import productAdditionalInfo from './productAdditionalInfo'
 
 const routes = Router();
 
@@ -24,6 +25,8 @@ routes.use('/get', async (req, res) => {
 });
 routes.use('/product', product);
 routes.use('/category', category);
+routes.use('/product-additional-info', productAdditionalInfo);
+
 
 routes.use(async (req, res) => {
   res.status(404).send('Not found!');

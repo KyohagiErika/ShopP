@@ -4,6 +4,7 @@ import { Shop } from '../entities/shop';
 import { StatusEnum, HttpStatusCode, RoleEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { UserRole } from '../entities/userRole';
+import { Like } from 'typeorm';
 
 const shopRepository = ShopPDataSource.getRepository(Shop);
 const userRoleRepository = ShopPDataSource.getRepository(UserRole);
@@ -12,10 +13,9 @@ export default class ShopModel {
   static async listAll() {
     const shops = await shopRepository.find({
       relations: {
-        user: true,
+        user: true
       },
       select: {
-        id: true,
         name: true,
         avatar: true,
         email: true,
@@ -23,6 +23,10 @@ export default class ShopModel {
         placeOfReceipt: true,
         star: true,
         followers: true,
+        user: {
+          email: true,
+          phone: true
+        }
       },
       where: {
         user: { status: StatusEnum.ACTIVE },
@@ -49,6 +53,25 @@ export default class ShopModel {
     });
     return shop ? shop : false;
   }
+  
+  static async searchShop(name: string) {
+    const shop = await shopRepository.find({
+      select: {
+        name: true,
+        avatar: true,
+        email: true,
+        phone: true,
+        placeOfReceipt: true,
+        star: true,
+        followers: true,
+      },
+      where: {
+        name: Like(`%${name}%`),
+        user: { status: StatusEnum.ACTIVE },
+      },
+    });
+    return shop ? shop : false;
+  }
 
   static async postNew(
     name: string,
@@ -60,22 +83,14 @@ export default class ShopModel {
   ) {
     const userRepository = ShopPDataSource.getRepository(User);
     const user = await userRepository.findOne({
-      relations: {
-        roles: true,
-      },
-      select: {
-        id: true,
-        roles: {
-          role: true,
-        }
-      },
       where: {
         id: userId,
         status: StatusEnum.ACTIVE,
+        roles: {role: RoleEnum.CUSTOMER},
       },
     });
     if (user == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Id not exist.');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'User is invalid.');
     } else {
       let shop = new Shop();
       shop.name = name;
@@ -91,7 +106,7 @@ export default class ShopModel {
       return new Response(
         HttpStatusCode.CREATED,
         'Create new shop successfully!',
-        shop
+         {name: shop.name, avatar: shop.avatar, email: shop.email, phone: shop.phone, placeOfReceipt: shop.placeOfReceipt}
       );
     }
   }
@@ -105,19 +120,14 @@ export default class ShopModel {
     placeOfReceipt: string
   ) {
     const shop = await shopRepository.findOne({
-      relations: {
-        user: true,
-      },
-      select: {
-        id: true,
-      },
+      
       where: {
         id: id,
-        user: { status: StatusEnum.ACTIVE },
-      },
+        user: { status: StatusEnum.ACTIVE, roles: {role: RoleEnum.SHOP}},
+      }
     });
     if (shop == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Id not exist.');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Shop is invalid.');
     } else {
       const shopEdit = await shopRepository.update(
         { id: id },

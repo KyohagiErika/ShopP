@@ -12,11 +12,13 @@ routes.get(
   ShopMiddleware.listAll
 );
 
-routes.get('/:id', AuthMiddleware.checkJwt, ShopMiddleware.getOneById);
+routes.get('/get-shop/:id', AuthMiddleware.checkJwt, ShopMiddleware.getOneById);
+
+routes.get('/search-shop/:name', AuthMiddleware.checkJwt, ShopMiddleware.searchShop);
 
 routes.post(
   '/new/:userId([0-9]+)',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   ShopMiddleware.postNew
 );
 

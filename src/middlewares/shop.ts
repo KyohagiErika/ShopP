@@ -38,6 +38,26 @@ export default class ShopMiddleware {
   }
 
   @ControllerService({
+    params: [
+      {
+        name: 'name',
+        type: String,
+      },
+    ],
+  })
+  static async searchShop(req: Request, res: Response) {
+    const name = req.params.name;
+    const result = await ShopModel.searchShop(name);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get shop failed!' });
+    }
+  }
+
+  @ControllerService({
     body: [
       {
         name: 'name',
@@ -60,7 +80,7 @@ export default class ShopMiddleware {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
-          if (!value.match(/^\d{10}$/))
+          if (!value.match(/^(01|03|05|07|08|09)+([0-9]{8})\b/))
             return `${propName} must be valid phone`;
           return null;
         },

@@ -118,13 +118,14 @@ export default class ProductMiddleware {
     ],
     body: [
       {
-        name: 'category',
-        type: String,
-      },
-      {
         name: 'name',
         type: String,
       },
+      {
+        name: 'category',
+        type: String,
+      },
+
       {
         name: 'detail',
         type: String,
@@ -132,6 +133,12 @@ export default class ProductMiddleware {
       {
         name: 'amount',
         type: String,
+        validator: (propName: string, value: number) => {
+          if(value<0 || value>100000000){
+            return `${propName} must be greater than 0 and less than 100000000`;
+          }
+          return null;
+        },
       },
     ],
   })
@@ -141,7 +148,7 @@ export default class ProductMiddleware {
     const result = await ProductModel.postNew(
       shopId,
       data.name,
-      data.category,
+      data.categoryId,
       data.detail.toString(),
       data.amount,
       ProductEnum.AVAILABLE
@@ -179,6 +186,12 @@ export default class ProductMiddleware {
       {
         name: 'amount',
         type: String,
+        validator: (propName: string, value: number) => {
+          if(value<0 || value>100000000){
+            return `${propName} must be greater than 0 and less than 100000000`;
+          }
+          return null;
+        },
       },
       {
         name: 'status',
