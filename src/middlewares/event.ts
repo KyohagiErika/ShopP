@@ -32,6 +32,23 @@ export default class EventMiddleware {
   }
 
   @ControllerService({
+    params: [
+      {
+        name: 'id',
+        type: String,
+      },
+    ],
+  })
+  static async findEventById(req: Request, res: Response) {
+    const id = +req.params.id;
+    const result = await EventModel.findEventById(id, res.locals.user);
+    if (result.getCode() == HttpStatusCode.OK)
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+  @ControllerService({
     body: [
       {
         name: 'name',
@@ -61,11 +78,11 @@ export default class EventMiddleware {
         name: 'additionalInfo',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value.length != 0) {
+          if (value.length != 0) {
             try {
-              JSON.parse(value)
-            } catch(e) {
-              return `${propName} must be an Object`
+              JSON.parse(value);
+            } catch (e) {
+              return `${propName} must be an Object`;
             }
           }
           return null;
@@ -147,7 +164,7 @@ export default class EventMiddleware {
     const startingDate = new Date(ConvertDate(data.startingDate));
     const endingDate = new Date(ConvertDate(data.endingDate));
     // handle starting date and ending date
-    if(startingDate > endingDate) {
+    if (startingDate > endingDate) {
       res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'startingDate must be smaller than endingDate!' });

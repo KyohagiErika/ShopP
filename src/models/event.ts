@@ -23,7 +23,6 @@ export default class EventModel {
       },
       relations: {
         additionalInfo: true,
-        banner: true,
         createdBy: true,
       },
       select: {
@@ -55,11 +54,10 @@ export default class EventModel {
         where: {
           status: StatusEnum.ACTIVE,
           createdBy: { id: user.id },
-          roleCreator: RoleEnum.SHOP
+          roleCreator: RoleEnum.SHOP,
         },
         relations: {
           additionalInfo: true,
-          banner: true,
           createdBy: true,
         },
         select: {
@@ -73,8 +71,7 @@ export default class EventModel {
           additionalInfo: { key: true, value: true },
         },
       });
-    }
-    else if(user.role.role == RoleEnum.ADMIN) {
+    } else if (user.role.role == RoleEnum.ADMIN) {
       eventList = await eventRepository.find({
         where: {
           status: StatusEnum.ACTIVE,
@@ -82,7 +79,6 @@ export default class EventModel {
         },
         relations: {
           additionalInfo: true,
-          banner: true,
           createdBy: true,
         },
         select: {
@@ -96,9 +92,11 @@ export default class EventModel {
           additionalInfo: { key: true, value: true },
         },
       });
-    }
-    else {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized role. Only admin or shop!');
+    } else {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only admin or shop!'
+      );
     }
     if (eventList.length == 0)
       return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
@@ -109,8 +107,44 @@ export default class EventModel {
     );
   }
 
-  static async findEventById() {
-    
+  static async findEventById(id: number, user: User) {
+    if (user.role.role == RoleEnum.CUSTOMER)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only shop or admin!'
+      );
+    const eventRepository = ShopPDataSource.getRepository(Event);
+    const event = await eventRepository.findOne({
+      where: {
+        status: StatusEnum.ACTIVE,
+        id
+      },
+      relations: {
+        additionalInfo: true,
+        createdBy: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        content: true,
+        startingDate: true,
+        endingDate: true,
+        roleCreator: true,
+        createdBy: { id: true, email: true, phone: true },
+        additionalInfo: { key: true, value: true },
+      },
+    });
+    if(event == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!')
+    if(user.role.role == RoleEnum.SHOP) {
+      if(event.createdBy.id != user.id)
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
+    }
+    return new Response(
+      HttpStatusCode.OK,
+      'Show Event successfully!',
+      event
+    );
   }
 
   static async newEvent(
@@ -145,7 +179,7 @@ export default class EventModel {
       if (banner == null)
         return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
     }
-    
+
     let event: Event;
     if (banner != null) {
       event = await eventRepository.save({
@@ -176,24 +210,20 @@ export default class EventModel {
         event,
       });
     }
-    return new Response(
-      HttpStatusCode.CREATED,
-      'Create event successfully!',
-      {
-        id: event.id,
-        name: event.name,
-        content: event.content,
-        startingDate: event.startingDate,
-        endingDate: event.endingDate,
-        roleCreator: event.roleCreator,
-        createdBy: {
-          id: event.createdBy.id,
-          phone: event.createdBy.phone,
-          email: event.createdBy.email,
-        },
-        additionalInfo: additionalInfo
-      }
-    );
+    return new Response(HttpStatusCode.CREATED, 'Create event successfully!', {
+      id: event.id,
+      name: event.name,
+      content: event.content,
+      startingDate: event.startingDate,
+      endingDate: event.endingDate,
+      roleCreator: event.roleCreator,
+      createdBy: {
+        id: event.createdBy.id,
+        phone: event.createdBy.phone,
+        email: event.createdBy.email,
+      },
+      additionalInfo: additionalInfo,
+    });
   }
 
   static async editEvent(
@@ -283,7 +313,7 @@ export default class EventModel {
     return new Response(HttpStatusCode.BAD_REQUEST, 'Edit Event failed!');
   }
 
-  static async deleteEvent(id: number,user: User) {
+  static async deleteEvent(id: number, user: User) {
     if (user.role.role == RoleEnum.CUSTOMER)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
@@ -292,18 +322,21 @@ export default class EventModel {
     const eventRepository = ShopPDataSource.getRepository(Event);
     const event = await eventRepository.findOne({
       relations: {
-        createdBy: true
+        createdBy: true,
       },
       where: {
-        id
-      }
-    })
-    if(event == null) 
+        id,
+      },
+    });
+    if (event == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
-    if(event.createdBy.id != user.id) 
+    if (event.createdBy.id != user.id)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized user!');
-    if(event.status == StatusEnum.INACTIVE)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'event has been already deleted!');
+    if (event.status == StatusEnum.INACTIVE)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'event has been already deleted!'
+      );
     const result = await eventRepository.update(
       {
         id,
