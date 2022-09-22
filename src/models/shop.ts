@@ -76,30 +76,30 @@ export default class ShopModel {
   static async postNew(
     name: string,
     avatar: number,
-    userId: number,
+    user: User,
     email: string,
     phone: string,
     placeOfReceipt: string
   ) {
-    const userRepository = ShopPDataSource.getRepository(User);
-    const user = await userRepository.findOne({
-      relations: {
-        role: true,
-      },
-      select: {
-        id: true,
-        role: {
-          role: true,
-        },
-      },
-      where: {
-        id: userId,
-        status: StatusEnum.ACTIVE,
-        //roles: {role: RoleEnum.CUSTOMER},
-      },
-    });
-    if (user == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'User is invalid.');
+    // const userRepository = ShopPDataSource.getRepository(User);
+    // const user = await userRepository.findOne({
+    //   relations: {
+    //     role: true,
+    //   },
+    //   select: {
+    //     id: true,
+    //     role: {
+    //       role: true,
+    //     },
+    //   },
+    //   where: {
+    //     id: userId,
+    //     status: StatusEnum.ACTIVE,
+    //     role: {role: RoleEnum.CUSTOMER},
+    //   },
+    // });
+    if (user.role.role == 1) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'User is already Shop.');
     } else {
       let shop = new Shop();
       shop.name = name;
@@ -111,7 +111,7 @@ export default class ShopModel {
 
       await shopRepository.save(shop);
       await userRoleRepository.update(
-        { user: { id: userId } },
+        { id: user.id },
         { role: RoleEnum.SHOP }
       );
 
@@ -135,7 +135,7 @@ export default class ShopModel {
       
       where: {
         id: id,
-        user: { status: StatusEnum.ACTIVE, //roles: {role: RoleEnum.SHOP}
+        user: { status: StatusEnum.ACTIVE, role: {role: RoleEnum.SHOP}
       },
       }
     });

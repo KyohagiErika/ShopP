@@ -5,6 +5,7 @@ import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
 import { Like } from 'typeorm';
+import { response } from 'express';
 
 const productRepository = ShopPDataSource.getRepository(Product);
 
@@ -157,7 +158,7 @@ export default class ProductModel {
     return product ? product : false;
   }
 
-  static async searchByShop(shop: string) {
+  static async searchByShop(shopId: string) {
     const product = await productRepository.find({
       relations: {
         shop: true,
@@ -175,11 +176,11 @@ export default class ProductModel {
       },
       where: [
         {
-          shop: { id: shop },
+          shop: {id: shopId},
           status: ProductEnum.AVAILABLE,
         },
         {
-          shop: { id: shop },
+          shop: {id: shopId},
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],
@@ -188,29 +189,23 @@ export default class ProductModel {
   }
 
   static async postNew(
-    shopId: string,
+    shop: Shop,
     name: string,
     categoryId: number,
     detail: string,
     amount: number,
     status: ProductEnum
   ) {
-    const shopRepository = ShopPDataSource.getRepository(Shop);
-    const shop = await shopRepository.findOne({
-      where: {
-        id: shopId,
-      },
-    });
     const categoryRepository = ShopPDataSource.getRepository(Category);
     const category = await categoryRepository.findOne({
       where: {
         id: categoryId,
       },
     });
-    if (shop == null || category == null) {
+    if (category == null) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        'shopId or categoryId not exist.'
+        'category not exist.'
       );
     } else {
       let product = new Product();

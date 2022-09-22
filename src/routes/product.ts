@@ -25,7 +25,7 @@ routes.get(
 routes.get('/search-by-shop/:shopId', ProductMiddleware.searchByShop);
 
 routes.post(
-  '/new/:shopId',
+  '/new',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   ProductMiddleware.postNew
 ); //[checkJwt, checkRole(RoleEnum.ADMIN)],

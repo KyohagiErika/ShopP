@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Shop } from '../entities/shop';
+import { User } from '../entities/user';
 import ShopModel from '../models/shop';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
@@ -92,12 +93,12 @@ export default class ShopMiddleware {
     ],
   })
   static async postNew(req: Request, res: Response) {
+    const user: User=res.locals.user;
     const data = req.body;
-    const userId = +req.params.userId;
     const result = await ShopModel.postNew(
       data.name.toString(),
       data.avatar.toString(),
-      userId,
+      user,
       data.email.toString(),
       data.phone.toString(),
       data.placeOfReceipt.toString()
@@ -109,6 +110,7 @@ export default class ShopMiddleware {
     } else {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }
+    res.locals.user = user 
   }
 
   @ControllerService({
