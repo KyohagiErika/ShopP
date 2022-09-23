@@ -1,3 +1,4 @@
+import { Shop } from './../entities/shop';
 import { UserRole } from './../entities/userRole';
 import { User } from './../entities/user';
 import { LocalFile } from './../entities/localFile';
@@ -7,6 +8,7 @@ import { Event } from './../entities/event';
 import { ShopPDataSource } from './../data';
 import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
+import { Like } from 'typeorm';
 
 export default class EventModel {
   static async listAdminEvents() {
@@ -27,11 +29,11 @@ export default class EventModel {
         additionalInfo: { key: true, value: true },
       },
       where: {
-        roleCreator: 1,
         status: StatusEnum.ACTIVE,
+        roleCreator: Like(RoleEnum.ADMIN),
       },
     });
-    if(adminEventList[0].roleCreator != 1) console.log('ngu') 
+    if(adminEventList[0].roleCreator == 1) console.log('ngu') 
     if (adminEventList.length ==  0) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
     }
@@ -50,7 +52,7 @@ export default class EventModel {
         where: {
           status: StatusEnum.ACTIVE,
           createdBy: { id: user.id },
-          roleCreator: RoleEnum.SHOP,
+          roleCreator: Like(RoleEnum.SHOP),
         },
         relations: {
           additionalInfo: true,
@@ -71,7 +73,7 @@ export default class EventModel {
       eventList = await eventRepository.find({
         where: {
           status: StatusEnum.ACTIVE,
-          roleCreator: RoleEnum.SHOP,
+          roleCreator: Like(RoleEnum.SHOP),
         },
         relations: {
           additionalInfo: true,
@@ -133,8 +135,10 @@ export default class EventModel {
     if (event == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
     if (user.role.role == RoleEnum.SHOP) {
-      if (event.createdBy.id != user.id)
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
+      if(event.roleCreator == RoleEnum.SHOP) {
+        if (event.createdBy.id != user.id)
+          return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
+      }
     }
     return new Response(HttpStatusCode.OK, 'Show Event successfully!', event);
   }
@@ -249,7 +253,7 @@ export default class EventModel {
     });
     if (event == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
-    if (event.createdBy.id != user.role.role)
+    if (event.createdBy.id != user.id)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized user!');
     let banner = null;
     if (
