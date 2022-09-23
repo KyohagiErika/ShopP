@@ -4,13 +4,12 @@ import { HttpStatusCode } from './../utils/shopp.enum';
 import { Request, Response } from 'express';
 import EventModel from '../models/event';
 import { ControllerService } from '../utils/decorators';
-import { use } from 'chai';
 import ConvertDate from '../utils/convertDate';
 
 export default class EventMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
-    const result = await EventModel.listAdminEvents(res.locals.user);
+    const result = await EventModel.listAdminEvents();
     if (result.getCode() == HttpStatusCode.OK)
       res
         .status(result.getCode())
@@ -35,7 +34,7 @@ export default class EventMiddleware {
     params: [
       {
         name: 'id',
-        type: Number,
+        type: String,
       },
     ],
   })

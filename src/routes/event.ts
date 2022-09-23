@@ -14,14 +14,14 @@ routes.get(
 
 // list events created by shop
 routes.get(
-  '/list-shop-events/:userId',
+  '/list-shop-events',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   EventMiddleware.listShopEvents
 );
 
 // create a new event
 routes.post(
-  '/new/:userId([0-9]+)',
+  '/new',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   EventMiddleware.newEvent
 );

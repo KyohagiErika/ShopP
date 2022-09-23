@@ -108,6 +108,11 @@ export default class CustomerModel {
     placeOfDelivery: string,
     user: User
   ) {
+    if(user.role.role == RoleEnum.ADMIN) 
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        `Unauthorized role. Admin can not create customer role!`
+      );
     const customerRepository = ShopPDataSource.getRepository(Customer);
     // check user has already have customer or not
     if (user.customer != null && user.customer != undefined) {

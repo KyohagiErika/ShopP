@@ -9,18 +9,9 @@ import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 
 export default class EventModel {
-  static async listAdminEvents(user: User) {
-    if (user.role.role != RoleEnum.ADMIN)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Unauthorized role. Only admin!'
-      );
+  static async listAdminEvents() {
     const eventRepository = ShopPDataSource.getRepository(Event);
     const adminEventList = await eventRepository.find({
-      where: {
-        status: StatusEnum.ACTIVE,
-        roleCreator: RoleEnum.ADMIN,
-      },
       relations: {
         additionalInfo: true,
         createdBy: true,
@@ -35,8 +26,13 @@ export default class EventModel {
         createdBy: { id: true, email: true, phone: true },
         additionalInfo: { key: true, value: true },
       },
+      where: {
+        roleCreator: 1,
+        status: StatusEnum.ACTIVE,
+      },
     });
-    if (adminEventList == null) {
+    if(adminEventList[0].roleCreator != 1) console.log('ngu') 
+    if (adminEventList.length ==  0) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
     }
     return new Response(
