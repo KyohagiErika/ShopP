@@ -12,13 +12,16 @@ routes.get(
   ProductAdditionalInfo.listAll
 );
 
-routes.get('/get-product-information/:id', AuthMiddleware.checkJwt, ProductAdditionalInfo.getOneById);
-
+routes.get(
+  '/get-product-information/:id',
+  AuthMiddleware.checkJwt,
+  ProductAdditionalInfo.getOneById
+);
 
 routes.post(
   '/new/:productId',
-   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
-   ProductAdditionalInfo.postNew
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  ProductAdditionalInfo.postNew
 );
 
 routes.post(

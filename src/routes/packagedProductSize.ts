@@ -6,19 +6,18 @@ import { RoleEnum } from '../utils/shopp.enum';
 
 const routes = Router();
 
+routes.get('/list-all', [AuthMiddleware.checkJwt], PackagedProductSize.listAll);
+
 routes.get(
-  '/list-all',
-  [AuthMiddleware.checkJwt],
-  PackagedProductSize.listAll
+  '/get-packaged-product-size/:id',
+  AuthMiddleware.checkJwt,
+  PackagedProductSize.getOneById
 );
-
-routes.get('/get-packaged-product-size/:id', AuthMiddleware.checkJwt, PackagedProductSize.getOneById);
-
 
 routes.post(
   '/new/:productId',
-   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
-   PackagedProductSize.postNew
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  PackagedProductSize.postNew
 );
 
 routes.post(

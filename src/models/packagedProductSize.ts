@@ -4,14 +4,15 @@ import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { PackagedProductSize } from '../entities/packagedProductSize';
 
-const packagedProductSizeReposity = ShopPDataSource.getRepository(PackagedProductSize);
+const packagedProductSizeReposity =
+  ShopPDataSource.getRepository(PackagedProductSize);
 
 export default class PackagedProductSizeModel {
   static async listAll() {
     const packagedProductSize = await packagedProductSizeReposity.find({
-        relations: {
-            product: true
-        },
+      relations: {
+        product: true,
+      },
       select: {
         weight: true,
         lenght: true,
@@ -24,14 +25,16 @@ export default class PackagedProductSizeModel {
         },
       },
     });
-    return packagedProductSize && packagedProductSize.length > 0 ? packagedProductSize : false;
+    return packagedProductSize && packagedProductSize.length > 0
+      ? packagedProductSize
+      : false;
   }
 
   static async getOneById(id: number) {
     const packagedProductSize = await packagedProductSizeReposity.find({
-        relations: {
-            product: true
-        },
+      relations: {
+        product: true,
+      },
       select: {
         weight: true,
         lenght: true,
@@ -55,28 +58,27 @@ export default class PackagedProductSizeModel {
     weight: number,
     lenght: number,
     width: number,
-    height: number,
+    height: number
   ) {
     const productRepository = ShopPDataSource.getRepository(Product);
     const product = await productRepository.findOne({
       select: {
         id: true,
-        name: true
+        name: true,
       },
-      where: [{
-        id: productId,
-        status: ProductEnum.AVAILABLE
-      },
-    {
-      id: productId,
-      status: ProductEnum.OUT_OF_ORDER
-    }],
+      where: [
+        {
+          id: productId,
+          status: ProductEnum.AVAILABLE,
+        },
+        {
+          id: productId,
+          status: ProductEnum.OUT_OF_ORDER,
+        },
+      ],
     });
-    if (product == null ) {
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'ProductId not exist.'
-      );
+    if (product == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'ProductId not exist.');
     } else {
       let packagedProductSize = new PackagedProductSize();
       packagedProductSize.product = product;
@@ -99,33 +101,38 @@ export default class PackagedProductSizeModel {
     weight: number,
     lenght: number,
     width: number,
-    height: number,
-  ){
+    height: number
+  ) {
     const packagedProductSize = await packagedProductSizeReposity.findOne({
-        where:[{
-            id: id,
-            product: {status:ProductEnum.AVAILABLE}
+      where: [
+        {
+          id: id,
+          product: { status: ProductEnum.AVAILABLE },
         },
         {
           id: id,
-          product: {status:ProductEnum.OUT_OF_ORDER}
-      },
-      ]
+          product: { status: ProductEnum.OUT_OF_ORDER },
+        },
+      ],
     });
-    if(packagedProductSize==null){
-        return new Response(HttpStatusCode.BAD_REQUEST, "Id not exit !");
-    }else{
-        const packagedProductSizeEdit = await packagedProductSizeReposity.update({id: id}, {weight: weight, lenght: lenght, width: width, height: height});
-        if(packagedProductSizeEdit.affected==1){
-            return new Response(HttpStatusCode.OK, 'Edit packaged size successfully!');
+    if (packagedProductSize == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Id not exit !');
     } else {
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Edit packaged size failed !'
+      const packagedProductSizeEdit = await packagedProductSizeReposity.update(
+        { id: id },
+        { weight: weight, lenght: lenght, width: width, height: height }
       );
+      if (packagedProductSizeEdit.affected == 1) {
+        return new Response(
+          HttpStatusCode.OK,
+          'Edit packaged size successfully!'
+        );
+      } else {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Edit packaged size failed !'
+        );
+      }
     }
-
-        }
-    }
-
   }
+}

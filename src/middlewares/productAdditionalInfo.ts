@@ -8,7 +8,7 @@ export default class ProductAddInfoMiddleware {
   static async listAll(req: Request, res: Response) {
     const result = await ProductAdditionInfoModel.listAll();
     if (result) {
-      res.status(HttpStatusCode.OK).send({data: result});
+      res.status(HttpStatusCode.OK).send({ data: result });
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -28,7 +28,7 @@ export default class ProductAddInfoMiddleware {
     const id = +req.params.id;
     const result = await ProductAdditionInfoModel.getOneById(id);
     if (result) {
-      res.status(HttpStatusCode.OK).send({data: result});
+      res.status(HttpStatusCode.OK).send({ data: result });
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -60,8 +60,7 @@ export default class ProductAddInfoMiddleware {
     const result = await ProductAdditionInfoModel.postNew(
       productId,
       data.key,
-      data.value,
-      
+      data.value
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
@@ -74,29 +73,29 @@ export default class ProductAddInfoMiddleware {
 
   @ControllerService({
     params: [
-        {
-          name: 'id',
-          type: String,
-        },
-      ],
-      body: [
-        {
-          name: 'key',
-          type: String,
-        },
-        {
-          name: 'value',
-          type: String,
-        },
-      ],
-    })
+      {
+        name: 'id',
+        type: String,
+      },
+    ],
+    body: [
+      {
+        name: 'key',
+        type: String,
+      },
+      {
+        name: 'value',
+        type: String,
+      },
+    ],
+  })
   static async edit(req: Request, res: Response) {
     const data = req.body;
     const id = +req.params.id;
     const result = await ProductAdditionInfoModel.edit(
       id,
       data.key,
-      data.value,
+      data.value
     );
     if (result.getCode() === HttpStatusCode.OK) {
       res
@@ -106,5 +105,4 @@ export default class ProductAddInfoMiddleware {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }
   }
-
 }

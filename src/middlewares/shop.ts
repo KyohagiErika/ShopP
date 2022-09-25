@@ -93,7 +93,7 @@ export default class ShopMiddleware {
     ],
   })
   static async postNew(req: Request, res: Response) {
-    const user: User=res.locals.user;
+    const user: User = res.locals.user;
     const data = req.body;
     const result = await ShopModel.postNew(
       data.name.toString(),
@@ -110,7 +110,7 @@ export default class ShopMiddleware {
     } else {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }
-    res.locals.user = user 
+    res.locals.user = user;
   }
 
   @ControllerService({
