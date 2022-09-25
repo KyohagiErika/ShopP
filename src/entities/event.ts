@@ -42,7 +42,7 @@ export class Event {
   })
   roleCreator: RoleEnum;
 
-  @OneToOne(() => User, user => user.event)
+  @ManyToOne(() => User, user => user.event)
   @JoinColumn()
   createdBy: User;
 

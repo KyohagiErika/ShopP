@@ -10,22 +10,17 @@ const routes = Router();
 routes.get(
   '/list-all',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
-  CustomerMiddleware.listAll
-);
+  CustomerMiddleware.listAll);
 
 // Get one customer
 routes.get('/:id', AuthMiddleware.checkJwt, CustomerMiddleware.getOneById);
 
 //Create a new customer
-routes.post(
-  '/new/:userId([0-9]+)',
-  // AuthMiddleware.checkJwt,
-  CustomerMiddleware.postNew
-);
+routes.post('/new', AuthMiddleware.checkJwt, CustomerMiddleware.postNew);
 
 //Edit one customer
 routes.post(
-  '/:id',
+  '/edit',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   CustomerMiddleware.edit
 );

@@ -135,12 +135,10 @@ class AuthMiddleware {
         function (err: any, success: any) {
           if (err) res.status(HttpStatusCode.UNKNOW_ERROR).send({ err: err });
           else
-            res
-              .status(HttpStatusCode.OK)
-              .send({
-                message:
-                  'OTP Reset Password OTP was sent via your email successfully',
-              });
+            res.status(HttpStatusCode.OK).send({
+              message:
+                'OTP Reset Password OTP was sent via your email successfully',
+            });
         }
       );
     }
