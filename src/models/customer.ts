@@ -2,8 +2,14 @@ import { User } from './../entities/user';
 import { Customer } from './../entities/customer';
 import { validate } from 'class-validator';
 import { ShopPDataSource } from '../data';
-import { StatusEnum, HttpStatusCode, GenderEnum } from '../utils/shopp.enum';
+import {
+  StatusEnum,
+  HttpStatusCode,
+  GenderEnum,
+  RoleEnum,
+} from '../utils/shopp.enum';
 import Response from '../utils/response';
+import CartModel from './cart';
 
 export default class CustomerModel {
   static async listAll() {
@@ -19,6 +25,11 @@ export default class CustomerModel {
         gender: true,
         dob: true,
         placeOfDelivery: true,
+        user: {
+          id: true,
+          email: true,
+          phone: true,
+        },
         // not need following shops
       },
       where: {
@@ -28,27 +39,65 @@ export default class CustomerModel {
     return customers ? customers : false;
   }
 
-  static async getOneById(customerId: string) {
+  static async getOneById(customerId: string, user: User) {
+    let customerPayload = user.customer;
+    let customer;
     const customerRepository = ShopPDataSource.getRepository(Customer);
-
-    const customer = await customerRepository.findOne({
-      relations: {
-        user: true,
-      },
-      select: {
-        id: true,
-        name: true,
-        avatar: true,
-        gender: true,
-        dob: true,
-        placeOfDelivery: true,
-        followingShops: true,
-      },
-      where: {
-        id: customerId,
-        user: { status: StatusEnum.ACTIVE },
-      },
-    });
+    // check role of user
+    if (
+      user.role.role == RoleEnum.CUSTOMER ||
+      user.role.role == RoleEnum.SHOP
+    ) {
+      if (customerPayload.id != customerId) {
+        customer = await customerRepository.findOne({
+          relations: {
+            user: true,
+          },
+          select: {
+            name: true,
+            avatar: true,
+            gender: true,
+            dob: true,
+          },
+          where: {
+            id: customerId,
+            user: { status: StatusEnum.ACTIVE },
+          },
+        });
+      } else
+        customer = {
+          id: customerPayload.id,
+          name: customerPayload.name,
+          dob: customerPayload.dob,
+          avatar: customerPayload.avatar,
+          user: {
+            id: user.id,
+            email: user.email,
+            phone: user.phone,
+          },
+        };
+    } else {
+      customer = await customerRepository.findOne({
+        relations: {
+          user: true,
+        },
+        select: {
+          name: true,
+          avatar: true,
+          gender: true,
+          dob: true,
+          user: {
+            id: true,
+            email: true,
+            phone: true,
+          },
+        },
+        where: {
+          id: customerId,
+          user: { status: StatusEnum.ACTIVE },
+        },
+      });
+    }
     return customer ? customer : false;
   }
 
@@ -57,73 +106,64 @@ export default class CustomerModel {
     gender: GenderEnum,
     dob: Date,
     placeOfDelivery: string,
-    userId: number
+    user: User
   ) {
-    const userRepository = ShopPDataSource.getRepository(User);
-    const customerRepository = ShopPDataSource.getRepository(Customer);
-
-    let userID = await userRepository.findOne({
-      relations: {
-        customer: true,
-        roles: true,
-      },
-      where: {
-        id: userId,
-        status: StatusEnum.ACTIVE,
-      },
-    });
-
-    if (userID === null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'UserId doesnt exist');
-    }
-
-    // check userID used or not
-
-    if (userID.customer != undefined) {
+    if (user.role.role == RoleEnum.ADMIN)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        `Customer with userId ${userId} has already existed`
+        `Unauthorized role. Admin can not create customer role!`
+      );
+    const customerRepository = ShopPDataSource.getRepository(Customer);
+    // check user has already have customer or not
+    if (user.customer != null && user.customer != undefined) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        `Customer has already existed`
       );
     }
-
     let customer = await customerRepository.save({
       name,
       gender,
       dob,
       placeOfDelivery,
-      user: userID,
+      user,
     });
-
+    CartModel.postNew(customer.id, {});
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',
-      customer
+      {
+        id: customer.id,
+        name: customer.name,
+        gender: customer.gender,
+        dob: customer.dob,
+        placeOfDelivery: customer.placeOfDelivery,
+        user: {
+          id: user.id,
+          email: user.email,
+          phone: user.phone,
+        },
+      }
     );
   }
 
   static async edit(
-    id: string,
     name: string,
     gender: GenderEnum,
     dob: Date,
-    placeOfDelivery: string
+    placeOfDelivery: string,
+    user: User
   ) {
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    const customerId = await customerRepository.findOne({
-      where: {
-        id,
-      },
-    });
-    if (customerId === null)
+    if (user.customer == null)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        "Customer Id doesn't exist"
+        'User has not have customer yet!'
       );
-
     const result = await customerRepository.update(
       {
-        id,
+        id: user.customer.id,
       },
       {
         name,

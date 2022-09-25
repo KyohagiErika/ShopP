@@ -38,11 +38,11 @@ export class Event {
   @Column({
     type: 'enum',
     enum: RoleEnum,
-    default: RoleEnum.ADMIN
+    default: RoleEnum.ADMIN,
   })
   roleCreator: RoleEnum;
 
-  @OneToOne(() => User, user => user.event)
+  @ManyToOne(() => User, user => user.event)
   @JoinColumn()
   createdBy: User;
 

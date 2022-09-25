@@ -1,35 +1,33 @@
 import { Router } from 'express';
 import AuthMiddleware from '../middlewares/auth';
 import { checkRole } from '../middlewares/checkRole';
-import ShopMiddleware from '../middlewares/shop';
+import ProductAdditionalInfo from '../middlewares/productAdditionalInfo';
 import { RoleEnum } from '../utils/shopp.enum';
 
 const routes = Router();
 
 routes.get(
   '/list-all',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
-  ShopMiddleware.listAll
+  [AuthMiddleware.checkJwt],
+  ProductAdditionalInfo.listAll
 );
 
-routes.get('/get-shop/:id', AuthMiddleware.checkJwt, ShopMiddleware.getOneById);
-
 routes.get(
-  '/search-shop/:name',
+  '/get-product-information/:id',
   AuthMiddleware.checkJwt,
-  ShopMiddleware.searchShop
+  ProductAdditionalInfo.getOneById
 );
 
 routes.post(
-  '/new',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  ShopMiddleware.postNew
+  '/new/:productId',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  ProductAdditionalInfo.postNew
 );
 
 routes.post(
   '/edit/:id',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
-  ShopMiddleware.edit
+  ProductAdditionalInfo.edit
 );
 
 export default routes;

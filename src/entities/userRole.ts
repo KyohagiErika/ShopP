@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './user';
 import { RoleEnum } from '../utils/shopp.enum';
 
@@ -7,7 +13,8 @@ export class UserRole {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, user => user.roles)
+  @OneToOne(() => User, user => user.role)
+  @JoinColumn()
   user: User;
 
   @Column({
