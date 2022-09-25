@@ -9,9 +9,9 @@ const productAddtionInfoReposity = ShopPDataSource.getRepository(ProductAddition
 export default class ProductAdditionInfoModel {
   static async listAll() {
     const productAdditionalInfo = await productAddtionInfoReposity.find({
-        relations: {
-            product: true
-        },
+      relations: {
+        product: true
+      },
       select: {
         key: true,
         value: true,
@@ -27,9 +27,9 @@ export default class ProductAdditionInfoModel {
 
   static async getOneById(id: number) {
     const productAdditionalInfo = await productAddtionInfoReposity.find({
-        relations: {
-            product: true
-        },
+      relations: {
+        product: true
+      },
       select: {
         key: true,
         value: true,
@@ -61,12 +61,12 @@ export default class ProductAdditionInfoModel {
         id: productId,
         status: ProductEnum.AVAILABLE
       },
-    {
-      id: productId,
-      status: ProductEnum.OUT_OF_ORDER
-    }],
+      {
+        id: productId,
+        status: ProductEnum.OUT_OF_ORDER
+      }],
     });
-    if (product == null ) {
+    if (product == null) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'ProductId not exist.'
@@ -90,32 +90,32 @@ export default class ProductAdditionInfoModel {
     id: number,
     key: string,
     value: string
-  ){
+  ) {
     const productAdditonalInfo = await productAddtionInfoReposity.findOne({
-        where:[{
-            id: id,
-            product: {status:ProductEnum.AVAILABLE}
-        },
-        {
-          id: id,
-          product: {status:ProductEnum.OUT_OF_ORDER}
+      where: [{
+        id: id,
+        product: { status: ProductEnum.AVAILABLE }
+      },
+      {
+        id: id,
+        product: { status: ProductEnum.OUT_OF_ORDER }
       },
       ]
     });
-    if(productAdditonalInfo==null){
-        return new Response(HttpStatusCode.BAD_REQUEST, "Id not exit !");
-    }else{
-        const productAdditionalInfoEdit = await productAddtionInfoReposity.update({id: id}, {key: key, value: value});
-        if(productAdditionalInfoEdit.affected==1){
-            return new Response(HttpStatusCode.OK, 'Edit product additonal infomation successfully!');
+    if (productAdditonalInfo == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, "Id not exit !");
     } else {
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Edit product additonal infomation failed !'
-      );
-    }
+      const productAdditionalInfoEdit = await productAddtionInfoReposity.update({ id: id }, { key: key, value: value });
+      if (productAdditionalInfoEdit.affected == 1) {
+        return new Response(HttpStatusCode.OK, 'Edit product additonal infomation successfully!');
+      } else {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Edit product additonal infomation failed !'
+        );
+      }
 
-        }
     }
-
   }
+
+}

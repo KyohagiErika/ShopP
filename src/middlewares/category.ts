@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import CategoryModel from '../models/category';
 import { ControllerService } from '../utils/decorators';
-import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
+import { HttpStatusCode } from '../utils/shopp.enum';
 
 export default class ProductMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
     const result = await CategoryModel.listAll();
     if (result) {
-      res.status(HttpStatusCode.OK).send({data: result});
+      res.status(HttpStatusCode.OK).send({ data: result });
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -21,7 +21,7 @@ export default class ProductMiddleware {
     const id = +req.params.id;
     const result = await CategoryModel.getOneById(id);
     if (result) {
-      res.status(HttpStatusCode.OK).send({data: result});
+      res.status(HttpStatusCode.OK).send({ data: result });
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)

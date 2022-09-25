@@ -129,7 +129,7 @@ export default class ProductMiddleware {
         name: 'amount',
         type: String,
         validator: (propName: string, value: number) => {
-          if(value<0 || value>100000000){
+          if (value < 0 || value > 100000000) {
             return `${propName} must be greater than 0 and less than 100000000`;
           }
           return null;
@@ -139,9 +139,9 @@ export default class ProductMiddleware {
   })
   static async postNew(req: Request, res: Response) {
     const data = req.body;
-    const shop: Shop=res.locals.user.shop;
-    if(shop == null){
-      res.status(HttpStatusCode.BAD_REQUEST).send({message: "Can not find shop"})
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res.status(HttpStatusCode.BAD_REQUEST).send({ message: "Can not find shop" })
     }
     const result = await ProductModel.postNew(
       shop,
@@ -186,7 +186,7 @@ export default class ProductMiddleware {
         name: 'amount',
         type: String,
         validator: (propName: string, value: number) => {
-          if(value<0 || value>100000000){
+          if (value < 0 || value > 100000000) {
             return `${propName} must be greater than 0 and less than 100000000`;
           }
           return null;

@@ -17,8 +17,8 @@ routes.get('/get-product-information/:id', AuthMiddleware.checkJwt, ProductAddit
 
 routes.post(
   '/new/:productId',
-   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
-   ProductAdditionalInfo.postNew
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  ProductAdditionalInfo.postNew
 );
 
 routes.post(

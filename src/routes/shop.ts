@@ -18,12 +18,12 @@ routes.get('/search-shop/:name', AuthMiddleware.checkJwt, ShopMiddleware.searchS
 
 routes.post(
   '/new',
-   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   ShopMiddleware.postNew
 );
 
 routes.post(
-  '/edit/:id',
+  '/edit',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   ShopMiddleware.edit
 );

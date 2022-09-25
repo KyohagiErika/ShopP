@@ -17,8 +17,8 @@ routes.get('/get-packaged-product-size/:id', AuthMiddleware.checkJwt, PackagedPr
 
 routes.post(
   '/new/:productId',
-   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
-   PackagedProductSize.postNew
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  PackagedProductSize.postNew
 );
 
 routes.post(

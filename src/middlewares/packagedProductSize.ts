@@ -8,7 +8,7 @@ export default class PackagedProductSizeMiddleware {
   static async listAll(req: Request, res: Response) {
     const result = await PackagedProductSizeModel.listAll();
     if (result) {
-      res.status(HttpStatusCode.OK).send({data: result});
+      res.status(HttpStatusCode.OK).send({ data: result });
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -28,7 +28,7 @@ export default class PackagedProductSizeMiddleware {
     const id = +req.params.id;
     const result = await PackagedProductSizeModel.getOneById(id);
     if (result) {
-      res.status(HttpStatusCode.OK).send({data: result});
+      res.status(HttpStatusCode.OK).send({ data: result });
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -71,7 +71,7 @@ export default class PackagedProductSizeMiddleware {
       data.height,
       data.width,
       data.lenght
-      
+
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
@@ -84,30 +84,30 @@ export default class PackagedProductSizeMiddleware {
 
   @ControllerService({
     params: [
-        {
-          name: 'id',
-          type: String,
-        },
-      ],
-      body: [
-        {
-          name: 'weight',
-          type: String,
-        },
-        {
-          name: 'height',
-          type: String,
-        },
-        {
-          name: 'width',
-          type: String,
-        },
-        {
-          name: 'lenght',
-          type: String,
-        }
-      ],
-    })
+      {
+        name: 'id',
+        type: String,
+      },
+    ],
+    body: [
+      {
+        name: 'weight',
+        type: String,
+      },
+      {
+        name: 'height',
+        type: String,
+      },
+      {
+        name: 'width',
+        type: String,
+      },
+      {
+        name: 'lenght',
+        type: String,
+      }
+    ],
+  })
   static async edit(req: Request, res: Response) {
     const data = req.body;
     const id = +req.params.id;

@@ -5,14 +5,13 @@ import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
 import { Like } from 'typeorm';
-import { response } from 'express';
 
 const productRepository = ShopPDataSource.getRepository(Product);
 
 export default class ProductModel {
   static async listAll() {
     const product = await productRepository.find({
-      relations:{
+      relations: {
         shop: true,
         category: true
 
@@ -24,8 +23,8 @@ export default class ProductModel {
         status: true,
         sold: true,
         star: true,
-        shop: {name: true},
-        category: {name: true}
+        shop: { name: true },
+        category: { name: true }
       },
       where: [
         {
@@ -50,8 +49,8 @@ export default class ProductModel {
         status: true,
         sold: true,
         star: true,
-        shop: {name: true},
-        category: {name: true},
+        shop: { name: true },
+        category: { name: true },
       },
       where: [
         {
@@ -80,8 +79,8 @@ export default class ProductModel {
         status: true,
         sold: true,
         star: true,
-        shop: {name: true},
-        category: {name: true},
+        shop: { name: true },
+        category: { name: true },
       },
       where: [
         {
@@ -110,8 +109,8 @@ export default class ProductModel {
         status: true,
         sold: true,
         star: true,
-        shop: {name: true},
-        category: {name: true},
+        shop: { name: true },
+        category: { name: true },
       },
       where: [
         {
@@ -140,8 +139,8 @@ export default class ProductModel {
         status: true,
         sold: true,
         star: true,
-        shop: {name: true},
-        category: {name: true},
+        shop: { name: true },
+        category: { name: true },
       },
 
       where: [
@@ -171,16 +170,16 @@ export default class ProductModel {
         status: true,
         sold: true,
         star: true,
-        shop: {name: true},
-        category: {name: true},
+        shop: { name: true },
+        category: { name: true },
       },
       where: [
         {
-          shop: {id: shopId},
+          shop: { id: shopId },
           status: ProductEnum.AVAILABLE,
         },
         {
-          shop: {id: shopId},
+          shop: { id: shopId },
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],
@@ -221,7 +220,7 @@ export default class ProductModel {
       return new Response(
         HttpStatusCode.CREATED,
         'Create new product successfully!',
-        {shop: {name: shop.name}, name: product.name, category: {name: category.name}, detail: product.detail, amount: product.amount, status: product.status}
+        { shop: { name: shop.name }, name: product.name, category: { name: category.name }, detail: product.detail, amount: product.amount, status: product.status }
       );
     }
   }
@@ -282,10 +281,10 @@ export default class ProductModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist.');
     }
 
-    const result = await productRepository.update( {
-        id: productId, 
-      },
-     
+    const result = await productRepository.update({
+      id: productId,
+    },
+
       { status: ProductEnum.DELETED }
     );
     if (result.affected == 1) {

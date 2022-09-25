@@ -53,7 +53,7 @@ export default class ShopModel {
     });
     return shop ? shop : false;
   }
-  
+
   static async searchShop(name: string) {
     const shop = await shopRepository.find({
       select: {
@@ -81,23 +81,6 @@ export default class ShopModel {
     phone: string,
     placeOfReceipt: string
   ) {
-    // const userRepository = ShopPDataSource.getRepository(User);
-    // const user = await userRepository.findOne({
-    //   relations: {
-    //     role: true,
-    //   },
-    //   select: {
-    //     id: true,
-    //     role: {
-    //       role: true,
-    //     },
-    //   },
-    //   where: {
-    //     id: userId,
-    //     status: StatusEnum.ACTIVE,
-    //     role: {role: RoleEnum.CUSTOMER},
-    //   },
-    // });
     if (user.role.role == 1) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'User is already Shop.');
     } else {
@@ -118,45 +101,33 @@ export default class ShopModel {
       return new Response(
         HttpStatusCode.CREATED,
         'Create new shop successfully!',
-         {name: shop.name, avatar: shop.avatar, email: shop.email, phone: shop.phone, placeOfReceipt: shop.placeOfReceipt}
+        { name: shop.name, avatar: shop.avatar, email: shop.email, phone: shop.phone, placeOfReceipt: shop.placeOfReceipt }
       );
     }
   }
 
   static async edit(
-    id: string,
+    shop: Shop,
     name: string,
     avatar: number,
     email: string,
     phone: string,
     placeOfReceipt: string
   ) {
-    const shop = await shopRepository.findOne({
-      
-      where: {
-        id: id,
-        user: { status: StatusEnum.ACTIVE, role: {role: RoleEnum.SHOP}
-      },
+    const shopEdit = await shopRepository.update(
+      { id: shop.id },
+      {
+        name: name,
+        avatar: avatar,
+        email: email,
+        phone: phone,
+        placeOfReceipt: placeOfReceipt,
       }
-    });
-    if (shop == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Shop is invalid.');
+    );
+    if (shopEdit.affected == 1) {
+      return new Response(HttpStatusCode.OK, 'Edit shop successfully!');
     } else {
-      const shopEdit = await shopRepository.update(
-        { id: id },
-        {
-          name: name,
-          avatar: avatar,
-          email: email,
-          phone: phone,
-          placeOfReceipt: placeOfReceipt,
-        }
-      );
-      if (shopEdit.affected == 1) {
-        return new Response(HttpStatusCode.OK, 'Edit shop successfully!');
-      } else {
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Edit shop failed !');
-      }
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Edit shop failed !');
     }
   }
 }
