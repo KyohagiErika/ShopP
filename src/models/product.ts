@@ -5,7 +5,6 @@ import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
 import { Like } from 'typeorm';
-import { response } from 'express';
 
 const productRepository = ShopPDataSource.getRepository(Product);
 

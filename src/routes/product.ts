@@ -28,7 +28,7 @@ routes.post(
   '/new',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   ProductMiddleware.postNew
-); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+);
 
 routes.post(
   '/edit/:id',
@@ -40,6 +40,5 @@ routes.post(
   '/delete/:id',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   ProductMiddleware.delete
-); //[checkJwt, checkRole(RoleEnum.ADMIN)],
-
+);
 export default routes;

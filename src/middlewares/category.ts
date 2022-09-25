@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import CategoryModel from '../models/category';
 import { ControllerService } from '../utils/decorators';
-import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
+import { HttpStatusCode } from '../utils/shopp.enum';
 
 export default class ProductMiddleware {
   @ControllerService()

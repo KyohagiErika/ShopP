@@ -110,16 +110,9 @@ export default class ShopMiddleware {
     } else {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }
-    res.locals.user = user;
   }
 
   @ControllerService({
-    params: [
-      {
-        name: 'id',
-        type: String,
-      },
-    ],
     body: [
       {
         name: 'name',
@@ -142,7 +135,7 @@ export default class ShopMiddleware {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
-          if (!value.match(/^\d{10}$/)) `${propName} must be valid phone`;
+          if (!value.match(/^\d{10}$/))`${propName} must be valid phone`;
           return null;
         },
       },
@@ -154,9 +147,9 @@ export default class ShopMiddleware {
   })
   static async edit(req: Request, res: Response) {
     const data = req.body;
-    const id = req.params.id;
+    const shop: Shop = res.locals.user.shop;
     const result = await ShopModel.edit(
-      id,
+      shop,
       data.name.toString(),
       data.avatar.toString(),
       data.email.toString(),

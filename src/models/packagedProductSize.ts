@@ -11,7 +11,7 @@ export default class PackagedProductSizeModel {
   static async listAll() {
     const packagedProductSize = await packagedProductSizeReposity.find({
       relations: {
-        product: true,
+        product: true
       },
       select: {
         weight: true,
@@ -33,7 +33,7 @@ export default class PackagedProductSizeModel {
   static async getOneById(id: number) {
     const packagedProductSize = await packagedProductSizeReposity.find({
       relations: {
-        product: true,
+        product: true
       },
       select: {
         weight: true,

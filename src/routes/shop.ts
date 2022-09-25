@@ -27,7 +27,7 @@ routes.post(
 );
 
 routes.post(
-  '/edit/:id',
+  '/edit',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   ShopMiddleware.edit
 );
