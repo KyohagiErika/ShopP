@@ -1,23 +1,6 @@
 version: '3.7'
 
 services:
-  be:
-    container_name: shopp_be
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    command:
-      - sh
-      - -c
-      - "npm run init-database && npm start"
-    ports:
-      - 3001:${PORT}
-    depends_on:
-      - mysql
-    networks:
-      - shopp
-    restart: always
-
   mysql:
     container_name: ${DATABASE_HOST}
     image: mysql:5.7
@@ -26,6 +9,23 @@ services:
       MYSQL_DATABASE: ${DATABASE_NAME}
     ports:
       - 3307:${DATABASE_PORT}
+    networks:
+      - shopp
+    restart: always
+
+  be:
+    container_name: shopp_be
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - sh
+      - -c
+      - 'npm run init-database && npm start'
+    ports:
+      - 3001:${PORT}
+    depends_on:
+      - mysql
     networks:
       - shopp
     restart: always

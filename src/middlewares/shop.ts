@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import { Shop } from '../entities/shop';
+import { User } from '../entities/user';
 import ShopModel from '../models/shop';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
@@ -8,7 +10,7 @@ export default class ShopMiddleware {
   static async listAll(req: Request, res: Response) {
     const result = await ShopModel.listAll();
     if (result) {
-      res.status(HttpStatusCode.OK).send(result);
+      res.status(HttpStatusCode.OK).send({ data: result });
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -28,7 +30,27 @@ export default class ShopMiddleware {
     const id = req.params.id;
     const result = await ShopModel.getOneById(id);
     if (result) {
-      res.status(HttpStatusCode.OK).send(result);
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get shop failed!' });
+    }
+  }
+
+  @ControllerService({
+    params: [
+      {
+        name: 'name',
+        type: String,
+      },
+    ],
+  })
+  static async searchShop(req: Request, res: Response) {
+    const name = req.params.name;
+    const result = await ShopModel.searchShop(name);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -59,7 +81,7 @@ export default class ShopMiddleware {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
-          if (!value.match(/^\d{10}$/))
+          if (!value.match(/^(01|03|05|07|08|09)+([0-9]{8})\b/))
             return `${propName} must be valid phone`;
           return null;
         },
@@ -71,12 +93,12 @@ export default class ShopMiddleware {
     ],
   })
   static async postNew(req: Request, res: Response) {
+    const user: User = res.locals.user;
     const data = req.body;
-    const userId = +req.params.userId;
     const result = await ShopModel.postNew(
       data.name.toString(),
       data.avatar.toString(),
-      userId,
+      user,
       data.email.toString(),
       data.phone.toString(),
       data.placeOfReceipt.toString()
@@ -91,12 +113,6 @@ export default class ShopMiddleware {
   }
 
   @ControllerService({
-    params: [
-      {
-        name: 'id',
-        type: String,
-      },
-    ],
     body: [
       {
         name: 'name',
@@ -119,7 +135,7 @@ export default class ShopMiddleware {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
-          if (!value.match(/^\d{10}$/)) `${propName} must be valid phone`;
+          if (!value.match(/^\d{10}$/))`${propName} must be valid phone`;
           return null;
         },
       },
@@ -131,9 +147,9 @@ export default class ShopMiddleware {
   })
   static async edit(req: Request, res: Response) {
     const data = req.body;
-    const id = req.params.id;
+    const shop: Shop = res.locals.user.shop;
     const result = await ShopModel.edit(
-      id,
+      shop,
       data.name.toString(),
       data.avatar.toString(),
       data.email.toString(),

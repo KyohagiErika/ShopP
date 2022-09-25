@@ -1,7 +1,9 @@
+import { User } from './../entities/user';
 import CustomerModel from '../models/customer';
 import { Request, Response } from 'express';
 import { ControllerService } from '../utils/decorators';
 import { GenderEnum, HttpStatusCode } from '../utils/shopp.enum';
+import ConvertDate from '../utils/convertDate';
 
 export default class CustomerMiddleware {
   @ControllerService()
@@ -24,37 +26,23 @@ export default class CustomerMiddleware {
   })
   static async getOneById(req: Request, res: Response) {
     const id = req.params.id;
-    if (id) {
-      const result = await CustomerModel.getOneById(id);
-      if (result) {
-        res.status(HttpStatusCode.OK).send({ data: result });
-      } else {
-        res
-          .status(HttpStatusCode.BAD_REQUEST)
-          .send({ message: 'Get customer failed!' + id });
-      }
+    const result = await CustomerModel.getOneById(id, res.locals.user);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Incorrect id! ' + id });
+        .send({ message: 'Unavailable customer!' });
     }
   }
 
   @ControllerService({
-    // params: [
-    //   {
-    //     name: 'userId',
-    //     type: Number,
-    //     validator: (propName: string, value: string) => {
-    //       return null;
-    //     },
-    //   },
-    // ],
     body: [
       {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
@@ -62,11 +50,13 @@ export default class CustomerMiddleware {
         name: 'gender',
         type: String,
         validator: (propName: string, value: string) => {
-          if (
-            value.toUpperCase() !== 'MALE' &&
-            value.toUpperCase() !== 'FEMALE'
-          )
-            return `${propName} is only MALE or FEMALE`;
+          if (value != null) {
+            if (
+              value.toUpperCase() !== 'MALE' &&
+              value.toUpperCase() !== 'FEMALE'
+            )
+              return `${propName} is only MALE or FEMALE`;
+          }
           return null;
         },
       },
@@ -74,10 +64,10 @@ export default class CustomerMiddleware {
         name: 'dob',
         type: String,
         validator: (propName: string, value: string) => {
-          var dateReplace = value.replace(/-/g, '/');
-          var parts = dateReplace.split('/');
-          var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
-          if (!Date.parse(dateTrueFormat)) return `${propName} is invalid`;
+          if (value.length != 0) {
+            if (!Date.parse(ConvertDate(value)))
+              return `${propName} is invalid`;
+          }
           return null;
         },
       },
@@ -85,28 +75,24 @@ export default class CustomerMiddleware {
         name: 'placeOfDelivery',
         type: String,
         validator: (propName: string, value: string) => {
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
     ],
   })
   static async postNew(req: Request, res: Response) {
-    const userId = +req.params.userId;
+    // console.log(res.locals.user)
     const data = req.body;
-
     // take date
-    var dateReplace = data.dob.replace(/-/g, '/');
-    var parts = dateReplace.split('/');
-    var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
-
+    var dateTrueFormat = ConvertDate(data.dob);
     const result = await CustomerModel.postNew(
       data.name.toString(),
       data.gender,
       new Date(dateTrueFormat),
       data.placeOfDelivery.toString(),
-      userId
+      res.locals.user
     );
-
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
         .status(result.getCode())
@@ -122,6 +108,7 @@ export default class CustomerMiddleware {
         name: 'name',
         type: String,
         validator: (propName: string, value: string) => {
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
@@ -141,10 +128,11 @@ export default class CustomerMiddleware {
         name: 'dob',
         type: String,
         validator: (propName: string, value: string) => {
-          var dateReplace = value.replace(/-/g, '/');
-          var parts = dateReplace.split('/');
-          var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
-          if (!Date.parse(dateTrueFormat)) return `${propName} is invalid`;
+          if (value.length != 0) {
+            if (!Date.parse(ConvertDate(value)))
+              return `${propName} is invalid`;
+          }
+
           return null;
         },
       },
@@ -152,6 +140,7 @@ export default class CustomerMiddleware {
         name: 'placeOfDelivery',
         type: String,
         validator: (propName: string, value: string) => {
+          if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
       },
@@ -160,26 +149,14 @@ export default class CustomerMiddleware {
   static async edit(req: Request, res: Response) {
     const data = req.body;
     const id = req.params.id;
-
-    // resolve gender
-    let gender: GenderEnum;
-    if (data.gender.toString().toUpperCase() === 'FEMALE') {
-      gender = GenderEnum.FEMALE;
-    } else {
-      gender = GenderEnum.MALE;
-    }
-
     // resolve dob
-    var dateReplace = data.dob.toString().replace(/-/g, '/');
-    var parts = dateReplace.split('/');
-    var dateTrueFormat = `${parts[2]}/${parts[1]}/${parts[0]}`;
-
+    var dateTrueFormat = ConvertDate(data.dob);
     const result = await CustomerModel.edit(
-      id.toString(),
-      data.name.toString(),
-      gender,
+      data.name,
+      data.gender,
       new Date(dateTrueFormat),
-      data.placeOfDelivery.toString()
+      data.placeOfDelivery,
+      res.locals.user
     );
     res.status(result.getCode()).send({ message: result.getMessage() });
   }

@@ -12,12 +12,8 @@ _Created day_: 04/08/2022
 
 ## Build with Docker
 ```
-docker build -t <image-name> .
-docker run -dp <port>:<port> <image-name>
-```
-```
-docker compose build
-docker compose up -d
+docker compose --env-file .env.deploy build
+docker compose --env-file .env.deploy up -d
 ```
 
 ## How It Work?

@@ -11,13 +11,14 @@ export default class UserModel {
   static async listAll() {
     const users = await userRepository.find({
       relations: {
-        roles: true,
+        role: true,
+        customer: true,
       },
       select: {
         id: true,
         email: true,
         phone: true,
-        roles: {
+        role: {
           role: true,
         },
       },
@@ -31,18 +32,38 @@ export default class UserModel {
   static async getOneById(userId: number) {
     const user = await userRepository.findOne({
       relations: {
-        roles: true,
+        role: true,
+        shop: true,
+        customer: true,
       },
       select: {
         id: true,
         email: true,
         phone: true,
-        roles: {
-          role: true,
-        },
       },
       where: {
         id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    return user ? user : false;
+  }
+
+  static async getOneByEmail(userEmail: string) {
+    const user = await userRepository.findOne({
+      relations: {
+        customer: true,
+      },
+      select: {
+        id: true,
+        email: true,
+        phone: true,
+        customer: {
+          name: true,
+        },
+      },
+      where: {
+        email: userEmail,
         status: StatusEnum.ACTIVE,
       },
     });

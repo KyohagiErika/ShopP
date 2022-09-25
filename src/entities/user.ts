@@ -12,6 +12,7 @@ import { UserRole } from './userRole';
 import { Customer } from './customer';
 import { StatusEnum } from '../utils/shopp.enum';
 import { Shop } from './shop';
+import { Event } from './event';
 
 @Entity()
 export class User {
@@ -41,14 +42,17 @@ export class User {
   @Column({ nullable: true })
   lockedAt: Date;
 
-  @OneToMany(() => UserRole, userRole => userRole.user)
-  roles: UserRole[];
+  @OneToOne(() => UserRole, userRole => userRole.user)
+  role: UserRole;
 
   @OneToOne(() => Shop, shop => shop.user)
   shop: Shop;
 
   @OneToOne(() => Customer, customer => customer.user)
   customer: Customer;
+
+  @OneToMany(() => Event, event => event.createdBy)
+  event: Event[];
 
   hashPassword() {
     this.password = bcrypt.hashSync(this.password, 8);
