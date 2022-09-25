@@ -23,11 +23,7 @@ export default class ProductModel {
         sold: true,
         star: true,
         shop: { name: true },
-<<<<<<< HEAD
-        category: { name: true }
-=======
         category: { name: true },
->>>>>>> origin
       },
       where: [
         {
@@ -220,9 +216,6 @@ export default class ProductModel {
       return new Response(
         HttpStatusCode.CREATED,
         'Create new product successfully!',
-<<<<<<< HEAD
-        { shop: { name: shop.name }, name: product.name, category: { name: category.name }, detail: product.detail, amount: product.amount, status: product.status }
-=======
         {
           shop: { name: shop.name },
           name: product.name,
@@ -231,7 +224,6 @@ export default class ProductModel {
           amount: product.amount,
           status: product.status,
         }
->>>>>>> origin
       );
     }
   }
@@ -292,16 +284,10 @@ export default class ProductModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist.');
     }
 
-<<<<<<< HEAD
-    const result = await productRepository.update({
-      id: productId,
-    },
-=======
     const result = await productRepository.update(
       {
         id: productId,
       },
->>>>>>> origin
 
       { status: ProductEnum.DELETED }
     );
