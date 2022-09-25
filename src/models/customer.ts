@@ -49,11 +49,12 @@ export default class CustomerModel {
       user.role.role == RoleEnum.SHOP
     ) {
       if (customerPayload.id != customerId) {
-        customer = await customerRepository.findOne({
+        let customerFind = await customerRepository.findOne({
           relations: {
             user: true,
           },
           select: {
+            id: true,
             name: true,
             avatar: true,
             gender: true,
@@ -64,6 +65,16 @@ export default class CustomerModel {
             user: { status: StatusEnum.ACTIVE },
           },
         });
+        customer = {
+          name: customerPayload.name,
+          dob: customerPayload.dob,
+          avatar: customerPayload.avatar,
+          user: {
+            id: user.id,
+            email: user.email,
+            phone: user.phone,
+          },
+        };
       } else
         customer = {
           id: customerPayload.id,
@@ -82,6 +93,7 @@ export default class CustomerModel {
           user: true,
         },
         select: {
+          id: true,
           name: true,
           avatar: true,
           gender: true,
