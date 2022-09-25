@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Shop } from '../entities/shop';
 import ProductModel from '../models/product';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
@@ -98,7 +99,7 @@ export default class ProductMiddleware {
     ],
   })
   static async searchByShop(req: Request, res: Response) {
-    const shopId = req.params.id;
+    const shopId = req.params.shopId;
     const result = await ProductModel.searchByShop(shopId);
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
@@ -110,21 +111,16 @@ export default class ProductMiddleware {
   }
 
   @ControllerService({
-    params: [
-      {
-        name: 'shopId',
-        type: String,
-      },
-    ],
     body: [
-      {
-        name: 'category',
-        type: String,
-      },
       {
         name: 'name',
         type: String,
       },
+      {
+        name: 'category',
+        type: String,
+      },
+
       {
         name: 'detail',
         type: String,
@@ -132,20 +128,32 @@ export default class ProductMiddleware {
       {
         name: 'amount',
         type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value > 100000000) {
+            return `${propName} must be greater than 0 and less than 100000000`;
+          }
+          return null;
+        },
       },
     ],
   })
   static async postNew(req: Request, res: Response) {
     const data = req.body;
-    const shopId = req.params.shopId;
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop' });
+    }
     const result = await ProductModel.postNew(
-      shopId,
+      shop,
       data.name,
-      data.category,
+      data.categoryId,
       data.detail.toString(),
       data.amount,
       ProductEnum.AVAILABLE
     );
+
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
         .status(result.getCode())
@@ -179,6 +187,12 @@ export default class ProductMiddleware {
       {
         name: 'amount',
         type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value > 100000000) {
+            return `${propName} must be greater than 0 and less than 100000000`;
+          }
+          return null;
+        },
       },
       {
         name: 'status',

@@ -4,6 +4,7 @@ import { Shop } from '../entities/shop';
 import { StatusEnum, HttpStatusCode, RoleEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { UserRole } from '../entities/userRole';
+import { Like } from 'typeorm';
 
 const shopRepository = ShopPDataSource.getRepository(Shop);
 const userRoleRepository = ShopPDataSource.getRepository(UserRole);
@@ -11,8 +12,10 @@ const userRoleRepository = ShopPDataSource.getRepository(UserRole);
 export default class ShopModel {
   static async listAll() {
     const shops = await shopRepository.find({
+      relations: {
+        user: true,
+      },
       select: {
-        id: true,
         name: true,
         avatar: true,
         email: true,
@@ -20,6 +23,10 @@ export default class ShopModel {
         placeOfReceipt: true,
         star: true,
         followers: true,
+        user: {
+          email: true,
+          phone: true,
+        },
       },
       where: {
         user: { status: StatusEnum.ACTIVE },
@@ -47,32 +54,35 @@ export default class ShopModel {
     return shop ? shop : false;
   }
 
+  static async searchShop(name: string) {
+    const shop = await shopRepository.find({
+      select: {
+        name: true,
+        avatar: true,
+        email: true,
+        phone: true,
+        placeOfReceipt: true,
+        star: true,
+        followers: true,
+      },
+      where: {
+        name: Like(`%${name}%`),
+        user: { status: StatusEnum.ACTIVE },
+      },
+    });
+    return shop ? shop : false;
+  }
+
   static async postNew(
     name: string,
     avatar: number,
-    userId: number,
+    user: User,
     email: string,
     phone: string,
     placeOfReceipt: string
   ) {
-    const userRepository = ShopPDataSource.getRepository(User);
-    const user = await userRepository.findOne({
-      relations: {
-        role: true,
-      },
-      select: {
-        id: true,
-        role: {
-          role: true,
-        },
-      },
-      where: {
-        id: userId,
-        status: StatusEnum.ACTIVE,
-      },
-    });
-    if (user == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Id not exist.');
+    if (user.role.role == 1) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'User is already Shop.');
     } else {
       let shop = new Shop();
       shop.name = name;
@@ -83,57 +93,44 @@ export default class ShopModel {
       shop.user = user;
 
       await shopRepository.save(shop);
-      await userRoleRepository.update(
-        { user: { id: userId } },
-        { role: RoleEnum.SHOP }
-      );
+      await userRoleRepository.update({ id: user.id }, { role: RoleEnum.SHOP });
 
       return new Response(
         HttpStatusCode.CREATED,
         'Create new shop successfully!',
-        shop
+        {
+          name: shop.name,
+          avatar: shop.avatar,
+          email: shop.email,
+          phone: shop.phone,
+          placeOfReceipt: shop.placeOfReceipt,
+        }
       );
     }
   }
 
   static async edit(
-    id: string,
+    shop: Shop,
     name: string,
     avatar: number,
     email: string,
     phone: string,
     placeOfReceipt: string
   ) {
-    const shop = await shopRepository.findOne({
-      relations: {
-        user: true,
-      },
-      select: {
-        id: true,
-      },
-      where: {
-        id: id,
-        user: { status: StatusEnum.ACTIVE },
-      },
-    });
-    if (shop == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Id not exist.');
-    } else {
-      const shopEdit = await shopRepository.update(
-        { id: id },
-        {
-          name: name,
-          avatar: avatar,
-          email: email,
-          phone: phone,
-          placeOfReceipt: placeOfReceipt,
-        }
-      );
-      if (shopEdit.affected == 1) {
-        return new Response(HttpStatusCode.OK, 'Edit shop successfully!');
-      } else {
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Edit shop failed !');
+    const shopEdit = await shopRepository.update(
+      { id: shop.id },
+      {
+        name: name,
+        avatar: avatar,
+        email: email,
+        phone: phone,
+        placeOfReceipt: placeOfReceipt,
       }
+    );
+    if (shopEdit.affected == 1) {
+      return new Response(HttpStatusCode.OK, 'Edit shop successfully!');
+    } else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Edit shop failed !');
     }
   }
 }
