@@ -33,8 +33,8 @@ export default class EventModel {
         roleCreator: Like(RoleEnum.ADMIN),
       },
     });
-    if(adminEventList[0].roleCreator == 1) console.log('ngu') 
-    if (adminEventList.length ==  0) {
+    if (adminEventList[0].roleCreator == 1) console.log('ngu');
+    if (adminEventList.length == 0) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
     }
     return new Response(
@@ -135,7 +135,7 @@ export default class EventModel {
     if (event == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
     if (user.role.role == RoleEnum.SHOP) {
-      if(event.roleCreator == RoleEnum.SHOP) {
+      if (event.roleCreator == RoleEnum.SHOP) {
         if (event.createdBy.id != user.id)
           return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
       }

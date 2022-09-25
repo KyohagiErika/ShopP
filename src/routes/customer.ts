@@ -10,7 +10,8 @@ const routes = Router();
 routes.get(
   '/list-all',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
-  CustomerMiddleware.listAll);
+  CustomerMiddleware.listAll
+);
 
 // Get one customer
 routes.get('/:id', AuthMiddleware.checkJwt, CustomerMiddleware.getOneById);
