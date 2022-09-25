@@ -33,7 +33,6 @@ export default class EventModel {
         roleCreator: Like(RoleEnum.ADMIN),
       },
     });
-    if (adminEventList[0].roleCreator == 1) console.log('ngu');
     if (adminEventList.length == 0) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
     }
