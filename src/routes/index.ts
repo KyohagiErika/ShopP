@@ -14,7 +14,7 @@ import packagedProductSize from './packagedProductSize';
 const routes = Router();
 
 routes.use('/auth', auth);
-routes.use('/user', user);
+routes.use('/account', user);
 routes.use('/upload', upload);
 routes.use('/shop', shop);
 routes.use('/customer', customer);
