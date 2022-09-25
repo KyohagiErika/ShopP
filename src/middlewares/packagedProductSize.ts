@@ -59,7 +59,7 @@ export default class PackagedProductSizeMiddleware {
       {
         name: 'lenght',
         type: String,
-      }
+      },
     ],
   })
   static async postNew(req: Request, res: Response) {
@@ -71,7 +71,6 @@ export default class PackagedProductSizeMiddleware {
       data.height,
       data.width,
       data.lenght
-
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
@@ -105,7 +104,7 @@ export default class PackagedProductSizeMiddleware {
       {
         name: 'lenght',
         type: String,
-      }
+      },
     ],
   })
   static async edit(req: Request, res: Response) {
@@ -126,6 +125,4 @@ export default class PackagedProductSizeMiddleware {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }
   }
-
 }
-

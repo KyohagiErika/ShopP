@@ -4,13 +4,19 @@ import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { ProductAdditionalInfo } from '../entities/productAdditionalInfo';
 
-const productAddtionInfoReposity = ShopPDataSource.getRepository(ProductAdditionalInfo);
+const productAddtionInfoReposity = ShopPDataSource.getRepository(
+  ProductAdditionalInfo
+);
 
 export default class ProductAdditionInfoModel {
   static async listAll() {
     const productAdditionalInfo = await productAddtionInfoReposity.find({
       relations: {
+<<<<<<< HEAD
         product: true
+=======
+        product: true,
+>>>>>>> origin
       },
       select: {
         key: true,
@@ -22,13 +28,19 @@ export default class ProductAdditionInfoModel {
         },
       },
     });
-    return productAdditionalInfo && productAdditionalInfo.length > 0 ? productAdditionalInfo : false;
+    return productAdditionalInfo && productAdditionalInfo.length > 0
+      ? productAdditionalInfo
+      : false;
   }
 
   static async getOneById(id: number) {
     const productAdditionalInfo = await productAddtionInfoReposity.find({
       relations: {
+<<<<<<< HEAD
         product: true
+=======
+        product: true,
+>>>>>>> origin
       },
       select: {
         key: true,
@@ -46,21 +58,14 @@ export default class ProductAdditionInfoModel {
     return productAdditionalInfo ? productAdditionalInfo : false;
   }
 
-  static async postNew(
-    productId: string,
-    key: string,
-    value: string,
-  ) {
+  static async postNew(productId: string, key: string, value: string) {
     const productRepository = ShopPDataSource.getRepository(Product);
     const product = await productRepository.findOne({
       select: {
         id: true,
-        name: true
+        name: true,
       },
-      where: [{
-        id: productId,
-        status: ProductEnum.AVAILABLE
-      },
+<<<<<<< HEAD
       {
         id: productId,
         status: ProductEnum.OUT_OF_ORDER
@@ -71,6 +76,21 @@ export default class ProductAdditionInfoModel {
         HttpStatusCode.BAD_REQUEST,
         'ProductId not exist.'
       );
+=======
+      where: [
+        {
+          id: productId,
+          status: ProductEnum.AVAILABLE,
+        },
+        {
+          id: productId,
+          status: ProductEnum.OUT_OF_ORDER,
+        },
+      ],
+    });
+    if (product == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'ProductId not exist.');
+>>>>>>> origin
     } else {
       let productAdditionalInfo = new ProductAdditionalInfo();
       productAdditionalInfo.product = product;
@@ -86,6 +106,7 @@ export default class ProductAdditionInfoModel {
     }
   }
 
+<<<<<<< HEAD
   static async edit(
     id: number,
     key: string,
@@ -108,14 +129,46 @@ export default class ProductAdditionInfoModel {
       const productAdditionalInfoEdit = await productAddtionInfoReposity.update({ id: id }, { key: key, value: value });
       if (productAdditionalInfoEdit.affected == 1) {
         return new Response(HttpStatusCode.OK, 'Edit product additonal infomation successfully!');
+=======
+  static async edit(id: number, key: string, value: string) {
+    const productAdditonalInfo = await productAddtionInfoReposity.findOne({
+      where: [
+        {
+          id: id,
+          product: { status: ProductEnum.AVAILABLE },
+        },
+        {
+          id: id,
+          product: { status: ProductEnum.OUT_OF_ORDER },
+        },
+      ],
+    });
+    if (productAdditonalInfo == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Id not exit !');
+    } else {
+      const productAdditionalInfoEdit = await productAddtionInfoReposity.update(
+        { id: id },
+        { key: key, value: value }
+      );
+      if (productAdditionalInfoEdit.affected == 1) {
+        return new Response(
+          HttpStatusCode.OK,
+          'Edit product additonal infomation successfully!'
+        );
+>>>>>>> origin
       } else {
         return new Response(
           HttpStatusCode.BAD_REQUEST,
           'Edit product additonal infomation failed !'
         );
       }
+<<<<<<< HEAD
 
     }
   }
 
+=======
+    }
+  }
+>>>>>>> origin
 }

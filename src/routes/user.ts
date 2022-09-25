@@ -23,13 +23,9 @@ routes.post('/sign-up', UserMiddleware.postNew);
 routes.post('/sign-up-admin', UserMiddleware.postNewAdmin);
 
 //Edit one user
-routes.post('/:id([0-9]+)', AuthMiddleware.checkJwt, UserMiddleware.edit);
+routes.post('/edit', AuthMiddleware.checkJwt, UserMiddleware.edit);
 
 //Delete one user
-routes.post(
-  '/delete/:id([0-9]+)',
-  AuthMiddleware.checkJwt,
-  UserMiddleware.delete
-);
+routes.post('/delete', AuthMiddleware.checkJwt, UserMiddleware.delete);
 
 export default routes;

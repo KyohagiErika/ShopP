@@ -34,12 +34,12 @@ export default class UserModel {
       relations: {
         role: true,
         shop: true,
-        customer: true
+        customer: true,
       },
       select: {
         id: true,
         email: true,
-        phone: true
+        phone: true,
       },
       where: {
         id: userId,

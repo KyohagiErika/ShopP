@@ -110,6 +110,10 @@ export default class ShopMiddleware {
     } else {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }
+<<<<<<< HEAD
+=======
+    res.locals.user = user;
+>>>>>>> origin
   }
 
   @ControllerService({

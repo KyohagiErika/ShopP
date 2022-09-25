@@ -1,15 +1,15 @@
+import { User } from './../entities/user';
 import { EventAdditionalInfo } from './../entities/eventAdditionalInfo';
 import { HttpStatusCode } from './../utils/shopp.enum';
 import { Request, Response } from 'express';
 import EventModel from '../models/event';
 import { ControllerService } from '../utils/decorators';
-import { use } from 'chai';
 import ConvertDate from '../utils/convertDate';
 
 export default class EventMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
-    const result = await EventModel.listAdminEvents(1);
+    const result = await EventModel.listAdminEvents();
     if (result.getCode() == HttpStatusCode.OK)
       res
         .status(result.getCode())
@@ -22,9 +22,7 @@ export default class EventMiddleware {
 
   @ControllerService()
   static async listShopEvents(req: Request, res: Response) {
-    const userId = +req.params.userId;
-    const result = await EventModel.listShopEvents(userId);
-
+    const result = await EventModel.listShopEvents(res.locals.user);
     if (result.getCode() == HttpStatusCode.OK)
       res
         .status(result.getCode())
@@ -32,6 +30,23 @@ export default class EventMiddleware {
     else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
+  @ControllerService({
+    params: [
+      {
+        name: 'id',
+        type: String,
+      },
+    ],
+  })
+  static async findEventById(req: Request, res: Response) {
+    const id = +req.params.id;
+    const result = await EventModel.findEventById(id, res.locals.user);
+    if (result.getCode() == HttpStatusCode.OK)
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
+  }
   @ControllerService({
     body: [
       {
@@ -60,27 +75,38 @@ export default class EventMiddleware {
       },
       {
         name: 'additionalInfo',
-        // type: Object,
-        validator: (propName: string, value) => {
-          if (typeof value != 'object') return `${propName} must be an Object`;
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (value.length != 0) {
+            try {
+              JSON.parse(value);
+            } catch (e) {
+              return `${propName} must be an Object`;
+            }
+          }
           return null;
         },
       },
     ],
   })
   static async newEvent(req: Request, res: Response) {
-    const userId = +req.params.userId;
     const data = req.body;
-    const additionalInfo = data.additionalInfo;
-    console.log(additionalInfo);
+    const startingDate = new Date(ConvertDate(data.startingDate));
+    const endingDate = new Date(ConvertDate(data.endingDate));
+    if (startingDate > endingDate) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'startingDate must be smaller than endingDate!' });
+      return;
+    }
     const result = await EventModel.newEvent(
-      userId,
+      res.locals.user,
       data.name,
       data.content,
       data.bannerId,
-      new Date(ConvertDate(data.startingDate)),
-      new Date(ConvertDate(data.endingDate)),
-      additionalInfo
+      startingDate,
+      endingDate,
+      JSON.parse(data.additionalInfo)
     );
     if (result.getCode() == HttpStatusCode.CREATED)
       res
@@ -117,8 +143,15 @@ export default class EventMiddleware {
       },
       {
         name: 'additionalInfo',
-        validator: (propName: string, value: object) => {
-          if (typeof value != 'object') return `${propName} must be an Object`;
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (value.length != 0) {
+            try {
+              JSON.parse(value);
+            } catch (e) {
+              return `${propName} must be an Object`;
+            }
+          }
           return null;
         },
       },
@@ -127,15 +160,24 @@ export default class EventMiddleware {
   static async editEvent(req: Request, res: Response) {
     const id = +req.params.id;
     const data = req.body;
-    const additionalInfo = data.additionalInfo;
+    const startingDate = new Date(ConvertDate(data.startingDate));
+    const endingDate = new Date(ConvertDate(data.endingDate));
+    // handle starting date and ending date
+    if (startingDate > endingDate) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'startingDate must be smaller than endingDate!' });
+      return;
+    }
     const result = await EventModel.editEvent(
+      res.locals.user,
       id,
       data.name,
       data.content,
       data.bannerId,
-      new Date(ConvertDate(data.startingDate)),
-      new Date(ConvertDate(data.endingDate)),
-      additionalInfo
+      startingDate,
+      endingDate,
+      JSON.parse(data.additionalInfo)
     );
     if (result.getCode() == HttpStatusCode.OK)
       res.status(result.getCode()).send({ message: result.getMessage() });
@@ -145,7 +187,7 @@ export default class EventMiddleware {
   @ControllerService()
   static async deleteEvent(req: Request, res: Response) {
     const id = +req.params.id;
-    const result = await EventModel.deleteEvent(id);
+    const result = await EventModel.deleteEvent(id, res.locals.user);
     if (result.getCode() == HttpStatusCode.OK)
       res.status(result.getCode()).send({ message: result.getMessage() });
     else res.status(result.getCode()).send({ message: result.getMessage() });
