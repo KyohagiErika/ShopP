@@ -60,12 +60,7 @@ export default class ProductAddInfoMiddleware {
     const result = await ProductAdditionInfoModel.postNew(
       productId,
       data.key,
-<<<<<<< HEAD
-      data.value,
-
-=======
       data.value
->>>>>>> origin
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
