@@ -35,3 +35,9 @@ export enum ProductEnum {
   OUT_OF_ORDER = 'OUT_OF_ORDER',
   DELETED = 'DELETED',
 }
+
+export enum VoucherTypeEnum {
+  FREESHIP = 'FREESHIP',
+  MONEY = 'MONEY',
+  PERCENT = 'PERCENT'
+}

@@ -1,9 +1,11 @@
+import { Voucher } from './voucher';
 import {
   Entity,
   PrimaryColumn,
   Column,
   ManyToOne,
   PrimaryGeneratedColumn,
+  JoinColumn,
 } from 'typeorm';
 
 import { Customer } from './customer';
@@ -13,6 +15,11 @@ export class Customer_Voucher {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  voucher: string;
+  @ManyToOne(() => Customer, customer => customer.customerVoucher)
+  @JoinColumn()
+  customer: Customer
+
+  @ManyToOne(() => Voucher, voucher => voucher.customerVoucher)
+  @JoinColumn()
+  voucher: Voucher
 }

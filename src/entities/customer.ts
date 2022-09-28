@@ -1,3 +1,4 @@
+import { Customer_Voucher } from './customerVoucher';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,6 +6,7 @@ import {
   JoinColumn,
   CreateDateColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 
 import { User } from './user';
@@ -44,4 +46,7 @@ export class Customer {
 
   @OneToOne(() => Cart, cart => cart.customer)
   cart: Cart;
+
+  @OneToMany(() => Customer_Voucher, customerVoucher => customerVoucher.customer)
+  customerVoucher: Customer_Voucher
 }
