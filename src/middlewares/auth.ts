@@ -14,12 +14,14 @@ class AuthMiddleware {
   @ControllerService({
     body: [
       {
-        name: 'email',
+        name: 'emailOrPhone',
         type: String,
         validator: (propName: string, value: string) => {
+          const phoneRegExp: RegExp = /^(01|03|05|07|08|09)+([0-9]{8})\b/;
           const emailRegExp: RegExp = /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
           if (!emailRegExp.test(value))
-            return `${propName} must be valid email`;
+            if(!phoneRegExp.test(value))
+              return `Email or Phone must be valid.`;
           return null;
         },
       },
@@ -36,9 +38,11 @@ class AuthMiddleware {
       },
     ],
   })
-  static async loginWithEmail(req: Request, res: Response) {
+  static async loginWithEmailOrPhone(req: Request, res: Response) {
     const data = req.body;
-    const result = await AuthModel.loginWithEmail(data.email, data.password);
+    let flag : boolean = false;
+    if(String(data.emailOrPhone).includes('@')) flag = true;
+    const result = await AuthModel.loginWithEmailOrPhone(String(data.email).toLowerCase(), data.password, flag);
     if (result.getCode() === HttpStatusCode.OK) {
       //Send the jwt in the response
       res.setHeader('Authentication', 'Bearer ' + result.getData());
@@ -109,7 +113,7 @@ class AuthMiddleware {
     //Get parameters from the body
     const data = req.body;
 
-    const user = await UserModel.getOneByEmail(data.email);
+    const user = await UserModel.getOneByEmail(String(data.email).toLowerCase());
     if (!user)
       res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Wrong email' });
     else {
@@ -119,8 +123,11 @@ class AuthMiddleware {
       const otp: string = generateOtp(6);
 
       await AuthModel.postUserOtp(user, OtpEnum.FORGET, otp, tokenExpiration);
+      let name = "" ;
+      if(user.customer == null || user.customer.name == null) name = "Our Customer";
+      else name = user.customer.name;
 
-      const emailTemplate = resetPasswordTemplate(otp, user.customer.name);
+      const emailTemplate = resetPasswordTemplate(otp, name);
 
       const sendGmail = SendGmailMiddleware.getInstance();
       await sendGmail.createConnection();
@@ -169,7 +176,7 @@ class AuthMiddleware {
   })
   static async verifyForgotPassword(req: Request, res: Response) {
     const data = req.body;
-    const user = await UserModel.getOneByEmail(data.email);
+    const user = await UserModel.getOneByEmail(String(data.email).toLowerCase());
     if (!user)
       res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Wrong email' });
     else {
@@ -234,7 +241,7 @@ class AuthMiddleware {
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'Wrong confirm password' });
 
-    const user = await UserModel.getOneByEmail(data.email);
+    const user = await UserModel.getOneByEmail(String(data.email).toLowerCase());
     if (!user)
       res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Wrong email' });
     else {
