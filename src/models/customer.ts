@@ -44,60 +44,35 @@ export default class CustomerModel {
     let customer;
     const customerRepository = ShopPDataSource.getRepository(Customer);
     // check role of user
-    if (
-      user.role.role == RoleEnum.CUSTOMER ||
-      user.role.role == RoleEnum.SHOP
-    ) {
-      if (customerPayload.id != customerId) {
-        customer = await customerRepository.findOne({
-          relations: {
-            user: true,
-          },
-          select: {
-            name: true,
-            avatar: true,
-            gender: true,
-            dob: true,
-          },
-          where: {
-            id: customerId,
-            user: { status: StatusEnum.ACTIVE },
-          },
-        });
-      } else
-        customer = {
-          id: customerPayload.id,
-          name: customerPayload.name,
-          dob: customerPayload.dob,
-          avatar: customerPayload.avatar,
-          user: {
-            id: user.id,
-            email: user.email,
-            phone: user.phone,
-          },
-        };
-    } else {
+    if (customerPayload.id != customerId) {
       customer = await customerRepository.findOne({
         relations: {
           user: true,
         },
         select: {
+          id: true,
           name: true,
           avatar: true,
           gender: true,
           dob: true,
-          user: {
-            id: true,
-            email: true,
-            phone: true,
-          },
         },
         where: {
           id: customerId,
           user: { status: StatusEnum.ACTIVE },
         },
       });
-    }
+    } else
+      customer = {
+        id: customerPayload.id,
+        name: customerPayload.name,
+        dob: customerPayload.dob,
+        avatar: customerPayload.avatar,
+        user: {
+          id: user.id,
+          email: user.email,
+          phone: user.phone,
+        },
+      };
     return customer ? customer : false;
   }
 
@@ -119,7 +94,7 @@ export default class CustomerModel {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         `Customer has already existed`
-      );
+      )
     }
     let customer = await customerRepository.save({
       name,

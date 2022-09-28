@@ -14,7 +14,7 @@ routes.get(
 );
 
 // Get one customer
-routes.get('/:id', AuthMiddleware.checkJwt, CustomerMiddleware.getOneById);
+routes.get('/:id',[AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)], CustomerMiddleware.getOneById);
 
 //Create a new customer
 routes.post('/new', AuthMiddleware.checkJwt, CustomerMiddleware.postNew);
