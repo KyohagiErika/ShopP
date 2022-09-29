@@ -43,12 +43,31 @@ export default class CustomerModel {
     let customerPayload = user.customer;
     let customer;
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    // check role of user
-    if (customerPayload.id != customerId) {
+    if(user.role.role == RoleEnum.ADMIN) {
       customer = await customerRepository.findOne({
         relations: {
           user: true,
         },
+        select: {
+          id: true,
+          name: true,
+          avatar: true,
+          gender: true,
+          dob: true,
+          user: {
+            id: true,
+            email: true,
+            phone: true,
+          },
+        },
+        where: {
+          id: customerId,
+          user: { status: StatusEnum.ACTIVE },
+        },
+      });
+    }
+    else if (customerPayload.id != customerId) {
+      customer = await customerRepository.findOne({
         select: {
           id: true,
           name: true,
@@ -67,6 +86,7 @@ export default class CustomerModel {
         name: customerPayload.name,
         dob: customerPayload.dob,
         avatar: customerPayload.avatar,
+        gender: customerPayload.gender,
         user: {
           id: user.id,
           email: user.email,

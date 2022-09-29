@@ -1,4 +1,3 @@
-import { Customer_Voucher } from './customerVoucher';
 import { RoleEnum } from './../utils/shopp.enum';
 import {
   Entity,
@@ -8,18 +7,22 @@ import {
   CreateDateColumn,
   OneToOne,
   OneToMany,
+  ManyToMany,
+  JoinTable,
+  ManyToOne,
 } from 'typeorm';
 
 import { User } from './user';
 import { VoucherTypeEnum } from '../utils/shopp.enum';
 import { Cart } from './cart';
+import { Customer } from './customer';
 
 @Entity()
 export class Voucher {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true })
+  @Column()
   title: string;
 
   @Column({
@@ -32,13 +35,16 @@ export class Voucher {
     type: 'enum',
     enum: RoleEnum,
   })
-  createdBy: RoleEnum;
+  roleCreator: RoleEnum;
 
-  @Column({ nullable: true })
+  @ManyToOne(() => User, user => user.voucher)
+  user: User
+
+  @Column()
   amount: number;
 
   @Column('json', { nullable: true })
-  condition: object;
+  condition: string;
 
   @Column()
   mfgDate: Date;
@@ -46,6 +52,6 @@ export class Voucher {
   @Column()
   expDate: Date;
 
-  @OneToMany(() => Customer_Voucher, customerVoucher => customerVoucher.voucher)
-  customerVoucher: Customer_Voucher;
+  @ManyToMany(() => Customer, customer => customer.voucher)
+  customer: Customer;
 }

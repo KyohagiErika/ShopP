@@ -1,4 +1,4 @@
-import { Customer_Voucher } from './customerVoucher';
+import { Voucher } from './voucher';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,6 +7,7 @@ import {
   CreateDateColumn,
   OneToOne,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 
 import { User } from './user';
@@ -47,6 +48,6 @@ export class Customer {
   @OneToOne(() => Cart, cart => cart.customer)
   cart: Cart;
 
-  @OneToMany(() => Customer_Voucher, customerVoucher => customerVoucher.customer)
-  customerVoucher: Customer_Voucher
+  @ManyToMany(() => Voucher, voucher => voucher.customer)
+  voucher: Voucher
 }
