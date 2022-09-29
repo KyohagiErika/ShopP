@@ -10,9 +10,13 @@ const userRepository = ShopPDataSource.getRepository(User);
 const UserOtpRepository = ShopPDataSource.getRepository(UserOtp);
 
 export default class AuthModel {
-  static async loginWithEmailOrPhone(emailOrPhone: string, password: string, flag: boolean) {
+  static async loginWithEmailOrPhone(
+    emailOrPhone: string,
+    password: string,
+    flag: boolean
+  ) {
     //Get user from database
-    var user: User | null = new User;
+    var user: User | null = new User();
     if (flag == true) {
       user = await userRepository.findOne({
         where: {
@@ -45,7 +49,10 @@ export default class AuthModel {
       );
       return new Response(HttpStatusCode.OK, 'Login successfully', token);
     } else
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Email or Phone is wrong!');
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Email or Phone is wrong!'
+      );
   }
 
   static async changePassword(
