@@ -8,7 +8,7 @@ const routes = Router();
 
 // list all vouchers
 routes.get(
-  '/list-All',
+  '/list-all',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   VoucherMiddleware.listAll
 );
@@ -29,7 +29,7 @@ routes.post(
 
 // delete a voucher
 routes.post(
-  '/delete/:id([0-9]+)',
+  '/delete/:id',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   VoucherMiddleware.deleteVoucher
 );

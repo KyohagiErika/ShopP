@@ -164,13 +164,16 @@ export default class VoucherMiddleware {
       mfgDate,
       expDate
     );
-    res.status(result.getCode()).send({ message: result.getMessage() });
+    if(result.getCode() == HttpStatusCode.OK)
+      res.status(result.getCode()).send({ message: result.getMessage(), data: result.getData() });
+    else
+      res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
   @ControllerService()
   static async deleteVoucher(req: Request, res: Response) {
     const id = req.params.id
     const result = await VoucherModel.deleteVoucher(res.locals.user, id)
-    res.status(result.getCode()).send({message: result.getMessage})
+    res.status(result.getCode()).send({message: result.getMessage()})
   }
 }

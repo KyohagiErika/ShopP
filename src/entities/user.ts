@@ -55,7 +55,7 @@ export class User {
   @OneToMany(() => Event, event => event.createdBy)
   event: Event[];
 
-  @OneToMany(() => Voucher, voucher => voucher.user)
+  @OneToMany(() => Voucher, voucher => voucher.createdBy)
   voucher: Voucher[];
 
   hashPassword() {

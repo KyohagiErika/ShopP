@@ -9,6 +9,7 @@ export default class VoucherModel {
     const voucherRepository = ShopPDataSource.getRepository(Voucher);
     const vouchers = await voucherRepository.find({
       select: {
+        id: true,
         title: true,
         type: true,
         amount: true,
@@ -62,7 +63,15 @@ export default class VoucherModel {
       return new Response(
         HttpStatusCode.OK,
         'Create voucher successfully!',
-        voucher
+        {
+          id: voucher.id,
+          title: voucher.title,
+          type: voucher.type,
+          amount: voucher.amount,
+          condition: voucher.condition,
+          mfgDate: voucher.mfgDate,
+          expDate: voucher.expDate
+        }
       );
     return new Response(HttpStatusCode.BAD_REQUEST, 'Failed');
   }
@@ -79,6 +88,9 @@ export default class VoucherModel {
   ) {
     const voucherRepository = ShopPDataSource.getRepository(Voucher);
     const voucher = await voucherRepository.findOne({
+      relations: {
+        createdBy: {role: true}
+      },
       where: {
         id
       }
@@ -120,6 +132,9 @@ export default class VoucherModel {
   static async deleteVoucher(user: User, id: string) {
     const voucherRepository = ShopPDataSource.getRepository(Voucher);
     const voucher = await voucherRepository.findOne({
+      relations: {
+        createdBy: { role: true },
+      },
       where: {
         id,
       },
