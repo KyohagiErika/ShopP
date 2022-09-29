@@ -13,6 +13,7 @@ export default class UserModel {
       relations: {
         role: true,
         customer: true,
+        shop: true,
       },
       select: {
         id: true,
@@ -40,6 +41,9 @@ export default class UserModel {
         id: true,
         email: true,
         phone: true,
+        role: {
+          role: true,
+        },
       },
       where: {
         id: userId,
@@ -52,14 +56,16 @@ export default class UserModel {
   static async getOneByEmail(userEmail: string) {
     const user = await userRepository.findOne({
       relations: {
+        role: true,
+        shop: true,
         customer: true,
       },
       select: {
         id: true,
         email: true,
         phone: true,
-        customer: {
-          name: true,
+        role: {
+          role: true,
         },
       },
       where: {
@@ -109,7 +115,11 @@ export default class UserModel {
     return new Response(
       HttpStatusCode.CREATED,
       'Create new user successfully!',
-      user
+      {
+        id: user.id,
+        email: user.email,
+        phone: user.phone,
+      }
     );
   }
 
