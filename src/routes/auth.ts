@@ -8,9 +8,10 @@ const router = Router();
 router.post('/login', AuthMiddleware.loginWithEmailOrPhone);
 
 //Logout route
-router.get('/logout', 
-[AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)], 
-AuthMiddleware.logout
+router.get(
+  '/logout',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  AuthMiddleware.logout
 );
 
 //Change my password

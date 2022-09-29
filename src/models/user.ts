@@ -20,8 +20,8 @@ export default class UserModel {
         email: true,
         phone: true,
         role: {
-          role: true
-        }
+          role: true,
+        },
       },
       where: {
         status: StatusEnum.ACTIVE,
@@ -35,15 +35,15 @@ export default class UserModel {
       relations: {
         role: true,
         shop: true,
-        customer: true
+        customer: true,
       },
       select: {
         id: true,
         email: true,
         phone: true,
         role: {
-          role: true
-        }
+          role: true,
+        },
       },
       where: {
         id: userId,
@@ -58,15 +58,15 @@ export default class UserModel {
       relations: {
         role: true,
         shop: true,
-        customer: true
+        customer: true,
       },
       select: {
         id: true,
         email: true,
         phone: true,
         role: {
-          role: true
-        }
+          role: true,
+        },
       },
       where: {
         email: userEmail,
@@ -115,10 +115,10 @@ export default class UserModel {
     return new Response(
       HttpStatusCode.CREATED,
       'Create new user successfully!',
-      { 
+      {
         id: user.id,
         email: user.email,
-        phone: user.phone
+        phone: user.phone,
       }
     );
   }

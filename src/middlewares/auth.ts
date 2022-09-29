@@ -50,9 +50,7 @@ class AuthMiddleware {
     if (result.getCode() === HttpStatusCode.OK) {
       //Send the jwt in the response
       res.setHeader('Authentication', result.getData());
-      res
-        .status(result.getCode())
-        .send({ message: result.getMessage() });
+      res.status(result.getCode()).send({ message: result.getMessage() });
     } else {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }
@@ -61,8 +59,8 @@ class AuthMiddleware {
   @ControllerService()
   static async logout(req: Request, res: Response) {
     res.removeHeader('Authentication');
-    res.status(HttpStatusCode.OK).send({ message: "Logout successfully!" });
-    }
+    res.status(HttpStatusCode.OK).send({ message: 'Logout successfully!' });
+  }
 
   @ControllerService({
     body: [
