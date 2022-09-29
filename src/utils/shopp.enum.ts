@@ -1,6 +1,7 @@
 export enum HttpStatusCode {
   OK = 200,
   CREATED = 201,
+  REDIRECT = 302,
   BAD_REQUEST = 400,
   UNAUTHORIZATION = 401,
   FORBIDDEN = 403,

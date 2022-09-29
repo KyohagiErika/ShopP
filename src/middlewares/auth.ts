@@ -49,14 +49,20 @@ class AuthMiddleware {
     );
     if (result.getCode() === HttpStatusCode.OK) {
       //Send the jwt in the response
-      res.setHeader('Authentication', 'Bearer ' + result.getData());
+      res.setHeader('Authentication', result.getData());
       res
         .status(result.getCode())
-        .send({ message: result.getMessage(), token: result.getData() });
+        .send({ message: result.getMessage() });
     } else {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }
   }
+
+  @ControllerService()
+  static async logout(req: Request, res: Response) {
+    res.removeHeader('Authentication');
+    res.status(HttpStatusCode.OK).send({ message: "Logout successfully!" });
+    }
 
   @ControllerService({
     body: [
@@ -277,8 +283,8 @@ class AuthMiddleware {
     let token = <string>req.header('Authorization');
     if (token == '')
       res
-        .status(HttpStatusCode.UNAUTHORIZATION)
-        .send({ message: 'Unauthorized error, Token is missing' });
+        .status(HttpStatusCode.REDIRECT)
+        .send({ message: 'Please Login to ShopP' });
     let jwtPayload;
     token = token?.replace('Bearer ', '');
     //Try to validate the token and get data
@@ -288,13 +294,13 @@ class AuthMiddleware {
       if (user === false) {
         res
           .status(HttpStatusCode.UNAUTHORIZATION)
-          .send({ message: 'Unauthorized error, User not exist!' });
+          .send({ message: 'Unauthorized: authentication required' });
       } else res.locals.user = user;
     } catch (error) {
       //If token is not valid, respond with 401 (unauthorized)
       res
         .status(HttpStatusCode.UNAUTHORIZATION)
-        .send({ message: 'Unauthorized error, token is invalid!' });
+        .send({ message: 'Unauthorized: authentication required' });
       return;
     }
 
@@ -304,7 +310,7 @@ class AuthMiddleware {
     const newToken = jwt.sign({ userId, email }, config.JWT_SECRET, {
       expiresIn: '1h',
     });
-    res.setHeader('Authentication', 'Bearer ' + newToken);
+    res.setHeader('Authentication', newToken);
 
     //Call the next middleware or controller
     next();
