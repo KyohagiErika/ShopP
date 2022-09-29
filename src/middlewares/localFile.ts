@@ -2,10 +2,11 @@ import { Request, Response } from 'express';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
 import UploadModel from '../models/upload';
+import { uploadImage } from './fileProvider';
 
-export default class UploadMiddleware {
+export default class LocalFileMiddleware {
   @ControllerService()
-  static async uploadImage(req: Request, res: Response) {
+  static async postImage(req: Request, res: Response) {
     if (req.file != undefined) {
       const file = req.file;
       await UploadModel.upload(file);
@@ -19,7 +20,7 @@ export default class UploadMiddleware {
   }
 
   @ControllerService()
-  static async uploadMultipleImage(req: Request, res: Response) {
+  static async postMultipleImage(req: Request, res: Response) {
     const files = req.files;
     if (files == undefined) {
       return res
@@ -33,7 +34,7 @@ export default class UploadMiddleware {
   }
 
   @ControllerService()
-  static async uploadVideo(req: Request, res: Response) {
+  static async postVideo(req: Request, res: Response) {
     if (req.file != undefined) {
       const file = req.file;
       await UploadModel.upload(file);
