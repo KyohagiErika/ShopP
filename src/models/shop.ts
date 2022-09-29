@@ -13,7 +13,7 @@ export default class ShopModel {
   static async listAll() {
     const shops = await shopRepository.find({
       relations: {
-        user: true
+        user: true,
       },
       select: {
         name: true,
@@ -25,8 +25,8 @@ export default class ShopModel {
         followers: true,
         user: {
           email: true,
-          phone: true
-        }
+          phone: true,
+        },
       },
       where: {
         user: { status: StatusEnum.ACTIVE },
@@ -93,15 +93,18 @@ export default class ShopModel {
       shop.user = user;
 
       await shopRepository.save(shop);
-      await userRoleRepository.update(
-        { id: user.id },
-        { role: RoleEnum.SHOP }
-      );
+      await userRoleRepository.update({ id: user.id }, { role: RoleEnum.SHOP });
 
       return new Response(
         HttpStatusCode.CREATED,
         'Create new shop successfully!',
-        { name: shop.name, avatar: shop.avatar, email: shop.email, phone: shop.phone, placeOfReceipt: shop.placeOfReceipt }
+        {
+          name: shop.name,
+          avatar: shop.avatar,
+          email: shop.email,
+          phone: shop.phone,
+          placeOfReceipt: shop.placeOfReceipt,
+        }
       );
     }
   }

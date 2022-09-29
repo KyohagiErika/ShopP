@@ -12,8 +12,11 @@ routes.get(
   ProductAdditionalInfo.listAll
 );
 
-routes.get('/get-product-information/:id', AuthMiddleware.checkJwt, ProductAdditionalInfo.getOneById);
-
+routes.get(
+  '/get-product-information/:id',
+  AuthMiddleware.checkJwt,
+  ProductAdditionalInfo.getOneById
+);
 
 routes.post(
   '/new/:productId',

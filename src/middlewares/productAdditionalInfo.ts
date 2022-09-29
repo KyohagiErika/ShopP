@@ -60,8 +60,7 @@ export default class ProductAddInfoMiddleware {
     const result = await ProductAdditionInfoModel.postNew(
       productId,
       data.key,
-      data.value,
-
+      data.value
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
@@ -96,7 +95,7 @@ export default class ProductAddInfoMiddleware {
     const result = await ProductAdditionInfoModel.edit(
       id,
       data.key,
-      data.value,
+      data.value
     );
     if (result.getCode() === HttpStatusCode.OK) {
       res
@@ -106,5 +105,4 @@ export default class ProductAddInfoMiddleware {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }
   }
-
 }

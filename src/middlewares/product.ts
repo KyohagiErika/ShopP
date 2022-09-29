@@ -141,7 +141,9 @@ export default class ProductMiddleware {
     const data = req.body;
     const shop: Shop = res.locals.user.shop;
     if (shop == null) {
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: "Can not find shop" })
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop' });
     }
     const result = await ProductModel.postNew(
       shop,

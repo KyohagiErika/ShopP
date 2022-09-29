@@ -51,8 +51,8 @@ export class User {
   @OneToOne(() => Customer, customer => customer.user)
   customer: Customer;
 
-  @OneToOne(() => Event, event => event.createdBy)
-  event: Event;
+  @OneToMany(() => Event, event => event.createdBy)
+  event: Event[];
 
   hashPassword() {
     this.password = bcrypt.hashSync(this.password, 8);

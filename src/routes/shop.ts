@@ -14,7 +14,11 @@ routes.get(
 
 routes.get('/get-shop/:id', AuthMiddleware.checkJwt, ShopMiddleware.getOneById);
 
-routes.get('/search-shop/:name', AuthMiddleware.checkJwt, ShopMiddleware.searchShop);
+routes.get(
+  '/search-shop/:name',
+  AuthMiddleware.checkJwt,
+  ShopMiddleware.searchShop
+);
 
 routes.post(
   '/new',
