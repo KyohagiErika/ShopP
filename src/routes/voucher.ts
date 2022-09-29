@@ -1,3 +1,4 @@
+import { Shop } from './../entities/shop';
 import { Router } from 'express';
 import AuthMiddleware from '../middlewares/auth';
 import { checkRole } from '../middlewares/checkRole';
@@ -15,21 +16,21 @@ routes.get(
 // create a new voucher
 routes.post(
   '/new',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   VoucherMiddleware.newVoucher
 );
 
 // edit a voucher
 routes.post(
   '/:id',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   VoucherMiddleware.editVoucher
 );
 
 // delete a voucher
 routes.post(
   '/delete/:id([0-9]+)',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   VoucherMiddleware.deleteVoucher
 );
 

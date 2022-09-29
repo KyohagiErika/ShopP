@@ -14,7 +14,6 @@ import {
 
 import { User } from './user';
 import { VoucherTypeEnum } from '../utils/shopp.enum';
-import { Cart } from './cart';
 import { Customer } from './customer';
 
 @Entity()
@@ -38,7 +37,7 @@ export class Voucher {
   roleCreator: RoleEnum;
 
   @ManyToOne(() => User, user => user.voucher)
-  user: User
+  createdBy: User;
 
   @Column()
   amount: number;

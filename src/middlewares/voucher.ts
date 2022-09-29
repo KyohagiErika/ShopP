@@ -2,7 +2,6 @@ import { HttpStatusCode, VoucherTypeEnum } from './../utils/shopp.enum';
 import { Response, Request } from 'express';
 import VoucherModel from '../models/voucher';
 import { ControllerService } from '../utils/decorators';
-import { Validator } from 'class-validator';
 import ConvertDate from '../utils/convertDate';
 
 export default class VoucherMiddleware {
@@ -84,6 +83,7 @@ export default class VoucherMiddleware {
       return;
     }
     const result = await VoucherModel.editVoucher(
+      res.locals.user,
       id,
       data.title,
       data.type,
@@ -156,9 +156,9 @@ export default class VoucherMiddleware {
       return;
     }
     const result = await VoucherModel.newVoucher(
+      res.locals.user,
       data.title,
       data.type,
-      data.createdBy,
       data.amount,
       data.condition,
       mfgDate,
@@ -170,7 +170,7 @@ export default class VoucherMiddleware {
   @ControllerService()
   static async deleteVoucher(req: Request, res: Response) {
     const id = req.params.id
-    const result = await VoucherModel.deleteVoucher(id)
+    const result = await VoucherModel.deleteVoucher(res.locals.user, id)
     res.status(result.getCode()).send({message: result.getMessage})
   }
 }

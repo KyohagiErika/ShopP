@@ -1,3 +1,4 @@
+import { User } from './../entities/user';
 import { HttpStatusCode, VoucherTypeEnum, RoleEnum } from './../utils/shopp.enum';
 import { Voucher } from './../entities/voucher';
 import { ShopPDataSource } from './../data';
@@ -38,9 +39,9 @@ export default class VoucherModel {
   }
 
   static async newVoucher(
+    user: User,
     title: string,
     type: VoucherTypeEnum,
-    createdBy: RoleEnum,
     amount: number,
     condition: string,
     mfgDate: Date,
@@ -50,7 +51,8 @@ export default class VoucherModel {
     const voucher = await voucherRepository.save({
       title,
       type,
-      createdBy,
+      roleCreator: user.role.role,
+      createdBy: user,
       amount,
       condition,
       mfgDate,
@@ -66,6 +68,7 @@ export default class VoucherModel {
   }
 
   static async editVoucher(
+    user: User,
     id: string,
     title: string,
     type: VoucherTypeEnum,
@@ -75,6 +78,32 @@ export default class VoucherModel {
     expDate: Date
   ) {
     const voucherRepository = ShopPDataSource.getRepository(Voucher);
+    const voucher = await voucherRepository.findOne({
+      where: {
+        id
+      }
+    })
+    if(voucher == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable Voucher!')
+    if(voucher.createdBy.role.role != user.role.role)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized error. Invalid role!');
+    if(voucher.createdBy.role.role == RoleEnum.ADMIN && user.role.role == RoleEnum.ADMIN) {
+      const result = await voucherRepository.update(id, {
+        title,
+        type,
+        amount,
+        condition,
+        mfgDate,
+        expDate,
+      });
+      if (result.affected == 1)
+        return new Response(HttpStatusCode.OK, 'Update voucher successfully!');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Update voucher failed!');
+    }
+    if(voucher.createdBy.role.role == RoleEnum.SHOP && user.role.role == RoleEnum.SHOP) {
+      if(voucher.createdBy.id != user.id)
+        return new Response(HttpStatusCode.BAD_REQUEST, 'No access permission!')
+    }
     const result = await voucherRepository.update(id, {
       title,
       type,
@@ -85,14 +114,39 @@ export default class VoucherModel {
     });
     if (result.affected == 1)
       return new Response(HttpStatusCode.OK, 'Update voucher successfully!');
-    return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable voucher');
+    return new Response(HttpStatusCode.BAD_REQUEST, 'Update voucher failed!');
   }
 
-  static async deleteVoucher(id: string) {
+  static async deleteVoucher(user: User, id: string) {
     const voucherRepository = ShopPDataSource.getRepository(Voucher);
+    const voucher = await voucherRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (voucher == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable Voucher!');
+    if (voucher.createdBy.role.role != user.role.role)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized error. Invalid role!'
+      );
+    if (
+      voucher.createdBy.role.role == RoleEnum.ADMIN &&
+      user.role.role == RoleEnum.ADMIN
+    ) {
+      const result = await voucherRepository.delete(id);
+      if (result.affected == 1)
+        return new Response(HttpStatusCode.OK, 'Delete voucher successfully');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Delete voucher failed!');
+    }
+    if(voucher.createdBy.role.role == RoleEnum.SHOP && user.role.role == RoleEnum.SHOP) {
+      if(voucher.createdBy.id != user.id)
+        return new Response(HttpStatusCode.BAD_REQUEST, 'No access permission!')
+    }
     const result = await voucherRepository.delete(id);
     if (result.affected == 1)
       return new Response(HttpStatusCode.OK, 'Delete voucher successfully');
-    return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable voucher');
+    return new Response(HttpStatusCode.BAD_REQUEST, 'Delete voucher failed!');
   }
 }
