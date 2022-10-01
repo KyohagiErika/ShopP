@@ -10,19 +10,19 @@ import { deleteFile } from '../utils';
 
 const shopRepository = ShopPDataSource.getRepository(Shop);
 const userRoleRepository = ShopPDataSource.getRepository(UserRole);
-const localFileRepository = ShopPDataSource.getRepository(LocalFile)
+const localFileRepository = ShopPDataSource.getRepository(LocalFile);
 
 export default class ShopModel {
   static async listAll() {
     const shops = await shopRepository.find({
       relations: {
         user: true,
-        avatar: true
+        avatar: true,
       },
       select: {
         name: true,
         avatar: {
-          path: true
+          path: true,
         },
         email: true,
         phone: true,
@@ -44,7 +44,7 @@ export default class ShopModel {
   static async getOneById(id: string) {
     const shop = await shopRepository.find({
       relations: {
-        avatar: true
+        avatar: true,
       },
       select: {
         name: true,
@@ -65,7 +65,7 @@ export default class ShopModel {
   static async searchShop(name: string) {
     const shop = await shopRepository.find({
       relations: {
-        avatar: true
+        avatar: true,
       },
       select: {
         name: true,
@@ -133,17 +133,18 @@ export default class ShopModel {
         name: name,
         email: email,
         phone: phone,
-        placeOfReceipt: placeOfReceipt
+        placeOfReceipt: placeOfReceipt,
       }
     );
-    
+
     const localFileEdit = await localFileRepository.update(
       {
-        id: shop.avatar.id
-      },{
-        filename : file.filename,
-        mimetype : file.mimetype,
-        path : file.path
+        id: shop.avatar.id,
+      },
+      {
+        filename: file.filename,
+        mimetype: file.mimetype,
+        path: file.path,
       }
     );
 

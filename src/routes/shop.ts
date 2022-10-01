@@ -23,13 +23,15 @@ routes.get(
 
 routes.post(
   '/new',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)], uploadImage('avatar'),
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  uploadImage('avatar'),
   ShopMiddleware.postNew
 );
 
 routes.post(
   '/edit',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)], uploadImage('avatar'),
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  uploadImage('avatar'),
   ShopMiddleware.edit
 );
 

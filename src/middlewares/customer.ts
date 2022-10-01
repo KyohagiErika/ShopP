@@ -1,8 +1,7 @@
-import { User } from './../entities/user';
 import CustomerModel from '../models/customer';
 import { Request, Response } from 'express';
 import { ControllerService } from '../utils/decorators';
-import { GenderEnum, HttpStatusCode } from '../utils/shopp.enum';
+import { HttpStatusCode } from '../utils/shopp.enum';
 import ConvertDate from '../utils/convertDate';
 
 export default class CustomerMiddleware {

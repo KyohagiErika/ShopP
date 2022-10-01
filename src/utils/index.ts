@@ -1,9 +1,5 @@
-import { UserOtp } from '../entities/userOtp';
-import AuthModel from '../models/auth';
-import { HttpStatusCode, OtpEnum } from './shopp.enum';
 import path from 'path';
 import fs from 'fs';
-import ShopPConfig from './shopp.config';
 
 //GENERATE OTP
 const generateOtp = (len: number): string => {
@@ -17,18 +13,11 @@ const generateOtp = (len: number): string => {
 
 //Delete file in public/uploads
 const deleteFile = (pathFile: string) => {
-  pathFile = pathFile.replace('//','/');
+  pathFile = pathFile.replace('//', '/');
   if (
-    fs.existsSync(
-      path.join(path.dirname(path.dirname(__dirname)), pathFile)
-    )
+    fs.existsSync(path.join(path.dirname(path.dirname(__dirname)), pathFile))
   ) {
-    fs.unlinkSync(
-      path.join(
-        path.dirname(path.dirname(__dirname)),
-        pathFile
-      )
-    );
+    fs.unlinkSync(path.join(path.dirname(path.dirname(__dirname)), pathFile));
   }
 };
 

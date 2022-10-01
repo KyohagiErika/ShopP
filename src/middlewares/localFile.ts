@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
 import UploadModel from '../models/upload';
-import { uploadImage } from './fileProvider';
 
 export default class LocalFileMiddleware {
   @ControllerService()

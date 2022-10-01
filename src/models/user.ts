@@ -14,7 +14,7 @@ export default class UserModel {
         role: true,
         customer: true,
         shop: {
-          avatar:true
+          avatar: true,
         },
       },
       select: {
@@ -34,7 +34,7 @@ export default class UserModel {
       relations: {
         role: true,
         shop: {
-          avatar:true
+          avatar: true,
         },
         customer: true,
       },
@@ -56,7 +56,7 @@ export default class UserModel {
       relations: {
         role: true,
         shop: {
-          avatar:true
+          avatar: true,
         },
         customer: true,
       },

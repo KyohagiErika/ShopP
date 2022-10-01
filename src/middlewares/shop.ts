@@ -115,7 +115,6 @@ export default class ShopMiddleware {
       res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ error: 'Please upload image' });
-
   }
 
   @ControllerService({
@@ -137,7 +136,7 @@ export default class ShopMiddleware {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
-          if (!value.match(/^\d{10}$/))`${propName} must be valid phone`;
+          if (!value.match(/^\d{10}$/)) `${propName} must be valid phone`;
           return null;
         },
       },
@@ -150,27 +149,26 @@ export default class ShopMiddleware {
   static async edit(req: Request, res: Response) {
     if (req.file != undefined) {
       const file = req.file;
-      //const localFile: LocalFile = await UploadModel.upload(file);
-    const data = req.body;
-    const shop: Shop = res.locals.user.shop;
-    const result = await ShopModel.edit(
-      shop,
-      data.name.toString(),
-      file,
-      data.email.toString(),
-      data.phone.toString(),
-      data.placeOfReceipt.toString()
-    );
-    if (result.getCode() === HttpStatusCode.OK) {
+      const data = req.body;
+      const shop: Shop = res.locals.user.shop;
+      const result = await ShopModel.edit(
+        shop,
+        data.name.toString(),
+        file,
+        data.email.toString(),
+        data.phone.toString(),
+        data.placeOfReceipt.toString()
+      );
+      if (result.getCode() === HttpStatusCode.OK) {
+        res
+          .status(result.getCode())
+          .send({ message: result.getMessage(), data: result.getData() });
+      } else {
+        res.status(result.getCode()).send({ message: result.getMessage() });
+      }
+    } else
       res
-        .status(result.getCode())
-        .send({ message: result.getMessage(), data: result.getData() });
-    } else {
-      res.status(result.getCode()).send({ message: result.getMessage() });
-    }
-  } else
-  res
-    .status(HttpStatusCode.BAD_REQUEST)
-    .send({ error: 'Please upload image' });
-}
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ error: 'Please upload image' });
+  }
 }

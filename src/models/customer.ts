@@ -1,6 +1,5 @@
 import { User } from './../entities/user';
 import { Customer } from './../entities/customer';
-import { validate } from 'class-validator';
 import { ShopPDataSource } from '../data';
 import {
   StatusEnum,

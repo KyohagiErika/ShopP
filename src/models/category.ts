@@ -1,5 +1,4 @@
 import { ShopPDataSource } from '../data';
-import { Product } from '../entities/product';
 import { HttpStatusCode } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
