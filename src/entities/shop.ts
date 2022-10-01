@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Product } from './product';
+import { Report } from './report';
 import { User } from './user';
 
 @Entity()
@@ -41,4 +42,7 @@ export class Shop {
 
   @Column({ default: 0 })
   followers: number;
+
+  @OneToMany(() => Report, report => report.id)
+  report: Report[];
 }
