@@ -3,13 +3,13 @@ import {
   PrimaryGeneratedColumn,
   Column,
   JoinColumn,
-  CreateDateColumn,
   OneToOne,
 } from 'typeorm';
 
 import { User } from './user';
 import { GenderEnum } from '../utils/shopp.enum';
 import { Cart } from './cart';
+import { LocalFile } from './localFile';
 
 @Entity()
 export class Customer {
@@ -19,8 +19,9 @@ export class Customer {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  avatar: number;
+  @OneToOne(() => LocalFile)
+  @JoinColumn()
+  avatar: LocalFile;
 
   @Column({
     type: 'enum',

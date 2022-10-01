@@ -3,6 +3,8 @@ import { Request, Response } from 'express';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
 import ConvertDate from '../utils/convertDate';
+import { LocalFile } from '../entities/localFile';
+import UploadModel from '../models/upload';
 
 export default class CustomerMiddleware {
   @ControllerService()
@@ -26,6 +28,7 @@ export default class CustomerMiddleware {
   static async getOneById(req: Request, res: Response) {
     const id = req.params.id;
     const result = await CustomerModel.getOneById(id, res.locals.user);
+    res.status(HttpStatusCode.OK).send({ data: res.locals.user });
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
     } else {
@@ -81,24 +84,32 @@ export default class CustomerMiddleware {
     ],
   })
   static async postNew(req: Request, res: Response) {
-    // console.log(res.locals.user)
-    const data = req.body;
-    // take date
-    var dateTrueFormat = ConvertDate(data.dob);
-    const result = await CustomerModel.postNew(
-      data.name.toString(),
-      data.gender,
-      new Date(dateTrueFormat),
-      data.placeOfDelivery.toString(),
-      res.locals.user
-    );
-    if (result.getCode() === HttpStatusCode.CREATED) {
+    if (req.file != undefined) {
+      const file = req.file;
+      const localFile: LocalFile = await UploadModel.upload(file);
+
+      const data = req.body;
+      // take date
+      var dateTrueFormat = ConvertDate(data.dob);
+      const result = await CustomerModel.postNew(
+        data.name.toString(),
+        data.gender,
+        new Date(dateTrueFormat),
+        data.placeOfDelivery.toString(),
+        res.locals.user,
+        localFile
+      );
+      if (result.getCode() === HttpStatusCode.CREATED) {
+        res
+          .status(result.getCode())
+          .send({ message: result.getMessage(), data: result.getData() });
+      } else {
+        res.status(result.getCode()).send({ message: result.getMessage() });
+      }
+    } else
       res
-        .status(result.getCode())
-        .send({ message: result.getMessage(), data: result.getData() });
-    } else {
-      res.status(result.getCode()).send({ message: result.getMessage() });
-    }
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ error: 'Please upload image' });
   }
 
   @ControllerService({
@@ -146,17 +157,25 @@ export default class CustomerMiddleware {
     ],
   })
   static async edit(req: Request, res: Response) {
-    const data = req.body;
-    const id = req.params.id;
-    // resolve dob
-    var dateTrueFormat = ConvertDate(data.dob);
-    const result = await CustomerModel.edit(
-      data.name,
-      data.gender,
-      new Date(dateTrueFormat),
-      data.placeOfDelivery,
-      res.locals.user
-    );
-    res.status(result.getCode()).send({ message: result.getMessage() });
+    if (req.file != undefined) {
+      const file = req.file;
+      const data = req.body;
+      const id = req.params.id;
+      // resolve dob
+      var dateTrueFormat = ConvertDate(data.dob);
+      const result = await CustomerModel.edit(
+        data.name,
+        data.gender,
+        new Date(dateTrueFormat),
+        data.placeOfDelivery,
+        res.locals.user,
+        file
+      );
+      res.status(result.getCode()).send({ message: result.getMessage() });
+    }
+    else
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ error: 'Please upload image' });
   }
 }

@@ -21,9 +21,6 @@ export default class ShopModel {
       },
       select: {
         name: true,
-        avatar: {
-          path: true,
-        },
         email: true,
         phone: true,
         placeOfReceipt: true,

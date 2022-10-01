@@ -9,6 +9,8 @@ import {
 } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import CartModel from './cart';
+import { LocalFile } from '../entities/localFile';
+import { deleteFile } from '../utils';
 
 export default class CustomerModel {
   static async listAll() {
@@ -16,11 +18,11 @@ export default class CustomerModel {
     const customers = await customerRepository.find({
       relations: {
         user: true,
+        avatar: true,
       },
       select: {
         id: true,
         name: true,
-        avatar: true,
         gender: true,
         dob: true,
         placeOfDelivery: true,
@@ -40,6 +42,7 @@ export default class CustomerModel {
 
   static async getOneById(customerId: string, user: User) {
     let customerPayload = user.customer;
+    return customerPayload;
     let customer;
     const customerRepository = ShopPDataSource.getRepository(Customer);
     // check role of user
@@ -47,11 +50,11 @@ export default class CustomerModel {
       customer = await customerRepository.findOne({
         relations: {
           user: true,
+          avatar: true,
         },
         select: {
           id: true,
           name: true,
-          avatar: true,
           gender: true,
           dob: true,
         },
@@ -65,7 +68,10 @@ export default class CustomerModel {
         id: customerPayload.id,
         name: customerPayload.name,
         dob: customerPayload.dob,
-        avatar: customerPayload.avatar,
+        avatar: {
+          id: customerPayload.avatar.id,
+          path: customerPayload.avatar.path
+        },
         user: {
           id: user.id,
           email: user.email,
@@ -80,7 +86,8 @@ export default class CustomerModel {
     gender: GenderEnum,
     dob: Date,
     placeOfDelivery: string,
-    user: User
+    user: User,
+    avatar: LocalFile
   ) {
     if (user.role.role == RoleEnum.ADMIN)
       return new Response(
@@ -101,6 +108,7 @@ export default class CustomerModel {
       dob,
       placeOfDelivery,
       user,
+      avatar
     });
     CartModel.postNew(customer.id, {});
     return new Response(
@@ -126,10 +134,13 @@ export default class CustomerModel {
     gender: GenderEnum,
     dob: Date,
     placeOfDelivery: string,
-    user: User
+    user: User,
+    file: Express.Multer.File
   ) {
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
+    const localFileRepository = ShopPDataSource.getRepository(LocalFile);
+
     if (user.customer == null)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
@@ -146,7 +157,21 @@ export default class CustomerModel {
         placeOfDelivery,
       }
     );
-    if (result.affected == 1) {
+
+    const localFileEdit = await localFileRepository.update(
+      {
+        id: user.customer.avatar.id,
+      },
+      {
+        filename: file.filename,
+        mimetype: file.mimetype,
+        path: file.path,
+      }
+    );
+
+    deleteFile(user.customer.avatar.path);
+
+    if (result.affected == 1 && localFileEdit.affected == 1) {
       return new Response(HttpStatusCode.OK, 'Edit customer successfully!');
     } else {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Edit customer failed !');
