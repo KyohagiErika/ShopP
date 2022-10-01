@@ -13,15 +13,14 @@ export default class UserModel {
       relations: {
         role: true,
         customer: true,
-        shop: true,
+        shop: {
+          avatar:true
+        },
       },
       select: {
         id: true,
         email: true,
         phone: true,
-        role: {
-          role: true,
-        },
       },
       where: {
         status: StatusEnum.ACTIVE,
@@ -34,16 +33,15 @@ export default class UserModel {
     const user = await userRepository.findOne({
       relations: {
         role: true,
-        shop: true,
+        shop: {
+          avatar:true
+        },
         customer: true,
       },
       select: {
         id: true,
         email: true,
         phone: true,
-        role: {
-          role: true,
-        },
       },
       where: {
         id: userId,
@@ -57,16 +55,15 @@ export default class UserModel {
     const user = await userRepository.findOne({
       relations: {
         role: true,
-        shop: true,
+        shop: {
+          avatar:true
+        },
         customer: true,
       },
       select: {
         id: true,
         email: true,
         phone: true,
-        role: {
-          role: true,
-        },
       },
       where: {
         email: userEmail,
