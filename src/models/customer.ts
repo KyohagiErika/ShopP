@@ -43,6 +43,7 @@ export default class CustomerModel {
     let customerPayload = user.customer;
     let customer;
     const customerRepository = ShopPDataSource.getRepository(Customer);
+    
     if(user.role.role == RoleEnum.ADMIN) {
       customer = await customerRepository.findOne({
         relations: {
@@ -66,6 +67,11 @@ export default class CustomerModel {
         },
       });
     }
+    else if (customerPayload == null)
+      return new Response(
+        HttpStatusCode.REDIRECT,
+        'User has not have customer yet!'
+      );
     else if (customerPayload.id != customerId) {
       customer = await customerRepository.findOne({
         select: {
@@ -153,7 +159,7 @@ export default class CustomerModel {
     const customerRepository = ShopPDataSource.getRepository(Customer);
     if (user.customer == null)
       return new Response(
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.REDIRECT,
         'User has not have customer yet!'
       );
     const result = await customerRepository.update(

@@ -7,6 +7,7 @@ export enum HttpStatusCode {
   NOT_FOUND = 404,
   INTERNAL_SERVER_ERROR = 500,
   UNKNOW_ERROR = 520,
+  REDIRECT = 302,
 }
 
 export enum StatusEnum {
