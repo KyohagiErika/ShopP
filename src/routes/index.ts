@@ -29,7 +29,7 @@ routes.use('/product', product);
 routes.use('/category', category);
 routes.use('/product-additional-info', productAdditionalInfo);
 routes.use('/packaged-product-size', packagedProductSize);
-routes.use('/report', report)
+routes.use('/report', report);
 
 routes.use(async (req, res) => {
   res.status(404).send('Not found!');

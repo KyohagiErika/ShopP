@@ -12,7 +12,12 @@ routes.get(
   ReportMiddleware.listAll
 );
 
-routes.get('/get-report/:id([0-9]+)', AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN), ReportMiddleware.getOneById);
+routes.get(
+  '/get-report/:id([0-9]+)',
+  AuthMiddleware.checkJwt,
+  checkRole(RoleEnum.ADMIN),
+  ReportMiddleware.getOneById
+);
 
 routes.get(
   '/view-report/:id([0-9]+)',
@@ -27,10 +32,10 @@ routes.post(
 );
 
 routes.post(
-    '/new-for-shop/:customerId',
-    [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
-    ReportMiddleware.postNewForShop
-  );
+  '/new-for-shop/:customerId',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  ReportMiddleware.postNewForShop
+);
 
 routes.post(
   '/edit-status/:id([0-9]+)',

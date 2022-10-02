@@ -40,20 +40,23 @@ export default class CategoryModel {
         name: name,
       },
     });
-    
-    if(!(category==null)){
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Category already exist !', category);
-    }else{
+
+    if (!(category == null)) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Category already exist !',
+        category
+      );
+    } else {
       let newCategory = new Category();
       newCategory.name = name;
-    await categoryRepository.save(newCategory);
+      await categoryRepository.save(newCategory);
 
-    return new Response(
-      HttpStatusCode.CREATED,
-      'Create new category successfully!',
-      newCategory
-    );
+      return new Response(
+        HttpStatusCode.CREATED,
+        'Create new category successfully!',
+        newCategory
+      );
     }
-    
   }
 }

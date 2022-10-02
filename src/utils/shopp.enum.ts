@@ -36,12 +36,12 @@ export enum ProductEnum {
   DELETED = 'DELETED',
 }
 
-export enum TypeTransferEnum{
+export enum TypeTransferEnum {
   SHOP_TO_CUSTOMER = 'SHOP_TO_CUSTOMER',
   CUSTOMER_TO_SHOP = 'CUSTOMER_TO_SHOP',
 }
 
-export enum StatusReportEnum{
+export enum StatusReportEnum {
   PROCESSING = 'PROCESSING',
   PROCESSED = 'PROCESSED',
 }
