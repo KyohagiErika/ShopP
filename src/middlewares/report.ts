@@ -16,14 +16,7 @@ export default class ReportMiddleware{
             }
     };
 
-    @ControllerService({
-       params: [ 
-       { 
-        name: 'id',
-        type: String
-       }
-       ]
-    })
+    @ControllerService()
     static async getOneById(req: Request, res: Response){
         const id = +req.params.id;
         const result = await ReportModel.getOneById(id);
@@ -69,7 +62,9 @@ export default class ReportMiddleware{
         const shopId = req.params.shopId
         const data = req.body
         if(customer == null){
-            res.status(HttpStatusCode.BAD_REQUEST).send({message: 'Can not find customer !'})
+            res.
+            status(HttpStatusCode.BAD_REQUEST).
+            send({message: 'Can not find customer !'})
         }
         const result = await ReportModel.postNewForCustomer(
             shopId,
@@ -80,9 +75,13 @@ export default class ReportMiddleware{
             StatusReportEnum.PROCESSING
 
         );
-        if(result.getCode() === HttpStatusCode.CREATED){
-            res.status(result.getCode()).send({message: result.getMessage(), data: result.getData()})
-        }
+        if (result.getCode() === HttpStatusCode.CREATED) {
+            res
+              .status(result.getCode())
+              .send({ message: result.getMessage(), data: result.getData() });
+          } else {
+            res.status(result.getCode()).send({ message: result.getMessage() });
+          }
 
 
     }
@@ -90,7 +89,7 @@ export default class ReportMiddleware{
     @ControllerService({
         params: [
             {
-                name: 'CustomerId',
+                name: 'customerId',
                 type: String
             }
         ],
@@ -116,25 +115,22 @@ export default class ReportMiddleware{
         const result = await ReportModel.postNewForShop(
             shop,
             customerId,
-            TypeTransferEnum.CUSTOMER_TO_SHOP,
+            TypeTransferEnum.SHOP_TO_CUSTOMER,
             data.reason,
             data.description,
             StatusReportEnum.PROCESSING
 
         );
-        if(result.getCode() === HttpStatusCode.CREATED){
-            res.status(result.getCode()).send({message: result.getMessage(), data: result.getData()})
-        }
+        if (result.getCode() === HttpStatusCode.CREATED) {
+            res
+              .status(result.getCode())
+              .send({ message: result.getMessage(), data: result.getData() });
+          } else {
+            res.status(result.getCode()).send({ message: result.getMessage() });
+          }
     }
 
-    @ControllerService({
-        params: [
-            {
-              name: 'id',
-              type: String,
-            },
-          ]
-    })
+    @ControllerService()
     static async editStatus(req: Request, res: Response){
         const id = +req.params.id
         const result = await ReportModel.editStatus(id)

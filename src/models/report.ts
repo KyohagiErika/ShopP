@@ -104,7 +104,7 @@ export default class ReportModel{
 
             }
         });
-        if(report==null){
+        if(!(report==null)){
             return new Response(HttpStatusCode.BAD_REQUEST, 'Report is in process !');
         }else{
             let newReport = new Report();
@@ -161,7 +161,7 @@ export default class ReportModel{
 
             }
         });
-        if(report==null){
+        if(!(report==null)){
             return new Response(HttpStatusCode.BAD_REQUEST, 'Report is in process !');
         }else{
             let newReport = new Report();

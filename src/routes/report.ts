@@ -12,10 +12,10 @@ routes.get(
   ReportMiddleware.listAll
 );
 
-routes.get('/get-report/:id', AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN), ReportMiddleware.getOneById);
+routes.get('/get-report/:id([0-9]+)', AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN), ReportMiddleware.getOneById);
 
 routes.get(
-  '/view-report/:id',
+  '/view-report/:id([0-9]+)',
   AuthMiddleware.checkJwt,
   ReportMiddleware.viewReport
 );
@@ -33,7 +33,7 @@ routes.post(
   );
 
 routes.post(
-  '/edit-status/:id',
+  '/edit-status/:id([0-9]+)',
   [AuthMiddleware.checkJwt],
   ReportMiddleware.editStatus
 );
