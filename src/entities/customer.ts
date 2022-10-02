@@ -1,3 +1,4 @@
+import { Voucher } from './voucher';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,6 +7,7 @@ import {
   CreateDateColumn,
   OneToOne,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 
 import { User } from './user';
@@ -46,6 +48,9 @@ export class Customer {
 
   @OneToOne(() => Cart, cart => cart.customer)
   cart: Cart;
+
+  @ManyToMany(() => Voucher, voucher => voucher.customer)
+  voucher: Voucher[];
 
   @OneToMany(() => Report, report => report.id)
   report: Report[];

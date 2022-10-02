@@ -43,45 +43,14 @@ export default class CustomerModel {
     let customerPayload = user.customer;
     let customer;
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    // check role of user
-    if (
-      user.role.role == RoleEnum.CUSTOMER ||
-      user.role.role == RoleEnum.SHOP
-    ) {
-      if (customerPayload.id != customerId) {
-        customer = await customerRepository.findOne({
-          relations: {
-            user: true,
-          },
-          select: {
-            name: true,
-            avatar: true,
-            gender: true,
-            dob: true,
-          },
-          where: {
-            id: customerId,
-            user: { status: StatusEnum.ACTIVE },
-          },
-        });
-      } else
-        customer = {
-          id: customerPayload.id,
-          name: customerPayload.name,
-          dob: customerPayload.dob,
-          avatar: customerPayload.avatar,
-          user: {
-            id: user.id,
-            email: user.email,
-            phone: user.phone,
-          },
-        };
-    } else {
+
+    if (user.role.role == RoleEnum.ADMIN) {
       customer = await customerRepository.findOne({
         relations: {
           user: true,
         },
         select: {
+          id: true,
           name: true,
           avatar: true,
           gender: true,
@@ -97,7 +66,38 @@ export default class CustomerModel {
           user: { status: StatusEnum.ACTIVE },
         },
       });
-    }
+    } else if (customerPayload == null)
+      return new Response(
+        HttpStatusCode.REDIRECT,
+        'User has not have customer yet!'
+      );
+    else if (customerPayload.id != customerId) {
+      customer = await customerRepository.findOne({
+        select: {
+          id: true,
+          name: true,
+          avatar: true,
+          gender: true,
+          dob: true,
+        },
+        where: {
+          id: customerId,
+          user: { status: StatusEnum.ACTIVE },
+        },
+      });
+    } else
+      customer = {
+        id: customerPayload.id,
+        name: customerPayload.name,
+        dob: customerPayload.dob,
+        avatar: customerPayload.avatar,
+        gender: customerPayload.gender,
+        user: {
+          id: user.id,
+          email: user.email,
+          phone: user.phone,
+        },
+      };
     return customer ? customer : false;
   }
 
@@ -158,7 +158,7 @@ export default class CustomerModel {
     const customerRepository = ShopPDataSource.getRepository(Customer);
     if (user.customer == null)
       return new Response(
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.REDIRECT,
         'User has not have customer yet!'
       );
     const result = await customerRepository.update(

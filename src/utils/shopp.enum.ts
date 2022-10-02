@@ -1,6 +1,7 @@
 export enum HttpStatusCode {
   OK = 200,
   CREATED = 201,
+  REDIRECT = 302,
   BAD_REQUEST = 400,
   UNAUTHORIZATION = 401,
   FORBIDDEN = 403,
@@ -34,6 +35,12 @@ export enum ProductEnum {
   AVAILABLE = 'AVAILABLE',
   OUT_OF_ORDER = 'OUT_OF_ORDER',
   DELETED = 'DELETED',
+}
+
+export enum VoucherTypeEnum {
+  FREESHIP = 'FREESHIP',
+  MONEY = 'MONEY',
+  PERCENT = 'PERCENT',
 }
 
 export enum TypeTransferEnum {

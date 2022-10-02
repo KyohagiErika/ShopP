@@ -10,6 +10,7 @@ import product from './product';
 import category from './category';
 import productAdditionalInfo from './productAdditionalInfo';
 import packagedProductSize from './packagedProductSize';
+import voucher from './voucher';
 import report from './report';
 
 const routes = Router();
@@ -21,6 +22,7 @@ routes.use('/shop', shop);
 routes.use('/customer', customer);
 routes.use('/cart', cart);
 routes.use('/event', event);
+routes.use('/voucher', voucher);
 
 routes.use('/get', async (req, res) => {
   res.send('Hello World!');
