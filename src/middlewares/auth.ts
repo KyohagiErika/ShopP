@@ -41,7 +41,7 @@ class AuthMiddleware {
     const result = await AuthModel.loginWithEmail(data.email, data.password);
     if (result.getCode() === HttpStatusCode.OK) {
       //Send the jwt in the response
-      res.setHeader('Authentication', 'Bearer ' + result.getData());
+      res.setHeader('Authentication', result.getData());
       res
         .status(result.getCode())
         .send({ message: result.getMessage(), token: result.getData() });

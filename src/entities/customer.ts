@@ -5,11 +5,13 @@ import {
   JoinColumn,
   CreateDateColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 
 import { User } from './user';
 import { GenderEnum } from '../utils/shopp.enum';
 import { Cart } from './cart';
+import { Report } from './report';
 
 @Entity()
 export class Customer {
@@ -44,4 +46,7 @@ export class Customer {
 
   @OneToOne(() => Cart, cart => cart.customer)
   cart: Cart;
+
+  @OneToMany(() => Report, report => report.id)
+  report: Report[];
 }
