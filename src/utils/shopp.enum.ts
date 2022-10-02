@@ -1,13 +1,13 @@
 export enum HttpStatusCode {
   OK = 200,
   CREATED = 201,
+  REDIRECT = 302,
   BAD_REQUEST = 400,
   UNAUTHORIZATION = 401,
   FORBIDDEN = 403,
   NOT_FOUND = 404,
   INTERNAL_SERVER_ERROR = 500,
   UNKNOW_ERROR = 520,
-  REDIRECT = 302,
 }
 
 export enum StatusEnum {
