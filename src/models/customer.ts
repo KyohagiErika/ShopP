@@ -55,11 +55,6 @@ export default class CustomerModel {
           avatar: true,
           gender: true,
           dob: true,
-          user: {
-            id: true,
-            email: true,
-            phone: true,
-          },
         },
         where: {
           id: customerId,

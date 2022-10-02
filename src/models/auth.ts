@@ -10,14 +10,28 @@ const userRepository = ShopPDataSource.getRepository(User);
 const UserOtpRepository = ShopPDataSource.getRepository(UserOtp);
 
 export default class AuthModel {
-  static async loginWithEmail(email: string, password: string) {
+  static async loginWithEmailOrPhone(
+    emailOrPhone: string,
+    password: string,
+    flag: boolean
+  ) {
     //Get user from database
-    const user: User | null = await userRepository.findOne({
-      where: {
-        email: email,
-        status: StatusEnum.ACTIVE,
-      },
-    });
+    var user: User | null = new User();
+    if (flag == true) {
+      user = await userRepository.findOne({
+        where: {
+          email: emailOrPhone,
+          status: StatusEnum.ACTIVE,
+        },
+      });
+    } else {
+      user = await userRepository.findOne({
+        where: {
+          phone: emailOrPhone,
+          status: StatusEnum.ACTIVE,
+        },
+      });
+    }
 
     if (user !== null) {
       //Check if encrypted password match
@@ -35,7 +49,10 @@ export default class AuthModel {
       );
       return new Response(HttpStatusCode.OK, 'Login successfully', token);
     } else
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Wrong login email!');
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Email or Phone is wrong!'
+      );
   }
 
   static async changePassword(
