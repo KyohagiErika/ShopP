@@ -49,5 +49,5 @@ export class Customer {
   cart: Cart;
 
   @ManyToMany(() => Voucher, voucher => voucher.customer)
-  voucher: Voucher
+  voucher: Voucher[]
 }

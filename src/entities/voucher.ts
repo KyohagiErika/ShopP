@@ -52,5 +52,5 @@ export class Voucher {
   expDate: Date;
 
   @ManyToMany(() => Customer, customer => customer.voucher)
-  customer: Customer;
+  customer: Customer[];
 }

@@ -225,4 +225,18 @@ export default class VoucherModel {
       return new Response(HttpStatusCode.OK, 'Delete voucher successfully');
     return new Response(HttpStatusCode.BAD_REQUEST, 'Delete voucher failed!');
   }
+
+  static async saveVoucher(user: User, id: string) {
+    const voucherRepository = ShopPDataSource.getRepository(Voucher);
+    const voucher = await voucherRepository.findOne({
+      where: {
+        id
+      }
+    })
+    if(voucher == null) 
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable Voucher!');
+    if(user.role.role == RoleEnum.CUSTOMER) {
+      
+    }
+  }
 }

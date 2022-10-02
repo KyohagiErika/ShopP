@@ -22,7 +22,7 @@ routes.get(
 
 // list shop vouchers
 routes.get(
-  '/list-shopP',
+  '/list-shop',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   VoucherMiddleware.listShopVouchers
 );
