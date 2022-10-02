@@ -40,5 +40,15 @@ export enum ProductEnum {
 export enum VoucherTypeEnum {
   FREESHIP = 'FREESHIP',
   MONEY = 'MONEY',
-  PERCENT = 'PERCENT'
+  PERCENT = 'PERCENT',
+}
+
+export enum TypeTransferEnum {
+  SHOP_TO_CUSTOMER = 'SHOP_TO_CUSTOMER',
+  CUSTOMER_TO_SHOP = 'CUSTOMER_TO_SHOP',
+}
+
+export enum StatusReportEnum {
+  PROCESSING = 'PROCESSING',
+  PROCESSED = 'PROCESSED',
 }

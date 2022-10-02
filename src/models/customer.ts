@@ -43,8 +43,8 @@ export default class CustomerModel {
     let customerPayload = user.customer;
     let customer;
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    
-    if(user.role.role == RoleEnum.ADMIN) {
+
+    if (user.role.role == RoleEnum.ADMIN) {
       customer = await customerRepository.findOne({
         relations: {
           user: true,
@@ -66,8 +66,7 @@ export default class CustomerModel {
           user: { status: StatusEnum.ACTIVE },
         },
       });
-    }
-    else if (customerPayload == null)
+    } else if (customerPayload == null)
       return new Response(
         HttpStatusCode.REDIRECT,
         'User has not have customer yet!'
@@ -120,7 +119,7 @@ export default class CustomerModel {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         `Customer has already existed`
-      )
+      );
     }
     let customer = await customerRepository.save({
       name,

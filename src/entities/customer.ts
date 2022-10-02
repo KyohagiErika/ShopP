@@ -13,6 +13,7 @@ import {
 import { User } from './user';
 import { GenderEnum } from '../utils/shopp.enum';
 import { Cart } from './cart';
+import { Report } from './report';
 
 @Entity()
 export class Customer {
@@ -49,5 +50,8 @@ export class Customer {
   cart: Cart;
 
   @ManyToMany(() => Voucher, voucher => voucher.customer)
-  voucher: Voucher[]
+  voucher: Voucher[];
+
+  @OneToMany(() => Report, report => report.id)
+  report: Report[];
 }
