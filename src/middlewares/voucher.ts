@@ -14,6 +14,22 @@ export default class VoucherMiddleware {
   }
 
   @ControllerService()
+  static async listShopPVouchers(req: Request, res: Response) {
+    const result = await VoucherModel.listShopPVouchers();
+    if (result) res.status(HttpStatusCode.OK).send({ data: result });
+    else
+      res.status(HttpStatusCode.OK).send({ message: 'No vouchers available' });
+  }
+
+  @ControllerService()
+  static async listShopVouchers(req: Request, res: Response) {
+    const result = await VoucherModel.listShopVouchers();
+    if (result) res.status(HttpStatusCode.OK).send({ data: result });
+    else
+      res.status(HttpStatusCode.OK).send({ message: 'No vouchers available' });
+  }
+
+  @ControllerService()
   static async getOneById(req: Request, res: Response) {
     const id = req.params.id;
     const result = await VoucherModel.getOneById(id);
@@ -76,6 +92,13 @@ export default class VoucherMiddleware {
     const data = req.body;
     const mfgDate = new Date(ConvertDate(data.mfgDate));
     const expDate = new Date(ConvertDate(data.expDate));
+    const now = new Date();
+    if (now <= mfgDate) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'mfgDate must be after today!' });
+      return;
+    }
     if (mfgDate > expDate) {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -149,6 +172,13 @@ export default class VoucherMiddleware {
     const data = req.body;
     const mfgDate = new Date(ConvertDate(data.mfgDate));
     const expDate = new Date(ConvertDate(data.expDate));
+    const now = new Date();
+    if (now <= mfgDate) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'mfgDate must be after today!' });
+      return;
+    }
     if (mfgDate > expDate) {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -164,16 +194,17 @@ export default class VoucherMiddleware {
       mfgDate,
       expDate
     );
-    if(result.getCode() == HttpStatusCode.OK)
-      res.status(result.getCode()).send({ message: result.getMessage(), data: result.getData() });
-    else
-      res.status(result.getCode()).send({ message: result.getMessage() });
+    if (result.getCode() == HttpStatusCode.OK)
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
   @ControllerService()
   static async deleteVoucher(req: Request, res: Response) {
-    const id = req.params.id
-    const result = await VoucherModel.deleteVoucher(res.locals.user, id)
-    res.status(result.getCode()).send({message: result.getMessage()})
+    const id = req.params.id;
+    const result = await VoucherModel.deleteVoucher(res.locals.user, id);
+    res.status(result.getCode()).send({ message: result.getMessage() });
   }
 }

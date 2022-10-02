@@ -13,6 +13,20 @@ routes.get(
   VoucherMiddleware.listAll
 );
 
+// list shopP vouchers
+routes.get(
+  '/list-shopP',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  VoucherMiddleware.listShopPVouchers
+);
+
+// list shop vouchers
+routes.get(
+  '/list-shopP',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  VoucherMiddleware.listShopVouchers
+);
+
 // create a new voucher
 routes.post(
   '/new',
