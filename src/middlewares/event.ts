@@ -1,5 +1,3 @@
-import { User } from './../entities/user';
-import { EventAdditionalInfo } from './../entities/eventAdditionalInfo';
 import { HttpStatusCode } from './../utils/shopp.enum';
 import { Request, Response } from 'express';
 import EventModel from '../models/event';

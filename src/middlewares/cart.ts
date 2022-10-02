@@ -1,7 +1,7 @@
 import CartModel from '../models/cart';
 import { Request, Response } from 'express';
 import { ControllerService } from '../utils/decorators';
-import { GenderEnum, HttpStatusCode } from '../utils/shopp.enum';
+import { HttpStatusCode } from '../utils/shopp.enum';
 
 export default class CartMiddleware {
   @ControllerService()

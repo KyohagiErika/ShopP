@@ -6,6 +6,7 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
+import { LocalFile } from './localFile';
 import { Product } from './product';
 import { Report } from './report';
 import { User } from './user';
@@ -18,8 +19,9 @@ export class Shop {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  avatar: number;
+  @OneToOne(() => LocalFile)
+  @JoinColumn()
+  avatar: LocalFile;
 
   @OneToOne(() => User, user => user.shop)
   @JoinColumn()

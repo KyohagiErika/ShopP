@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import AuthMiddleware from '../middlewares/auth';
 import { checkRole } from '../middlewares/checkRole';
+import { uploadImage } from '../middlewares/fileProvider';
 import ShopMiddleware from '../middlewares/shop';
 import { RoleEnum } from '../utils/shopp.enum';
 
@@ -23,12 +24,14 @@ routes.get(
 routes.post(
   '/new',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  uploadImage('avatar'),
   ShopMiddleware.postNew
 );
 
 routes.post(
   '/edit',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  uploadImage('avatar'),
   ShopMiddleware.edit
 );
 
