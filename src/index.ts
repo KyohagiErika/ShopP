@@ -7,6 +7,10 @@ import cors from 'cors';
 import helmet from 'helmet';
 import http from 'http';
 import chalk from 'chalk';
+import { SwaggerDocument } from './swagger';
+
+const swaggerdoc = SwaggerDocument.getDocument();
+console.log(swaggerdoc);
 
 const app = express();
 app.use(bodyParser.json());
