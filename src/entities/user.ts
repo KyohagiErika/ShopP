@@ -1,3 +1,4 @@
+import { Voucher } from './voucher';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -53,6 +54,9 @@ export class User {
 
   @OneToMany(() => Event, event => event.createdBy)
   event: Event[];
+
+  @OneToMany(() => Voucher, voucher => voucher.createdBy)
+  voucher: Voucher[];
 
   hashPassword() {
     this.password = bcrypt.hashSync(this.password, 8);

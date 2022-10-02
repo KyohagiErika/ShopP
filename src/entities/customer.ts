@@ -1,15 +1,19 @@
+import { Voucher } from './voucher';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   JoinColumn,
   OneToOne,
+  OneToMany,
+  ManyToMany,
 } from 'typeorm';
 
 import { User } from './user';
 import { GenderEnum } from '../utils/shopp.enum';
 import { Cart } from './cart';
 import { LocalFile } from './localFile';
+import { Report } from './report';
 
 @Entity()
 export class Customer {
@@ -45,4 +49,10 @@ export class Customer {
 
   @OneToOne(() => Cart, cart => cart.customer)
   cart: Cart;
+
+  @ManyToMany(() => Voucher, voucher => voucher.customer)
+  voucher: Voucher[];
+
+  @OneToMany(() => Report, report => report.id)
+  report: Report[];
 }

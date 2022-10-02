@@ -81,12 +81,9 @@ export const uploadVideo = (key: string) => {
           .status(HttpStatusCode.BAD_REQUEST)
           .send({ error: err.errorMessage });
       else if (err && err.code === 'LIMIT_FILE_SIZE')
-        return res
-          .status(HttpStatusCode.BAD_REQUEST)
-          .send({
-            error:
-              'Maximum file size allowed is ' + ShopPConfig.FILE_SIZE + 'MB',
-          });
+        return res.status(HttpStatusCode.BAD_REQUEST).send({
+          error: 'Maximum file size allowed is ' + ShopPConfig.FILE_SIZE + 'MB',
+        });
       next();
     });
   };
@@ -105,12 +102,9 @@ export const uploadImage = (key: string) => {
           .status(HttpStatusCode.BAD_REQUEST)
           .send({ error: err.errorMessage });
       else if (err && err.code === 'LIMIT_FILE_SIZE')
-        return res
-          .status(HttpStatusCode.BAD_REQUEST)
-          .send({
-            error:
-              'Maximum file size allowed is ' + ShopPConfig.FILE_SIZE + 'MB',
-          });
+        return res.status(HttpStatusCode.BAD_REQUEST).send({
+          error: 'Maximum file size allowed is ' + ShopPConfig.FILE_SIZE + 'MB',
+        });
       next();
     });
   };
@@ -129,12 +123,9 @@ export const uploadMultipleImage = (key: string) => {
           .status(HttpStatusCode.BAD_REQUEST)
           .send({ error: err.errorMessage });
       else if (err && err.code === 'LIMIT_FILE_SIZE')
-        return res
-          .status(HttpStatusCode.BAD_REQUEST)
-          .send({
-            error:
-              'Maximum file size allowed is ' + ShopPConfig.FILE_SIZE + 'MB',
-          });
+        return res.status(HttpStatusCode.BAD_REQUEST).send({
+          error: 'Maximum file size allowed is ' + ShopPConfig.FILE_SIZE + 'MB',
+        });
       next();
     });
   };

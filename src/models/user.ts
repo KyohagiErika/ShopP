@@ -38,7 +38,7 @@ export default class UserModel {
         shop: {
           avatar: true,
         },
-        customer:  {
+        customer: {
           avatar: true,
         },
       },

@@ -45,11 +45,32 @@ export default class CustomerModel {
     return customerPayload;
     let customer;
     const customerRepository = ShopPDataSource.getRepository(Customer);
-    // check role of user
-    if (customerPayload.id != customerId) {
+
+    if (user.role.role == RoleEnum.ADMIN) {
       customer = await customerRepository.findOne({
         relations: {
           user: true,
+          avatar: true,
+        },
+        select: {
+          id: true,
+          name: true,
+          gender: true,
+          dob: true,
+        },
+        where: {
+          id: customerId,
+          user: { status: StatusEnum.ACTIVE },
+        },
+      });
+    } else if (customerPayload == null)
+      return new Response(
+        HttpStatusCode.REDIRECT,
+        'User has not have customer yet!'
+      );
+    else if (customerPayload.id != customerId) {
+      customer = await customerRepository.findOne({
+        relations: {
           avatar: true,
         },
         select: {
@@ -68,10 +89,8 @@ export default class CustomerModel {
         id: customerPayload.id,
         name: customerPayload.name,
         dob: customerPayload.dob,
-        avatar: {
-          id: customerPayload.avatar.id,
-          path: customerPayload.avatar.path
-        },
+        avatar: customerPayload.avatar,
+        gender: customerPayload.gender,
         user: {
           id: user.id,
           email: user.email,
@@ -108,7 +127,7 @@ export default class CustomerModel {
       dob,
       placeOfDelivery,
       user,
-      avatar
+      avatar,
     });
     CartModel.postNew(customer.id, {});
     return new Response(
@@ -143,7 +162,7 @@ export default class CustomerModel {
 
     if (user.customer == null)
       return new Response(
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.REDIRECT,
         'User has not have customer yet!'
       );
     const result = await customerRepository.update(

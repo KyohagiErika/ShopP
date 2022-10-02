@@ -15,12 +15,19 @@ routes.get(
 );
 
 // Get one customer
-routes.get('/:id', AuthMiddleware.checkJwt, CustomerMiddleware.getOneById);
+routes.get(
+  '/:id',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  CustomerMiddleware.getOneById
+);
 
 //Create a new customer
-routes.post('/new', AuthMiddleware.checkJwt, 
-uploadImage('avatar'),
-CustomerMiddleware.postNew);
+routes.post(
+  '/new',
+  AuthMiddleware.checkJwt,
+  uploadImage('avatar'),
+  CustomerMiddleware.postNew
+);
 
 //Edit one customer
 routes.post(

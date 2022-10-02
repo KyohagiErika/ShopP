@@ -26,7 +26,7 @@ export default class CustomerMiddleware {
     ],
   })
   static async getOneById(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = req.params.id.toString();
     const result = await CustomerModel.getOneById(id, res.locals.user);
     res.status(HttpStatusCode.OK).send({ data: res.locals.user });
     if (result) {
@@ -172,8 +172,7 @@ export default class CustomerMiddleware {
         file
       );
       res.status(result.getCode()).send({ message: result.getMessage() });
-    }
-    else
+    } else
       res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ error: 'Please upload image' });
