@@ -127,7 +127,7 @@ export default class ShopMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           if (!value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/))
-            `${propName} must be valid email`;
+            return `${propName} must be valid email`;
           return null;
         },
       },
@@ -135,7 +135,8 @@ export default class ShopMiddleware {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
-          if (!value.match(/^\d{10}$/)) `${propName} must be valid phone`;
+          if (!value.match(/^\d{10}$/))
+            return `${propName} must be valid phone`;
           return null;
         },
       },

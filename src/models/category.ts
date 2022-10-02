@@ -30,15 +30,33 @@ export default class CategoryModel {
     return category ? category : false;
   }
 
-  static async postNew(name: string, description: string) {
-    let category = new Category();
-    category.name = name;
-    await categoryRepository.save(category);
+  static async postNew(name: string) {
+    const category = await categoryRepository.findOne({
+      select: {
+        id: true,
+        name: true,
+      },
+      where: {
+        name: name,
+      },
+    });
 
-    return new Response(
-      HttpStatusCode.CREATED,
-      'Create new category successfully!',
-      category
-    );
+    if (!(category == null)) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Category already exist !',
+        category
+      );
+    } else {
+      let newCategory = new Category();
+      newCategory.name = name;
+      await categoryRepository.save(newCategory);
+
+      return new Response(
+        HttpStatusCode.CREATED,
+        'Create new category successfully!',
+        newCategory
+      );
+    }
   }
 }

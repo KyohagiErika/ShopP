@@ -36,3 +36,19 @@ export enum ProductEnum {
   OUT_OF_ORDER = 'OUT_OF_ORDER',
   DELETED = 'DELETED',
 }
+
+export enum VoucherTypeEnum {
+  FREESHIP = 'FREESHIP',
+  MONEY = 'MONEY',
+  PERCENT = 'PERCENT',
+}
+
+export enum TypeTransferEnum {
+  SHOP_TO_CUSTOMER = 'SHOP_TO_CUSTOMER',
+  CUSTOMER_TO_SHOP = 'CUSTOMER_TO_SHOP',
+}
+
+export enum StatusReportEnum {
+  PROCESSING = 'PROCESSING',
+  PROCESSED = 'PROCESSED',
+}
