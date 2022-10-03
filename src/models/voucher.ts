@@ -229,6 +229,9 @@ export default class VoucherModel {
   static async saveVoucher(user: User, id: string) {
     const voucherRepository = ShopPDataSource.getRepository(Voucher);
     const voucher = await voucherRepository.findOne({
+      relations: {
+        customer: true
+      },
       where: {
         id
       }
@@ -236,7 +239,7 @@ export default class VoucherModel {
     if(voucher == null) 
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable Voucher!');
     if(user.role.role == RoleEnum.CUSTOMER) {
-      
+      voucher.customer
     }
   }
 }
