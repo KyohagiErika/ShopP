@@ -289,6 +289,7 @@ class AuthMiddleware {
     try {
       jwtPayload = <any>jwt.verify(token, config.JWT_SECRET);
       const user: User | false = await UserModel.getOneById(jwtPayload.userId);
+      console.log(user)
       if (user === false) {
         res
           .status(HttpStatusCode.UNAUTHORIZATION)
