@@ -6,7 +6,9 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
+import { LocalFile } from './localFile';
 import { Product } from './product';
+import { Report } from './report';
 import { User } from './user';
 
 @Entity()
@@ -17,8 +19,9 @@ export class Shop {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  avatar: number;
+  @OneToOne(() => LocalFile)
+  @JoinColumn()
+  avatar: LocalFile;
 
   @OneToOne(() => User, user => user.shop)
   @JoinColumn()
@@ -41,4 +44,7 @@ export class Shop {
 
   @Column({ default: 0 })
   followers: number;
+
+  @OneToMany(() => Report, report => report.id)
+  report: Report[];
 }

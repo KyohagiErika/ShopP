@@ -11,6 +11,6 @@ export const checkRole = (role: RoleEnum) => {
     else
       res
         .status(HttpStatusCode.UNAUTHORIZATION)
-        .send({ message: 'Unauthorized error, Role is invalid!' });
+        .send({ message: 'Unauthorized: Access is denied!' });
   };
 };

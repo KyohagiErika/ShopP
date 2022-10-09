@@ -5,19 +5,22 @@ import { StatusEnum, HttpStatusCode, RoleEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { UserRole } from '../entities/userRole';
 import { Like } from 'typeorm';
+import { LocalFile } from '../entities/localFile';
+import { deleteFile } from '../utils';
 
 const shopRepository = ShopPDataSource.getRepository(Shop);
 const userRoleRepository = ShopPDataSource.getRepository(UserRole);
+const localFileRepository = ShopPDataSource.getRepository(LocalFile);
 
 export default class ShopModel {
   static async listAll() {
     const shops = await shopRepository.find({
       relations: {
         user: true,
+        avatar: true,
       },
       select: {
         name: true,
-        avatar: true,
         email: true,
         phone: true,
         placeOfReceipt: true,
@@ -37,9 +40,11 @@ export default class ShopModel {
 
   static async getOneById(id: string) {
     const shop = await shopRepository.find({
+      relations: {
+        avatar: true,
+      },
       select: {
         name: true,
-        avatar: true,
         email: true,
         phone: true,
         placeOfReceipt: true,
@@ -56,9 +61,11 @@ export default class ShopModel {
 
   static async searchShop(name: string) {
     const shop = await shopRepository.find({
+      relations: {
+        avatar: true,
+      },
       select: {
         name: true,
-        avatar: true,
         email: true,
         phone: true,
         placeOfReceipt: true,
@@ -75,7 +82,7 @@ export default class ShopModel {
 
   static async postNew(
     name: string,
-    avatar: number,
+    avatar: LocalFile,
     user: User,
     email: string,
     phone: string,
@@ -112,7 +119,7 @@ export default class ShopModel {
   static async edit(
     shop: Shop,
     name: string,
-    avatar: number,
+    file: Express.Multer.File,
     email: string,
     phone: string,
     placeOfReceipt: string
@@ -121,13 +128,26 @@ export default class ShopModel {
       { id: shop.id },
       {
         name: name,
-        avatar: avatar,
         email: email,
         phone: phone,
         placeOfReceipt: placeOfReceipt,
       }
     );
-    if (shopEdit.affected == 1) {
+
+    const localFileEdit = await localFileRepository.update(
+      {
+        id: shop.avatar.id,
+      },
+      {
+        filename: file.filename,
+        mimetype: file.mimetype,
+        path: file.path,
+      }
+    );
+
+    deleteFile(shop.avatar.path);
+
+    if (shopEdit.affected == 1 && localFileEdit.affected == 1) {
       return new Response(HttpStatusCode.OK, 'Edit shop successfully!');
     } else {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Edit shop failed !');

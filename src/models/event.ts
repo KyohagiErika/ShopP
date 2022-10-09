@@ -1,5 +1,3 @@
-import { Shop } from './../entities/shop';
-import { UserRole } from './../entities/userRole';
 import { User } from './../entities/user';
 import { LocalFile } from './../entities/localFile';
 import { EventAdditionalInfo } from './../entities/eventAdditionalInfo';

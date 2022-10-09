@@ -39,7 +39,7 @@ export default class ProductMiddleware {
   })
   static async postNew(req: Request, res: Response) {
     const data = req.body;
-    const result = await CategoryModel.postNew(data.name, data.description);
+    const result = await CategoryModel.postNew(data.name);
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
         .status(result.getCode())

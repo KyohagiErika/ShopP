@@ -11,6 +11,7 @@ export default class UploadModel {
     localFile.path = file.path;
 
     await localFileRepository.save(localFile);
+    return localFile;
   }
 
   static async uploadMultiple(

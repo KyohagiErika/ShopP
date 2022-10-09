@@ -1,4 +1,3 @@
-import { Shop } from './../entities/shop';
 import Response from '../utils/response';
 import { StatusEnum, HttpStatusCode } from './../utils/shopp.enum';
 import { Customer } from './../entities/customer';

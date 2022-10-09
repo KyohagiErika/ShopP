@@ -156,10 +156,10 @@ const resetPassword = function (otp: string, firstName: string) {
 
 </html>`;
   const text = `
-        Reset Password, You recently requested to reset your password for your node-typescript-boilerplate account. Copy and paste it for reset password:
+        Reset Password, You recently requested to reset your password for your ShopP account. Copy and paste it for reset password:
         ${otp}
 
-If you did not requested a password reset, please ignore this email or reply to let us know. This password reset is only valid for the next 2 hours.`;
+If you did not requested a password reset, please ignore this email or reply to let us know. This password reset is only valid for the next 10 minutes.`;
   return {
     html: html,
     text: text,

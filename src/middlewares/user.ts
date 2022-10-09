@@ -53,6 +53,17 @@ export default class UserMiddleware {
         },
       },
       {
+        name: 'confirmPassword',
+        type: String,
+        validator: (propName: string, value: string) => {
+          const pwdRegExp: RegExp =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*(\-_+=`~\?\/])(?=.{8,})/;
+          if (!pwdRegExp.test(value))
+            return `${propName} must constain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
+          return null;
+        },
+      },
+      {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
@@ -66,8 +77,12 @@ export default class UserMiddleware {
   })
   static async postNew(req: Request, res: Response) {
     const data = req.body;
+    if (data.password !== data.confirmPassword)
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Confirmed Password must be equal to Password' });
     const result = await UserModel.postNew(
-      data.email,
+      String(data.email).toLowerCase(),
       data.phone,
       data.password,
       RoleEnum.CUSTOMER
@@ -105,6 +120,17 @@ export default class UserMiddleware {
         },
       },
       {
+        name: 'confirmPassword',
+        type: String,
+        validator: (propName: string, value: string) => {
+          const pwdRegExp: RegExp =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*(\-_+=`~\?\/])(?=.{8,})/;
+          if (!pwdRegExp.test(value))
+            return `${propName} must constain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
+          return null;
+        },
+      },
+      {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
@@ -118,8 +144,12 @@ export default class UserMiddleware {
   })
   static async postNewAdmin(req: Request, res: Response) {
     const data = req.body;
+    if (data.password !== data.confirmPassword)
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Confirmed Password must be equal to Password' });
     const result = await UserModel.postNew(
-      data.email,
+      String(data.email).toLowerCase(),
       data.phone,
       data.password,
       RoleEnum.ADMIN
@@ -160,7 +190,11 @@ export default class UserMiddleware {
   static async edit(req: Request, res: Response) {
     const data = req.body;
     const id = res.locals.user.id;
-    const result = await UserModel.edit(id, data.email, data.phone);
+    const result = await UserModel.edit(
+      id,
+      String(data.email).toLowerCase(),
+      data.phone
+    );
     res.status(result.getCode()).send({ message: result.getMessage() });
   }
 

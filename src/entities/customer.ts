@@ -4,7 +4,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   JoinColumn,
-  CreateDateColumn,
   OneToOne,
   OneToMany,
   ManyToMany,
@@ -13,6 +12,8 @@ import {
 import { User } from './user';
 import { GenderEnum } from '../utils/shopp.enum';
 import { Cart } from './cart';
+import { LocalFile } from './localFile';
+import { Report } from './report';
 
 @Entity()
 export class Customer {
@@ -22,8 +23,9 @@ export class Customer {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  avatar: number;
+  @OneToOne(() => LocalFile)
+  @JoinColumn()
+  avatar: LocalFile;
 
   @Column({
     type: 'enum',
@@ -50,4 +52,7 @@ export class Customer {
 
   @ManyToMany(() => Voucher, voucher => voucher.customer)
   voucher: Voucher[];
+
+  @OneToMany(() => Report, report => report.id)
+  report: Report[];
 }

@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
+import { LocalFile } from '../entities/localFile';
 import { Shop } from '../entities/shop';
 import { User } from '../entities/user';
 import ShopModel from '../models/shop';
+import UploadModel from '../models/upload';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
 
@@ -65,10 +67,6 @@ export default class ShopMiddleware {
         type: String,
       },
       {
-        name: 'avatar',
-        type: String,
-      },
-      {
         name: 'email',
         type: String,
         validator: (propName: string, value: string) => {
@@ -93,23 +91,30 @@ export default class ShopMiddleware {
     ],
   })
   static async postNew(req: Request, res: Response) {
-    const user: User = res.locals.user;
-    const data = req.body;
-    const result = await ShopModel.postNew(
-      data.name.toString(),
-      data.avatar.toString(),
-      user,
-      data.email.toString(),
-      data.phone.toString(),
-      data.placeOfReceipt.toString()
-    );
-    if (result.getCode() === HttpStatusCode.CREATED) {
+    if (req.file != undefined) {
+      const file = req.file;
+      const localFile: LocalFile = await UploadModel.upload(file);
+      const user: User = res.locals.user;
+      const data = req.body;
+      const result = await ShopModel.postNew(
+        data.name.toString(),
+        localFile,
+        user,
+        data.email.toString(),
+        data.phone.toString(),
+        data.placeOfReceipt.toString()
+      );
+      if (result.getCode() === HttpStatusCode.CREATED) {
+        res
+          .status(result.getCode())
+          .send({ message: result.getMessage(), data: result.getData() });
+      } else {
+        res.status(result.getCode()).send({ message: result.getMessage() });
+      }
+    } else
       res
-        .status(result.getCode())
-        .send({ message: result.getMessage(), data: result.getData() });
-    } else {
-      res.status(result.getCode()).send({ message: result.getMessage() });
-    }
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ error: 'Please upload image' });
   }
 
   @ControllerService({
@@ -119,15 +124,11 @@ export default class ShopMiddleware {
         type: String,
       },
       {
-        name: 'avatar',
-        type: String,
-      },
-      {
         name: 'email',
         type: String,
         validator: (propName: string, value: string) => {
           if (!value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/))
-            `${propName} must be valid email`;
+            return `${propName} must be valid email`;
           return null;
         },
       },
@@ -135,7 +136,8 @@ export default class ShopMiddleware {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
-          if (!value.match(/^\d{10}$/)) `${propName} must be valid phone`;
+          if (!value.match(/^\d{10}$/))
+            return `${propName} must be valid phone`;
           return null;
         },
       },
@@ -146,22 +148,28 @@ export default class ShopMiddleware {
     ],
   })
   static async edit(req: Request, res: Response) {
-    const data = req.body;
-    const shop: Shop = res.locals.user.shop;
-    const result = await ShopModel.edit(
-      shop,
-      data.name.toString(),
-      data.avatar.toString(),
-      data.email.toString(),
-      data.phone.toString(),
-      data.placeOfReceipt.toString()
-    );
-    if (result.getCode() === HttpStatusCode.OK) {
+    if (req.file != undefined) {
+      const file = req.file;
+      const data = req.body;
+      const shop: Shop = res.locals.user.shop;
+      const result = await ShopModel.edit(
+        shop,
+        data.name.toString(),
+        file,
+        data.email.toString(),
+        data.phone.toString(),
+        data.placeOfReceipt.toString()
+      );
+      if (result.getCode() === HttpStatusCode.OK) {
+        res
+          .status(result.getCode())
+          .send({ message: result.getMessage(), data: result.getData() });
+      } else {
+        res.status(result.getCode()).send({ message: result.getMessage() });
+      }
+    } else
       res
-        .status(result.getCode())
-        .send({ message: result.getMessage(), data: result.getData() });
-    } else {
-      res.status(result.getCode()).send({ message: result.getMessage() });
-    }
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ error: 'Please upload image' });
   }
 }

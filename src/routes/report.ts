@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import AuthMiddleware from '../middlewares/auth';
 import { checkRole } from '../middlewares/checkRole';
-import { uploadImage } from '../middlewares/fileProvider';
-import ShopMiddleware from '../middlewares/shop';
+import ReportMiddleware from '../middlewares/report';
 import { RoleEnum } from '../utils/shopp.enum';
 
 const routes = Router();
@@ -10,29 +9,38 @@ const routes = Router();
 routes.get(
   '/list-all',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
-  ShopMiddleware.listAll
+  ReportMiddleware.listAll
 );
-
-routes.get('/get-shop/:id', AuthMiddleware.checkJwt, ShopMiddleware.getOneById);
 
 routes.get(
-  '/search-shop/:name',
+  '/get-report/:id([0-9]+)',
   AuthMiddleware.checkJwt,
-  ShopMiddleware.searchShop
+  checkRole(RoleEnum.ADMIN),
+  ReportMiddleware.getOneById
+);
+
+routes.get(
+  '/view-report/:id([0-9]+)',
+  AuthMiddleware.checkJwt,
+  ReportMiddleware.viewReport
 );
 
 routes.post(
-  '/new',
+  '/new-for-customer/:shopId',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  uploadImage('avatar'),
-  ShopMiddleware.postNew
+  ReportMiddleware.postNewForCustomer
 );
 
 routes.post(
-  '/edit',
+  '/new-for-shop/:customerId',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
-  uploadImage('avatar'),
-  ShopMiddleware.edit
+  ReportMiddleware.postNewForShop
+);
+
+routes.post(
+  '/edit-status/:id([0-9]+)',
+  [AuthMiddleware.checkJwt],
+  ReportMiddleware.editStatus
 );
 
 export default routes;
