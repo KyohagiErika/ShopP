@@ -1,9 +1,14 @@
 import { User } from './../entities/user';
-import { HttpStatusCode, VoucherTypeEnum, RoleEnum } from './../utils/shopp.enum';
+import {
+  HttpStatusCode,
+  VoucherTypeEnum,
+  RoleEnum,
+} from './../utils/shopp.enum';
 import { Voucher } from './../entities/voucher';
 import { ShopPDataSource } from './../data';
 import Response from '../utils/response';
-import { MoreThan } from 'typeorm';
+import { ArrayContains, MoreThan } from 'typeorm';
+import { Customer } from '../entities/customer';
 
 export default class VoucherModel {
   static async listAll() {
@@ -228,18 +233,229 @@ export default class VoucherModel {
 
   static async saveVoucher(user: User, id: string) {
     const voucherRepository = ShopPDataSource.getRepository(Voucher);
+    if (user.role.role != RoleEnum.CUSTOMER)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized error. Invalid role!'
+      );
     const voucher = await voucherRepository.findOne({
       relations: {
-        customer: true
+        customer: true,
       },
       where: {
-        id
-      }
-    })
-    if(voucher == null) 
+        id,
+      },
+    });
+    if (voucher == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable Voucher!');
-    if(user.role.role == RoleEnum.CUSTOMER) {
-      voucher.customer
+    if (user.role.role == RoleEnum.CUSTOMER) {
+      let length = voucher.customer.length;
+      for (let i = 0; i < length; i++) {
+        if (voucher.customer[i].id == user.customer.id) {
+          voucher.customer.push(user.customer);
+          voucherRepository.save(voucher);
+          return new Response(
+            HttpStatusCode.OK,
+            'save voucher successfully!',
+            voucher
+          );
+        }
+      }
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Already have this voucher!'
+      );
+    }
+    return new Response(HttpStatusCode.BAD_REQUEST, 'Undefined error!');
+  }
+
+  static async showCustomerShopPVouchers(user: User) {
+    const customerRepository = await ShopPDataSource.getRepository(Customer);
+    if (user.role.role != RoleEnum.CUSTOMER)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized error. Invalid role!'
+      );
+    else {
+      const customer = await customerRepository.findOne({
+        relations: {
+          voucher: true,
+        },
+        where: {
+          id: user.customer.id,
+        },
+      });
+      if (customer == null) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'must sign up customer before!'
+        );
+      }
+      const now = new Date();
+      let voucherALL = customer.voucher;
+      let voucherShopP: object[] = [];
+      voucherALL.forEach(voucher => {
+        if (voucher.roleCreator == RoleEnum.ADMIN && voucher.mfgDate > now) {
+          voucherShopP.push({
+            id: voucher.id,
+            title: voucher.title,
+            type: voucher.type,
+            condition: voucher.condition,
+            mfgDate: voucher.mfgDate,
+            expDate: voucher.expDate,
+          });
+        }
+      });
+      return new Response(
+        HttpStatusCode.OK,
+        'show ShopP vouchers successfully!!',
+        voucherShopP
+      );
     }
   }
+
+  static async showCustomerShopVouchers(user: User) {
+    const customerRepository = await ShopPDataSource.getRepository(Customer);
+    if (user.role.role != RoleEnum.CUSTOMER)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized error. Invalid role!'
+      );
+    else {
+      const customer = await customerRepository.findOne({
+        relations: {
+          voucher: true,
+        },
+        where: {
+          id: user.customer.id,
+        },
+      });
+      if (customer == null) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'must sign up customer before!'
+        );
+      }
+      const now = new Date();
+      let voucherALL = customer.voucher;
+      let voucherShop: object[] = [];
+      voucherALL.forEach(voucher => {
+        if (voucher.roleCreator == RoleEnum.SHOP && voucher.mfgDate > now) {
+          voucherShop.push({
+            id: voucher.id,
+            title: voucher.title,
+            type: voucher.type,
+            condition: voucher.condition,
+            mfgDate: voucher.mfgDate,
+            expDate: voucher.expDate,
+          });
+        }
+      });
+      return new Response(
+        HttpStatusCode.OK,
+        'show Shop vouchers successfully!!',
+        voucherShop
+      );
+    }
+  }
+
+  static async showCustomerFreeshipVouchers(user: User) {
+    const customerRepository = await ShopPDataSource.getRepository(Customer);
+    if (user.role.role != RoleEnum.CUSTOMER)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized error. Invalid role!'
+      );
+    else {
+      const customer = await customerRepository.findOne({
+        relations: {
+          voucher: true,
+        },
+        where: {
+          id: user.customer.id,
+        },
+      });
+      if (customer == null) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'must sign up customer before!'
+        );
+      }
+      const now = new Date();
+      let voucherALL = customer.voucher;
+      let freeshipVoucher: object[] = [];
+      voucherALL.forEach(voucher => {
+        if (
+          voucher.roleCreator == RoleEnum.ADMIN &&
+          voucher.mfgDate > now &&
+          voucher.type == VoucherTypeEnum.FREESHIP
+        ) {
+          freeshipVoucher.push({
+            id: voucher.id,
+            title: voucher.title,
+            type: voucher.type,
+            condition: voucher.condition,
+            mfgDate: voucher.mfgDate,
+            expDate: voucher.expDate,
+          });
+        }
+      });
+      return new Response(
+        HttpStatusCode.OK,
+        'show freeship vouchers successfully!!',
+        freeshipVoucher
+      );
+    }
+  }
+
+  static async showCustomerDiscountVouchers(user: User) {
+    const customerRepository = await ShopPDataSource.getRepository(Customer);
+    if (user.role.role != RoleEnum.CUSTOMER)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized error. Invalid role!'
+      );
+    else {
+      const customer = await customerRepository.findOne({
+        relations: {
+          voucher: true,
+        },
+        where: {
+          id: user.customer.id,
+        },
+      });
+      if (customer == null) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'must sign up customer before!'
+        );
+      }
+      const now = new Date();
+      let voucherALL = customer.voucher;
+      let discountVoucher: object[] = [];
+      voucherALL.forEach(voucher => {
+        if (
+          voucher.roleCreator == RoleEnum.ADMIN &&
+          voucher.mfgDate > now &&
+          (voucher.type == VoucherTypeEnum.MONEY ||
+            voucher.type == VoucherTypeEnum.PERCENT)
+        ) {
+          discountVoucher.push({
+            id: voucher.id,
+            title: voucher.title,
+            type: voucher.type,
+            condition: voucher.condition,
+            mfgDate: voucher.mfgDate,
+            expDate: voucher.expDate,
+          });
+        }
+      });
+      return new Response(
+        HttpStatusCode.OK,
+        'show discount vouchers successfully!!',
+        discountVoucher
+      );
+    }
+  }
+  
 }

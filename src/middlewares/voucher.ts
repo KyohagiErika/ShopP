@@ -207,4 +207,62 @@ export default class VoucherMiddleware {
     const result = await VoucherModel.deleteVoucher(res.locals.user, id);
     res.status(result.getCode()).send({ message: result.getMessage() });
   }
+
+  @ControllerService()
+  static async saveVoucher(req: Request, res: Response) {
+    const id = req.params.id;
+    const result = await VoucherModel.saveVoucher(res.locals.user, id);
+    if (result.getCode() == HttpStatusCode.OK)
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+
+  @ControllerService()
+  static async showCustomerShopPVouchers(req: Request, res: Response) {
+    const result = await VoucherModel.showCustomerShopPVouchers(
+      res.locals.user
+    );
+    if (result.getCode() == HttpStatusCode.OK)
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+
+  @ControllerService()
+  static async showCustomerShopVouchers(req: Request, res: Response) {
+    const result = await VoucherModel.showCustomerShopVouchers(res.locals.user);
+    if (result.getCode() == HttpStatusCode.OK)
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+
+  @ControllerService()
+  static async showCustomerFreeshipVouchers(req: Request, res: Response) {
+    const result = await VoucherModel.showCustomerFreeshipVouchers(
+      res.locals.user
+    );
+    if (result.getCode() == HttpStatusCode.OK)
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+
+  @ControllerService()
+  static async showCustomerDiscountVouchers(req: Request, res: Response) {
+    const result = await VoucherModel.showCustomerDiscountVouchers(
+      res.locals.user
+    );
+    if (result.getCode() == HttpStatusCode.OK)
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+  
 }
