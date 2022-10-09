@@ -42,3 +42,8 @@ export enum VoucherTypeEnum {
   MONEY = 'MONEY',
   PERCENT = 'PERCENT',
 }
+
+export enum TypeTransferEnum {
+  SHOP_TO_CUSTOMER = 'SHOP_TO_CUSTOMER',
+  CUSTOMER_TO_SHOP = 'CUSTOMER_TO_SHOP',
+}
