@@ -135,7 +135,7 @@ export default class ShopMiddleware {
         name: 'phone',
         type: String,
         validator: (propName: string, value: string) => {
-          if (!value.match(/^\d{10}$/))`${propName} must be valid phone`;
+          if (!value.match(/^\d{10}$/)) `${propName} must be valid phone`;
           return null;
         },
       },

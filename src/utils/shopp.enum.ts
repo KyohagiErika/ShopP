@@ -40,5 +40,5 @@ export enum ProductEnum {
 export enum VoucherTypeEnum {
   FREESHIP = 'FREESHIP',
   MONEY = 'MONEY',
-  PERCENT = 'PERCENT'
+  PERCENT = 'PERCENT',
 }
