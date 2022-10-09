@@ -261,10 +261,7 @@ export default class VoucherModel {
       }
       voucher.customer.push(user.customer);
       voucherRepository.save(voucher);
-      return new Response(
-        HttpStatusCode.OK,
-        'save voucher successfully!'
-      );
+      return new Response(HttpStatusCode.OK, 'save voucher successfully!');
     }
     return new Response(HttpStatusCode.BAD_REQUEST, 'Undefined error!');
   }
@@ -306,7 +303,7 @@ export default class VoucherModel {
           });
         }
       });
-      if(voucherShopP.length == 0)
+      if (voucherShopP.length == 0)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
           'unavailable vouchers!!'
@@ -356,7 +353,7 @@ export default class VoucherModel {
           });
         }
       });
-      if(voucherShop.length == 0) 
+      if (voucherShop.length == 0)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
           'unavailable vouchers!!'
@@ -410,7 +407,7 @@ export default class VoucherModel {
           });
         }
       });
-      if(freeshipVoucher.length == 0) 
+      if (freeshipVoucher.length == 0)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
           'unavailable vouchers!!'
@@ -465,7 +462,7 @@ export default class VoucherModel {
           });
         }
       });
-      if(discountVoucher.length == 0)
+      if (discountVoucher.length == 0)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
           'unavailable vouchers!!'

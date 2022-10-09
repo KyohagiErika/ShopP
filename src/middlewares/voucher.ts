@@ -34,7 +34,10 @@ export default class VoucherMiddleware {
     const id = req.params.id;
     const result = await VoucherModel.getOneById(id);
     if (result) res.status(HttpStatusCode.OK).send({ data: result });
-    else res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Unavailable voucher' });
+    else
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Unavailable voucher' });
   }
 
   @ControllerService({

@@ -90,6 +90,4 @@ routes.get(
   VoucherMiddleware.getOneById
 );
 
-
-
 export default routes;
