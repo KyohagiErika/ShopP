@@ -7,7 +7,7 @@ import {
 import { Voucher } from './../entities/voucher';
 import { ShopPDataSource } from './../data';
 import Response from '../utils/response';
-import { ArrayContains, MoreThan } from 'typeorm';
+import { ArrayContains, Like, MoreThan } from 'typeorm';
 import { Customer } from '../entities/customer';
 
 export default class VoucherModel {
@@ -45,7 +45,7 @@ export default class VoucherModel {
         expDate: true,
       },
       where: {
-        createdBy: { role: { role: RoleEnum.ADMIN } },
+        createdBy: { role: { role: Like(RoleEnum.ADMIN) } },
         mfgDate: MoreThan(now),
       },
     });
@@ -66,7 +66,7 @@ export default class VoucherModel {
         expDate: true,
       },
       where: {
-        createdBy: { role: { role: RoleEnum.SHOP } },
+        createdBy: { role: { role: Like(RoleEnum.SHOP) } },
         mfgDate: MoreThan(now),
       },
     });
@@ -233,7 +233,7 @@ export default class VoucherModel {
 
   static async saveVoucher(user: User, id: string) {
     const voucherRepository = ShopPDataSource.getRepository(Voucher);
-    if (user.role.role != RoleEnum.CUSTOMER)
+    if (user.role.role == RoleEnum.ADMIN)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Unauthorized error. Invalid role!'
@@ -248,22 +248,22 @@ export default class VoucherModel {
     });
     if (voucher == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable Voucher!');
-    if (user.role.role == RoleEnum.CUSTOMER) {
+    if (user.role.role >= RoleEnum.CUSTOMER) {
       let length = voucher.customer.length;
       for (let i = 0; i < length; i++) {
         if (voucher.customer[i].id == user.customer.id) {
-          voucher.customer.push(user.customer);
-          voucherRepository.save(voucher);
           return new Response(
-            HttpStatusCode.OK,
-            'save voucher successfully!',
+            HttpStatusCode.BAD_REQUEST,
+            'Already have this voucher!',
             voucher
           );
         }
       }
+      voucher.customer.push(user.customer);
+      voucherRepository.save(voucher);
       return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Already have this voucher!'
+        HttpStatusCode.OK,
+        'save voucher successfully!'
       );
     }
     return new Response(HttpStatusCode.BAD_REQUEST, 'Undefined error!');
@@ -271,7 +271,7 @@ export default class VoucherModel {
 
   static async showCustomerShopPVouchers(user: User) {
     const customerRepository = await ShopPDataSource.getRepository(Customer);
-    if (user.role.role != RoleEnum.CUSTOMER)
+    if (user.role.role == RoleEnum.ADMIN)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Unauthorized error. Invalid role!'
@@ -306,6 +306,11 @@ export default class VoucherModel {
           });
         }
       });
+      if(voucherShopP.length == 0)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'unavailable vouchers!!'
+        );
       return new Response(
         HttpStatusCode.OK,
         'show ShopP vouchers successfully!!',
@@ -316,7 +321,7 @@ export default class VoucherModel {
 
   static async showCustomerShopVouchers(user: User) {
     const customerRepository = await ShopPDataSource.getRepository(Customer);
-    if (user.role.role != RoleEnum.CUSTOMER)
+    if (user.role.role == RoleEnum.ADMIN)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Unauthorized error. Invalid role!'
@@ -351,6 +356,11 @@ export default class VoucherModel {
           });
         }
       });
+      if(voucherShop.length == 0) 
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'unavailable vouchers!!'
+        );
       return new Response(
         HttpStatusCode.OK,
         'show Shop vouchers successfully!!',
@@ -361,7 +371,7 @@ export default class VoucherModel {
 
   static async showCustomerFreeshipVouchers(user: User) {
     const customerRepository = await ShopPDataSource.getRepository(Customer);
-    if (user.role.role != RoleEnum.CUSTOMER)
+    if (user.role.role == RoleEnum.ADMIN)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Unauthorized error. Invalid role!'
@@ -400,6 +410,11 @@ export default class VoucherModel {
           });
         }
       });
+      if(freeshipVoucher.length == 0) 
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'unavailable vouchers!!'
+        );
       return new Response(
         HttpStatusCode.OK,
         'show freeship vouchers successfully!!',
@@ -410,7 +425,7 @@ export default class VoucherModel {
 
   static async showCustomerDiscountVouchers(user: User) {
     const customerRepository = await ShopPDataSource.getRepository(Customer);
-    if (user.role.role != RoleEnum.CUSTOMER)
+    if (user.role.role == RoleEnum.ADMIN)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Unauthorized error. Invalid role!'
@@ -450,6 +465,11 @@ export default class VoucherModel {
           });
         }
       });
+      if(discountVoucher.length == 0)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'unavailable vouchers!!'
+        );
       return new Response(
         HttpStatusCode.OK,
         'show discount vouchers successfully!!',

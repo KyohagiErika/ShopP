@@ -34,7 +34,7 @@ export default class VoucherMiddleware {
     const id = req.params.id;
     const result = await VoucherModel.getOneById(id);
     if (result) res.status(HttpStatusCode.OK).send({ data: result });
-    else res.status(HttpStatusCode.OK).send({ message: 'Unavailable voucher' });
+    else res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Unavailable voucher' });
   }
 
   @ControllerService({
@@ -173,7 +173,7 @@ export default class VoucherMiddleware {
     const mfgDate = new Date(ConvertDate(data.mfgDate));
     const expDate = new Date(ConvertDate(data.expDate));
     const now = new Date();
-    if (now <= mfgDate) {
+    if (now >= mfgDate) {
       res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'mfgDate must be after today!' });
@@ -221,6 +221,7 @@ export default class VoucherMiddleware {
 
   @ControllerService()
   static async showCustomerShopPVouchers(req: Request, res: Response) {
+    console.log('okeee');
     const result = await VoucherModel.showCustomerShopPVouchers(
       res.locals.user
     );
