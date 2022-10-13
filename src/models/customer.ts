@@ -210,6 +210,7 @@ export default class CustomerModel {
     const shop = await shopRepository.findOne({
       select: {
         id: true,
+        followers: true,
       },
       where: {
         id: shopId,
@@ -255,9 +256,10 @@ export default class CustomerModel {
     const shop = await shopRepository.findOne({
       select: {
         id: true,
+        followers: true
       },
       where: {
-        id: shopId,
+        id: shopId
       },
     });
     if (shop == null)
@@ -291,6 +293,11 @@ export default class CustomerModel {
   }
 
   static async showFollowedShopsList(user: User) {
+    if (user.role.role == RoleEnum.ADMIN)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized error. Invalid role!'
+      );
     const customerRepository = ShopPDataSource.getRepository(Customer);
     const customer = await customerRepository.findOne({
       relations: {
