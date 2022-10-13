@@ -1,3 +1,4 @@
+import { Shop } from './../entities/shop';
 import { User } from './../entities/user';
 import {
   HttpStatusCode,
@@ -391,4 +392,33 @@ export default class VoucherModel {
       VoucherTypeEnum.PERCENT
     );
   }
+
+  static async deleteCustomerVoucher(user: User, id: string) {
+    const customerRepository = ShopPDataSource.getRepository(Customer)
+    const now = new Date()
+    const customer = await customerRepository.findOne({
+      relations: {
+        voucher: true
+      },
+      select: {
+        id: true
+      },
+      where: {
+        id: user.customer.id,
+        voucher: {expDate: MoreThan(now)}
+      }
+    })
+    if(customer == null) 
+      return new Response(HttpStatusCode.BAD_REQUEST,'Customer not exist')
+    let length = customer.voucher.length
+    customer.voucher =  customer.voucher.filter((item) => {
+      return item.id != id
+    })
+    if(length == customer.voucher.length) 
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable voucher')
+    return new Response(HttpStatusCode.OK, 'Delete voucher successfully!!')
+  }
+
+
 }
+
