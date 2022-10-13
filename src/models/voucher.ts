@@ -394,6 +394,11 @@ export default class VoucherModel {
   }
 
   static async deleteCustomerVoucher(user: User, id: string) {
+    if (user.role.role == RoleEnum.ADMIN)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized error. Invalid role!'
+      );
     const customerRepository = ShopPDataSource.getRepository(Customer)
     const now = new Date()
     const customer = await customerRepository.findOne({

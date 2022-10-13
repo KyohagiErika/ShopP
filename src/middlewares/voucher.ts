@@ -266,4 +266,13 @@ export default class VoucherMiddleware {
         .send({ message: result.getMessage(), data: result.getData() });
     else res.status(result.getCode()).send({ message: result.getMessage() });
   }
+
+  @ControllerService()
+  static async deleteCustomerVoucher(req: Request, res: Response) {
+    const result = await VoucherModel.deleteCustomerVoucher(
+      res.locals.user,
+      req.params.id
+    )
+    res.status(result.getCode()).send({message: result.getMessage()})
+  }
 }
