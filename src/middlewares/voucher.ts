@@ -14,8 +14,8 @@ export default class VoucherMiddleware {
   }
 
   @ControllerService()
-  static async listShopPVouchers(req: Request, res: Response) {
-    const result = await VoucherModel.listShopPVouchers();
+  static async listAppVouchers(req: Request, res: Response) {
+    const result = await VoucherModel.listAppVouchers();
     if (result) res.status(HttpStatusCode.OK).send({ data: result });
     else
       res.status(HttpStatusCode.OK).send({ message: 'No vouchers available' });
@@ -223,11 +223,9 @@ export default class VoucherMiddleware {
   }
 
   @ControllerService()
-  static async showCustomerShopPVouchers(req: Request, res: Response) {
+  static async showCustomerAppVouchers(req: Request, res: Response) {
     console.log('okeee');
-    const result = await VoucherModel.showCustomerShopPVouchers(
-      res.locals.user
-    );
+    const result = await VoucherModel.showCustomerAppVouchers(res.locals.user);
     if (result.getCode() == HttpStatusCode.OK)
       res
         .status(result.getCode())

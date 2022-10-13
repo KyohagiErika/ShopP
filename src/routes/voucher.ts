@@ -17,7 +17,7 @@ routes.get(
 routes.get(
   '/list-shopP',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  VoucherMiddleware.listShopPVouchers
+  VoucherMiddleware.listAppVouchers
 );
 
 // list shop vouchers
@@ -59,7 +59,7 @@ routes.post(
 routes.get(
   '/customerShopP',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  VoucherMiddleware.showCustomerShopPVouchers
+  VoucherMiddleware.showCustomerAppVouchers
 );
 
 // show shopVouchers of customer
