@@ -51,5 +51,5 @@ export class Shop {
   report: Report[];
 
   @ManyToMany(() => Customer, customer => customer.shop)
-  customer: Customer[]
+  customer: Customer[];
 }

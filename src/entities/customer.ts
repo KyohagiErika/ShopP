@@ -8,6 +8,7 @@ import {
   OneToOne,
   OneToMany,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 import { User } from './user';
@@ -58,5 +59,6 @@ export class Customer {
   report: Report[];
 
   @ManyToMany(() => Shop, shop => shop.customer)
-  shop: Shop[]
+  @JoinTable()
+  shop: Shop[];
 }

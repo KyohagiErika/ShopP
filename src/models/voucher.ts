@@ -421,9 +421,9 @@ export default class VoucherModel {
     })
     if(length == customer.voucher.length) 
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable voucher')
+    await customerRepository.save(customer)
     return new Response(HttpStatusCode.OK, 'Delete voucher successfully!!')
   }
-
-
+  
 }
 

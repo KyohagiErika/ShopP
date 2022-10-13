@@ -1,3 +1,4 @@
+import { Shop } from './../entities/shop';
 import { User } from './../entities/user';
 import { Customer } from './../entities/customer';
 import { ShopPDataSource } from '../data';
@@ -11,6 +12,7 @@ import Response from '../utils/response';
 import CartModel from './cart';
 import { LocalFile } from '../entities/localFile';
 import { deleteFile } from '../utils';
+import { isNotEmpty } from 'class-validator/types/decorator/decorators';
 
 export default class CustomerModel {
   static async listAll() {
@@ -198,6 +200,122 @@ export default class CustomerModel {
   }
 
   static async followShop(user: User, shopId: string) {
-    
+    if (user.role.role == RoleEnum.ADMIN)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized error. Invalid role!'
+      );
+    const shopRepository = ShopPDataSource.getRepository(Shop);
+    const customerRepository = ShopPDataSource.getRepository(Customer);
+    const shop = await shopRepository.findOne({
+      select: {
+        id: true,
+      },
+      where: {
+        id: shopId,
+      },
+    });
+    if (shop == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'unavailable shop ID');
+    const customer = await customerRepository.findOne({
+      relations: {
+        shop: true,
+      },
+      select: {
+        id: true,
+      },
+      where: {
+        id: user.customer.id,
+      },
+    });
+    if (customer == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'customer not exist');
+    for (let item of customer.shop) {
+      if (item.id == shopId)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'shop already followed!'
+        );
+    }
+    shop.followers++;
+    customer.shop.push(shop);
+    customerRepository.save(customer)
+    shopRepository.save(shop)
+    return new Response(HttpStatusCode.OK, 'follow shop successfully!');
+  }
+
+  static async unfollowShop(user: User, shopId: string) {
+    if (user.role.role == RoleEnum.ADMIN)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized error. Invalid role!'
+      );
+    const shopRepository = ShopPDataSource.getRepository(Shop);
+    const customerRepository = ShopPDataSource.getRepository(Customer);
+    const shop = await shopRepository.findOne({
+      select: {
+        id: true,
+      },
+      where: {
+        id: shopId,
+      },
+    });
+    if (shop == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'unavailable shop ID');
+    const customer = await customerRepository.findOne({
+      relations: {
+        shop: true,
+      },
+      select: {
+        id: true,
+      },
+      where: {
+        id: user.customer.id,
+      },
+    });
+    if (customer == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'customer not exist');
+    let length = customer.shop.length;
+    customer.shop = customer.shop.filter(item => {
+      return item.id != shopId;
+    });
+    if (length == customer.shop.length)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'shop is not followed yet!'
+      );
+    shop.followers--
+    await customerRepository.save(customer)
+    await shopRepository.save(shop)
+    return new Response(HttpStatusCode.OK, 'unfollow shop successfully!!');
+  }
+
+  static async showFollowedShopsList(user: User) {
+    const customerRepository = ShopPDataSource.getRepository(Customer);
+    const customer = await customerRepository.findOne({
+      relations: {
+        shop: true,
+      },
+      select: {
+        shop: {
+          id: true,
+          name: true,
+          star: true,
+          followers: true,
+        },
+      },
+      where: {
+        id: user.customer.id,
+      },
+    });
+    if (customer == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'customer not exist!');
+    if (customer.shop.length == 0)
+      return new Response(HttpStatusCode.OK, 'no shop followed now!');
+    return new Response(
+      HttpStatusCode.OK,
+      'show followed shops successfully!',
+      customer.shop
+    );
   }
 }
