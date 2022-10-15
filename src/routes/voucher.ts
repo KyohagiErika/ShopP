@@ -48,6 +48,41 @@ routes.post(
   VoucherMiddleware.deleteVoucher
 );
 
+// save voucher into voucher wallet
+routes.post(
+  '/saveVoucher/:id',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  VoucherMiddleware.saveVoucher
+);
+
+// show shopPVouchers of customer
+routes.get(
+  '/customerShopP',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  VoucherMiddleware.showCustomerShopPVouchers
+);
+
+// show shopVouchers of customer
+routes.get(
+  '/customerShop',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  VoucherMiddleware.showCustomerShopVouchers
+);
+
+// show freeshipVouchers of customer
+routes.get(
+  '/customerFreeship',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  VoucherMiddleware.showCustomerFreeshipVouchers
+);
+
+// show discountVouchers of customer
+routes.get(
+  '/customerDiscount',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  VoucherMiddleware.showCustomerDiscountVouchers
+);
+
 // find a voucher
 routes.get(
   '/:id',
