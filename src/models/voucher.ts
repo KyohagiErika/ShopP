@@ -298,37 +298,21 @@ export default class VoucherModel {
       const now = new Date();
       let voucherALL = customer.voucher;
       let vouchers: object[] = [];
-      if(type1 == undefined) {
+      if (type1 == undefined) {
         voucherALL.forEach(voucher => {
-          if (
-            voucher.roleCreator == role &&
-              voucher.expDate > now 
-          ) {
-            vouchers.push({
-              id: voucher.id,
-              title: voucher.title,
-              type: voucher.type,
-              condition: voucher.condition,
-              mfgDate: voucher.mfgDate,
-              expDate: voucher.expDate,
-            });
+          if (voucher.roleCreator == role && voucher.expDate > now) {
+            vouchers.push(Voucher.mapVoucher(voucher));
           }
         });
-      } else if(type2 == undefined) {
+      } else if (type2 == undefined) {
         voucherALL.forEach(voucher => {
           if (
             voucher.roleCreator == role &&
             voucher.expDate > now &&
             voucher.type == type1
           ) {
-            vouchers.push({
-              id: voucher.id,
-              title: voucher.title,
-              type: voucher.type,
-              condition: voucher.condition,
-              mfgDate: voucher.mfgDate,
-              expDate: voucher.expDate,
-            });
+            vouchers.push(Voucher.mapVoucher(voucher));
+
           }
         });
       } else {
@@ -338,14 +322,8 @@ export default class VoucherModel {
             voucher.expDate > now &&
             (voucher.type == type1 || voucher.type == type2)
           ) {
-            vouchers.push({
-              id: voucher.id,
-              title: voucher.title,
-              type: voucher.type,
-              condition: voucher.condition,
-              mfgDate: voucher.mfgDate,
-              expDate: voucher.expDate,
-            });
+            vouchers.push(Voucher.mapVoucher(voucher));
+
           }
         });
       }
@@ -399,31 +377,28 @@ export default class VoucherModel {
         HttpStatusCode.BAD_REQUEST,
         'Unauthorized error. Invalid role!'
       );
-    const customerRepository = ShopPDataSource.getRepository(Customer)
-    const now = new Date()
+    const customerRepository = ShopPDataSource.getRepository(Customer);
+    const now = new Date();
     const customer = await customerRepository.findOne({
       relations: {
-        voucher: true
+        voucher: true,
       },
       select: {
-        id: true
+        id: true,
       },
       where: {
         id: user.customer.id,
-        voucher: {expDate: MoreThan(now)}
-      }
-    })
-    if(customer == null) 
-      return new Response(HttpStatusCode.BAD_REQUEST,'Customer not exist')
-    let length = customer.voucher.length
-    customer.voucher =  customer.voucher.filter((item) => {
-      return item.id != id
-    })
-    if(length == customer.voucher.length) 
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable voucher')
-    return new Response(HttpStatusCode.OK, 'Delete voucher successfully!!')
+        voucher: { expDate: MoreThan(now) },
+      },
+    });
+    if (customer == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Customer not exist');
+    let length = customer.voucher.length;
+    customer.voucher = customer.voucher.filter(item => {
+      return item.id != id;
+    });
+    if (length == customer.voucher.length)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable voucher');
+    return new Response(HttpStatusCode.OK, 'Delete voucher successfully!!');
   }
-
-
 }
-
