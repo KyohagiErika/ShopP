@@ -224,7 +224,6 @@ export default class VoucherMiddleware {
 
   @ControllerService()
   static async showCustomerAppVouchers(req: Request, res: Response) {
-    console.log('okeee');
     const result = await VoucherModel.showCustomerAppVouchers(res.locals.user);
     if (result.getCode() == HttpStatusCode.OK)
       res
