@@ -12,8 +12,12 @@ import productAdditionalInfo from './productAdditionalInfo';
 import packagedProductSize from './packagedProductSize';
 import voucher from './voucher';
 import report from './report';
+import SwaggerUi from 'swagger-ui-express';
+import * as swaggerDocument from '../swagger.json';
 
 const routes = Router();
+
+routes.use('/swagger', SwaggerUi.serve, SwaggerUi.setup(swaggerDocument));
 
 routes.use('/auth', auth);
 routes.use('/account', user);
