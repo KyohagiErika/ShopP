@@ -1,4 +1,3 @@
-import { Shop } from './../entities/shop';
 import { Router } from 'express';
 import AuthMiddleware from '../middlewares/auth';
 import { checkRole } from '../middlewares/checkRole';
@@ -17,7 +16,7 @@ routes.get(
 routes.get(
   '/list-shopP',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  VoucherMiddleware.listShopPVouchers
+  VoucherMiddleware.listAppVouchers
 );
 
 // list shop vouchers
@@ -50,35 +49,42 @@ routes.post(
 
 // save voucher into voucher wallet
 routes.post(
-  '/saveVoucher/:id',
+  '/save-voucher/:id',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   VoucherMiddleware.saveVoucher
 );
 
+// delete customer vouchers
+routes.post(
+  '/delete-customer-voucher/:id',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  VoucherMiddleware.deleteCustomerVoucher
+);
+
 // show shopPVouchers of customer
 routes.get(
-  '/customerShopP',
+  '/customer-ShopP',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  VoucherMiddleware.showCustomerShopPVouchers
+  VoucherMiddleware.showCustomerAppVouchers
 );
 
 // show shopVouchers of customer
 routes.get(
-  '/customerShop',
+  '/customer-Shop',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   VoucherMiddleware.showCustomerShopVouchers
 );
 
 // show freeshipVouchers of customer
 routes.get(
-  '/customerFreeship',
+  '/customer-freeship',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   VoucherMiddleware.showCustomerFreeshipVouchers
 );
 
 // show discountVouchers of customer
 routes.get(
-  '/customerDiscount',
+  '/customer-discount',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   VoucherMiddleware.showCustomerDiscountVouchers
 );
