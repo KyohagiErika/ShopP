@@ -49,9 +49,9 @@ class AuthMiddleware {
     );
     if (result.getCode() === HttpStatusCode.OK) {
       //Send the jwt in the response
-      res.setHeader('Authentication', result.getData());
-      // console.log(req.header('Authorization'));
-      res.status(result.getCode()).send({ message: result.getMessage() });
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), token: result.getData() });
     } else {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }
