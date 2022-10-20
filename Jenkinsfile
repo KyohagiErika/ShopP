@@ -4,8 +4,8 @@ pipeline{
     stages {
         stage('Build...') {
             steps {
-                sh 'docker compose down'
-                sh 'docker compose build --no-cache'
+                sh 'sudo docker compose down'
+                sh 'sudo docker compose build --no-cache'
             }
         }
         stage('Deploy...') {
@@ -15,7 +15,7 @@ pipeline{
                 }
             }
             steps {
-                sh 'docker compose up -d'
+                sh 'sudo docker compose up -d'
             }
         }
     }
