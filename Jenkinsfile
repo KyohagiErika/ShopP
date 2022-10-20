@@ -3,10 +3,20 @@ pipeline{
 
     stages {
         stage('Build...') {
-            agent any
-
             steps {
-                echo "Hello World!"
+                npm i
+                npm run build
+            }
+        }
+        stage('Deploy...') {
+            when {
+                expression {
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                }
+            }
+            steps {
+                npm run init-database
+                npm start
             }
         }
     }
