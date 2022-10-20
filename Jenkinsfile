@@ -4,8 +4,8 @@ pipeline{
     stages {
         stage('Build...') {
             steps {
-                npm i
-                npm run build
+                sh 'npm i'
+                sh 'npm run build'
             }
         }
         stage('Deploy...') {
@@ -15,8 +15,8 @@ pipeline{
                 }
             }
             steps {
-                npm run init-database
-                npm start
+                sh 'npm run init-database'
+                sh 'npm start'
             }
         }
     }
