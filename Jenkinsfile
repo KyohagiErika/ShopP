@@ -4,8 +4,8 @@ pipeline{
     stages {
         stage('Build...') {
             steps {
-                sh 'npm i'
-                sh 'npm run build'
+                sh 'docker compose down'
+                sh 'docker compose build --no-cache'
             }
         }
         stage('Deploy...') {
@@ -15,8 +15,7 @@ pipeline{
                 }
             }
             steps {
-                sh 'npm run init-database'
-                sh 'npm start'
+                sh 'docker compose up -d'
             }
         }
     }
