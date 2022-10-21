@@ -11,6 +11,7 @@ import {
 
 import { ProductEnum } from '../utils/shopp.enum';
 import { Category } from './category';
+import { OrderProduct } from './oderProduct';
 import { PackagedProductSize } from './packagedProductSize';
 import { ProductAdditionalInfo } from './productAdditionalInfo';
 import { ProductImage } from './productImage';
@@ -74,4 +75,7 @@ export class Product {
   @OneToMany(() => ProductImage, productImage => productImage.id)
   @JoinColumn()
   productImage: ProductImage[];
+
+  @OneToMany(() => OrderProduct, orderProduct => orderProduct.id)
+  orderProduct: OrderProduct[];
 }

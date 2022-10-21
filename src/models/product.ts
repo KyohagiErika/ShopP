@@ -216,14 +216,7 @@ export default class ProductModel {
       return new Response(
         HttpStatusCode.CREATED,
         'Create new product successfully!',
-        {
-          shop: { name: shop.name },
-          name: product.name,
-          category: { name: category.name },
-          detail: product.detail,
-          amount: product.amount,
-          status: product.status,
-        }
+        product
       );
     }
   }

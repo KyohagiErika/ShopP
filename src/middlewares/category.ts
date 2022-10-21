@@ -3,7 +3,7 @@ import CategoryModel from '../models/category';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
 
-export default class ProductMiddleware {
+export default class CategoryMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
     const result = await CategoryModel.listAll();

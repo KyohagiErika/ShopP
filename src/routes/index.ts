@@ -12,6 +12,9 @@ import productAdditionalInfo from './productAdditionalInfo';
 import packagedProductSize from './packagedProductSize';
 import voucher from './voucher';
 import report from './report';
+import order from './order';
+import payment from './payment';
+import shoppingUnit from './shoppingUnit'
 
 const routes = Router();
 
@@ -32,6 +35,9 @@ routes.use('/category', category);
 routes.use('/product-additional-info', productAdditionalInfo);
 routes.use('/packaged-product-size', packagedProductSize);
 routes.use('/report', report);
+routes.use('/order', order);
+routes.use('/payment', payment);
+routes.use('/shoppinh-unit', shoppingUnit)
 
 routes.use(async (req, res) => {
   res.status(404).send('Not found!');
