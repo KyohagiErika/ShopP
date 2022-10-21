@@ -1,3 +1,4 @@
+import { Customer } from './customer';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,6 +6,7 @@ import {
   OneToOne,
   JoinColumn,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import { LocalFile } from './localFile';
 import { OrderProduct } from './oderProduct';
@@ -52,4 +54,6 @@ export class Shop {
 
   @OneToMany(() => Order, order => order.id)
   order: Order[];
+  @ManyToMany(() => Customer, customer => customer.shop)
+  customer: Customer[]
 }

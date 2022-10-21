@@ -1,3 +1,4 @@
+import { Shop } from './shop';
 import { Voucher } from './voucher';
 import {
   Entity,
@@ -60,4 +61,6 @@ export class Customer {
 
   @OneToMany(() => Order, order => order.id)
   order: Order[];
+  @ManyToMany(() => Shop, shop => shop.customer)
+  shop: Shop[]
 }

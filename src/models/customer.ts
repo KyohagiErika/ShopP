@@ -196,4 +196,8 @@ export default class CustomerModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Edit customer failed !');
     }
   }
+
+  static async followShop(user: User, shopId: string) {
+    
+  }
 }

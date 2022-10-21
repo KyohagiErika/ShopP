@@ -58,4 +58,23 @@ export class Voucher {
 
   @ManyToMany(() => Order, order => order.id)
   order: Order[];
+  static mapVoucher(voucherEntity: Voucher): VoucherCustomerResponse {
+    return {
+      id: voucherEntity.id,
+      title: voucherEntity.title,
+      type: voucherEntity.type,
+      condition: voucherEntity.condition,
+      mfgDate: voucherEntity.mfgDate,
+      expDate: voucherEntity.expDate
+    }
+  }
+}
+
+type VoucherCustomerResponse = {
+  id: string,
+  title: string,
+  type: VoucherTypeEnum,
+  condition: string,
+  mfgDate: Date,
+  expDate: Date
 }
