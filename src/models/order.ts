@@ -204,7 +204,7 @@ export default class orderModel {
         return order ? order : false
     }
 
-    static async viewCancerOrder() {
+    static async viewCancelOrder() {
         const order = await orderReposity.find({
             relations: {
                 payment: true,
@@ -341,7 +341,7 @@ export default class orderModel {
         }
     }
 
-    static async cancerOrder(id: string) {
+    static async cancelOrder(id: string) {
         const order = await orderReposity.findOne({
             where: {
                 id: id,
@@ -351,7 +351,7 @@ export default class orderModel {
             return new Response(HttpStatusCode.BAD_REQUEST, 'Order not exist.');
         }
         if (order.deliveryStatus == DeliveryStatusEnum.PACKAGING || order.deliveryStatus == DeliveryStatusEnum.DELIVERING) {
-            return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not cancer')
+            return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not cancel')
         }
 
         const result = await orderReposity.update(
@@ -362,9 +362,14 @@ export default class orderModel {
             { deliveryStatus: DeliveryStatusEnum.CANCELLED, status: StatusEnum.INACTIVE }
         );
         if (result.affected == 1) {
-            return new Response(HttpStatusCode.OK, 'Cancer order successfully!');
+            return new Response(HttpStatusCode.OK, 'Cancel order successfully!');
         } else {
-            return new Response(HttpStatusCode.BAD_REQUEST, 'Cancer order failed!');
+            return new Response(HttpStatusCode.BAD_REQUEST, 'Cancel order failed!');
         }
     }
+
+    // static async returnOrder(id: string){
+    //     const now = new Date();
+
+    // }
 }

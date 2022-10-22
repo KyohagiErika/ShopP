@@ -31,6 +31,9 @@ export class Product {
   @Column()
   amount: number;
 
+  @Column()
+  quantity: number
+
   @Column({ default: 0 })
   sold: number;
 

@@ -157,9 +157,9 @@ export default class OrderMiddlieware {
     }
 
     @ControllerService()
-    static async cancerOrder(req: Request, res: Response) {
+    static async cancelOrder(req: Request, res: Response) {
         const id = req.params.id;
-        const result = await orderModel.cancerOrder(id)
+        const result = await orderModel.cancelOrder(id)
         if (result) {
             res.status(result.getCode()).send({ message: result.getMessage() });
         }

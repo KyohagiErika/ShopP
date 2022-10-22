@@ -26,9 +26,9 @@ routes.post(
 );
 
 routes.post(
-    '/cancer-order/:id',
+    '/cancel-order/:id',
     [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-    OrderMiddlieware.cancerOrder
+    OrderMiddlieware.cancelOrder
 );
 
 routes.post(
