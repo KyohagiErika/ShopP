@@ -18,13 +18,14 @@ export class Cart {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToMany(() => Product, product => product.carts)
-  products: Product[];
+  @Column({
+    type: 'json',
+  })
+  products: object;
 
   @OneToOne(() => Customer, customer => customer.cart)
   @JoinColumn()
   customer: Customer;
-
 }
 
 
