@@ -12,13 +12,14 @@ import productAdditionalInfo from './productAdditionalInfo';
 import packagedProductSize from './packagedProductSize';
 import voucher from './voucher';
 import report from './report';
-import SwaggerUi from 'swagger-ui-express';
-import * as swaggerDocument from '../swagger.json';
+import swagger from './swagger';
 
 const routes = Router();
 
-routes.use('/swagger', SwaggerUi.serve, SwaggerUi.setup(swaggerDocument));
-
+routes.use('/get', async (req, res) => {
+  res.send('Hello World!');
+});
+routes.use('/api-docs', swagger);
 routes.use('/auth', auth);
 routes.use('/account', user);
 routes.use('/upload', upload);
@@ -27,10 +28,6 @@ routes.use('/customer', customer);
 routes.use('/cart', cart);
 routes.use('/event', event);
 routes.use('/voucher', voucher);
-
-routes.use('/get', async (req, res) => {
-  res.send('Hello World!');
-});
 routes.use('/product', product);
 routes.use('/category', category);
 routes.use('/product-additional-info', productAdditionalInfo);

@@ -4,15 +4,34 @@ import { checkRole } from '../middlewares/checkRole';
 import { RoleEnum } from '../utils/shopp.enum';
 
 const router = Router();
-//Login route
-router.post('/login', AuthMiddleware.loginWithEmailOrPhone);
 
-//Logout route
-router.get(
-  '/logout',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  AuthMiddleware.logout
-);
+/**
+ * @swagger
+ * /auth/login:
+ *  post:
+ *   tags:
+ *    - Auth
+ *   summary: Login to ShopP
+ *   description: Login to ShopP
+ *   parameters:
+ *    - in: body
+ *      name: body
+ *      required: true
+ *      description: Login
+ *      schema:
+ *       $ref: '#/definitions/LoginRequest'
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/definitions/LoginRequest'
+ *   responses:
+ *    200:
+ *     description: Success
+ *    404:
+ *     description: Bad Request
+ */
+router.post('/login', AuthMiddleware.loginWithEmailOrPhone);
 
 //Change my password
 router.post(
