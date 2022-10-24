@@ -14,8 +14,8 @@ const routes = Router();
  *    - Account
  *   security:
  *    - bearerAuth: []
- *   summary: Get all users
- *   description: Get all users
+ *   summary: Get all users(Admin)
+ *   description: Get all users(Admin)
  *   responses:
  *    200:
  *     description: Success
@@ -38,8 +38,8 @@ routes.get(
  *    - Account
  *   security:
  *    - bearerAuth: []
- *   summary: get one account information
- *   description: get one account information
+ *   summary: Get one account information
+ *   description: Get one account information
  *   parameters:
  *    - in: path
  *      name: id
@@ -69,9 +69,6 @@ routes.get('/:id([0-9]+)', AuthMiddleware.checkJwt, UserMiddleware.getOneById);
  *   requestBody:
  *    content:
  *     application/json:
- *      schema:
- *       $ref: '#/definitions/CreateNewUserRequest'
- *     multipart/form-data:
  *      schema:
  *       $ref: '#/definitions/CreateNewUserRequest'
  *   responses:
@@ -134,7 +131,7 @@ routes.post('/edit', AuthMiddleware.checkJwt, UserMiddleware.edit);
 /**
  * @swagger
  * /account/delete:
- *  post:
+ *  get:
  *   tags:
  *    - Account
  *   security:
@@ -145,6 +142,34 @@ routes.post('/edit', AuthMiddleware.checkJwt, UserMiddleware.edit);
  *    200:
  *     description: Success
  */
-routes.post('/delete', AuthMiddleware.checkJwt, UserMiddleware.delete);
+routes.get('/delete', AuthMiddleware.checkJwt, UserMiddleware.delete);
+
+/**
+ * @swagger
+ * /account/ban/{id}:
+ *  get:
+ *   tags:
+ *    - Account
+ *   security:
+ *    - bearerAuth: []
+ *   parameters:
+ *    - in: path
+ *      name: id
+ *      schema:
+ *       type: integer
+ *      required: true
+ *      description: id of the user
+ *      example: 2
+ *   summary: Ban user(Admin)
+ *   description: Ban user(Admin)
+ *   responses:
+ *    200:
+ *     description: Success
+ */
+routes.get(
+  '/ban/:id([0-9]+)',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
+  UserMiddleware.ban
+);
 
 export default routes;
