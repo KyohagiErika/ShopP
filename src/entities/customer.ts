@@ -58,7 +58,7 @@ export class Customer {
   @OneToMany(() => Report, report => report.id)
   report: Report[];
 
-  @ManyToMany(() => Shop, shop => shop.customer)
+  @ManyToMany(() => Shop, shop => shop.followers)
   @JoinTable()
-  shop: Shop[];
+  shopsFollowed: Shop[];
 }
