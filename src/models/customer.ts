@@ -131,7 +131,7 @@ export default class CustomerModel {
       user,
       avatar,
     });
-    CartModel.postNew(customer.id, {});
+    CartModel.postNew(user);
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',
