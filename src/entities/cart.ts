@@ -1,3 +1,4 @@
+import { Product } from './product';
 import {
   Entity,
   PrimaryColumn,
@@ -6,6 +7,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
+  OneToMany,
+  ManyToMany,
 } from 'typeorm';
 
 import { Customer } from './customer';
@@ -24,3 +27,5 @@ export class Cart {
   @JoinColumn()
   customer: Customer;
 }
+
+
