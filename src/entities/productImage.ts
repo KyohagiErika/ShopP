@@ -18,6 +18,6 @@ export class ProductImage {
   @JoinColumn()
   localFile: LocalFile;
 
-  @ManyToOne(() => Product, product => product.id)
+  @ManyToOne(() => Product, product => product.productImage)
   product: Product;
 }
