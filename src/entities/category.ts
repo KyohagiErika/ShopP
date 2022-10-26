@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import { LocalFile } from './localFile';
 
 import { Product } from './product';
 
@@ -12,4 +20,8 @@ export class Category {
 
   @OneToMany(() => Product, product => product.id)
   products: Product[];
+
+  @OneToOne(() => LocalFile)
+  @JoinColumn()
+  image: LocalFile;
 }

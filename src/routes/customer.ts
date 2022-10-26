@@ -14,13 +14,6 @@ routes.get(
   CustomerMiddleware.listAll
 );
 
-// Get one customer
-routes.get(
-  '/:id',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  CustomerMiddleware.getOneById
-);
-
 //Create a new customer
 routes.post(
   '/new',
@@ -35,6 +28,34 @@ routes.post(
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   uploadImage('avatar'),
   CustomerMiddleware.edit
+);
+
+//Follow shop
+routes.post(
+  '/follow-shop/:shopId',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  CustomerMiddleware.followShop
+);
+
+//Unfollow shop
+routes.post(
+  '/unfollow-shop/:shopId',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  CustomerMiddleware.unollowShop
+);
+
+//show followed shop list
+routes.get(
+  '/show-followed-shops-list',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  CustomerMiddleware.showFollowedShopsList
+);
+
+// Get one customer
+routes.get(
+  '/:id',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  CustomerMiddleware.getOneById
 );
 
 export default routes;
