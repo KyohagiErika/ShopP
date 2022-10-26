@@ -9,8 +9,6 @@ import {
   ManyToMany,
 } from 'typeorm';
 import { LocalFile } from './localFile';
-import { OrderProduct } from './orderProduct';
-import { Order } from './order';
 import { Product } from './product';
 import { Report } from './report';
 import { User } from './user';
@@ -52,8 +50,6 @@ export class Shop {
   @OneToMany(() => Report, report => report.id)
   report: Report[];
 
-  @OneToMany(() => Order, order => order.id)
-  order: Order[];
   @ManyToMany(() => Customer, customer => customer.shopsFollowed)
   followers: Customer[];
 }
