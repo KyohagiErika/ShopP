@@ -204,4 +204,11 @@ export default class UserMiddleware {
     const result = await UserModel.delete(id);
     res.status(result.getCode()).send({ message: result.getMessage() });
   }
+
+  @ControllerService()
+  static async ban(req: Request, res: Response) {
+    const id = +req.params.id;
+    const result = await UserModel.ban(id);
+    res.status(result.getCode()).send({ message: result.getMessage() });
+  }
 }

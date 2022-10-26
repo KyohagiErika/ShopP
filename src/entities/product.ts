@@ -73,7 +73,7 @@ export class Product {
   )
   packagedProductSize: PackagedProductSize;
 
-  @OneToMany(() => ProductImage, productImage => productImage.id)
+  @OneToMany(() => ProductImage, productImage => productImage.product)
   @JoinColumn()
   productImage: ProductImage[];
   
