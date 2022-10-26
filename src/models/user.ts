@@ -3,6 +3,7 @@ import { User } from '../entities/user';
 import { UserRole } from '../entities/userRole';
 import { StatusEnum, RoleEnum, HttpStatusCode } from '../utils/shopp.enum';
 import Response from '../utils/response';
+import { In, LessThan } from 'typeorm';
 
 const userRepository = ShopPDataSource.getRepository(User);
 const userRoleRepository = ShopPDataSource.getRepository(UserRole);
@@ -191,6 +192,37 @@ export default class UserModel {
       return new Response(HttpStatusCode.OK, 'Delete user successfully!');
     } else {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Delete user failed!');
+    }
+  }
+
+  static async ban(userId: number) {
+    const user: User | null = await userRepository.findOne({
+      relations: {
+        role: true,
+      },
+      where: {
+        id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    if (user == null || user.role.role == RoleEnum.ADMIN) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'User not exist.');
+    }
+
+    const result = await userRepository.update(
+      {
+        id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+      { status: StatusEnum.LOCKED, lockedAt: new Date() }
+    );
+    if (result.affected == 1) {
+      return new Response(
+        HttpStatusCode.OK,
+        'User has been banned successfully!'
+      );
+    } else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Ban user failed!');
     }
   }
 }

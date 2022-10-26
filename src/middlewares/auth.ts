@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { ControllerService } from '../utils/decorators';
-import { HttpStatusCode, OtpEnum } from '../utils/shopp.enum';
+import { HttpStatusCode, OtpEnum, StatusEnum } from '../utils/shopp.enum';
 import AuthModel from '../models/auth';
 import config from '../utils/shopp.config';
 import resetPasswordTemplate from '../utils/templates/resetPasswordTemplate';
@@ -9,6 +9,7 @@ import SendGmailMiddleware from './sendGmail';
 import UserModel from '../models/user';
 import { generateOtp } from '../utils';
 import { User } from '../entities/user';
+import verifyEmail from '../utils/templates/verifyEmailTemplate';
 
 class AuthMiddleware {
   @ControllerService({
@@ -57,12 +58,6 @@ class AuthMiddleware {
     }
   }
 
-  @ControllerService()
-  static async logout(req: Request, res: Response) {
-    res.removeHeader('Authentication');
-    res.status(HttpStatusCode.OK).send({ message: 'Logout successfully!' });
-  }
-
   @ControllerService({
     body: [
       {
@@ -87,14 +82,29 @@ class AuthMiddleware {
           return null;
         },
       },
+      {
+        name: 'confirmNewPassword',
+        type: String,
+        validator: (propName: string, value: string) => {
+          const pwdRegExp: RegExp =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
+          if (!pwdRegExp.test(value))
+            return `${propName} must constain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
+          return null;
+        },
+      },
     ],
   })
   static async changePassword(req: Request, res: Response) {
     //Get ID from JWT
-    const id = res.locals.jwtPayload.userId;
+    const id = res.locals.user;
 
     //Get parameters from the body
     const data = req.body;
+    if (data.oldPassword !== data.confirmNewPassword)
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Wrong confirm new password' });
 
     const result = await AuthModel.changePassword(
       id,
@@ -120,11 +130,9 @@ class AuthMiddleware {
   })
   static async forgotPassword(req: Request, res: Response) {
     //Get parameters from the body
-    const data = req.body;
+    const email = req.body.email;
 
-    const user = await UserModel.getOneByEmail(
-      String(data.email).toLowerCase()
-    );
+    const user = await UserModel.getOneByEmail(String(email).toLowerCase());
     if (!user)
       res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Wrong email' });
     else {
@@ -175,6 +183,68 @@ class AuthMiddleware {
           return null;
         },
       },
+    ],
+  })
+  static async sendGmailForVerifingEmail(req: Request, res: Response) {
+    //Get email from the body
+    const email = req.body.email;
+    const user = await UserModel.getOneByEmail(String(email).toLowerCase());
+    if (!user)
+      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Wrong email' });
+    else {
+      let tokenExpiration: Date = new Date();
+      tokenExpiration.setMinutes(10 + tokenExpiration.getMinutes());
+
+      const otp: string = generateOtp(6);
+
+      await AuthModel.postUserOtp(
+        email,
+        OtpEnum.VERIFICATION,
+        otp,
+        tokenExpiration
+      );
+      let name = '';
+      if (user.customer == null || user.customer.name == null)
+        name = 'Our Customer';
+      else name = user.customer.name;
+
+      const emailTemplate = verifyEmail(otp, name);
+
+      const sendGmail = SendGmailMiddleware.getInstance();
+      await sendGmail.createConnection();
+      await sendGmail.sendMail(
+        {
+          from: config.SMTP_SENDER,
+          to: email,
+          subject: 'Verify Your Login Email',
+          text: 'Hello from ShopP',
+          html: emailTemplate.html,
+        },
+        function (err: any, success: any) {
+          if (err)
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ err: err });
+          else
+            res.status(HttpStatusCode.OK).send({
+              message:
+                'Verifing Email OTP was sent via your email successfully',
+            });
+        }
+      );
+    }
+  }
+
+  @ControllerService({
+    body: [
+      {
+        name: 'email',
+        type: String,
+        validator: (propName: string, value: string) => {
+          const emailRegExp: RegExp = /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+          if (!emailRegExp.test(value))
+            return `${propName} must be valid email`;
+          return null;
+        },
+      },
       {
         name: 'otp',
         type: String,
@@ -186,21 +256,15 @@ class AuthMiddleware {
       },
     ],
   })
-  static async verifyForgotPassword(req: Request, res: Response) {
+  static async verifyEmail(req: Request, res: Response) {
     const data = req.body;
-    const user = await UserModel.getOneByEmail(
-      String(data.email).toLowerCase()
+
+    const result = await AuthModel.verifyOtp(
+      data.email,
+      data.otp,
+      OtpEnum.VERIFICATION
     );
-    if (!user)
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Wrong email' });
-    else {
-      const result = await AuthModel.verifyOtp(
-        user.id,
-        data.otp,
-        OtpEnum.FORGET
-      );
-      res.status(result.getCode()).send({ message: result.getMessage() });
-    }
+    return res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
   @ControllerService({
