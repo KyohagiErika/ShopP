@@ -137,6 +137,16 @@ export default class ProductMiddleware {
           return null;
         },
       },
+      {
+        name: 'quantity',
+        type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value > 100000) {
+            return `${propName} must be greater than 0 and less than 100000`;
+          }
+          return null;
+        },
+      },
     ],
   })
   static async postNew(req: Request, res: Response) {
@@ -197,6 +207,16 @@ export default class ProductMiddleware {
         type: String,
       },
       {
+        name: 'quantity',
+        type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value > 100000) {
+            return `${propName} must be greater than 0 and less than 100000`;
+          }
+          return null;
+        },
+      },
+      {
         name: 'amount',
         type: String,
         validator: (propName: string, value: number) => {
@@ -235,6 +255,7 @@ export default class ProductMiddleware {
       data.category,
       data.detail.toString(),
       data.amount,
+      data.quantity,
       status
     );
     if (result.getCode() === HttpStatusCode.OK) {

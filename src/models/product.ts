@@ -24,6 +24,7 @@ export default class ProductModel {
         detail: true,
         amount: true,
         status: true,
+        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -51,6 +52,7 @@ export default class ProductModel {
         detail: true,
         amount: true,
         status: true,
+        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -82,6 +84,7 @@ export default class ProductModel {
         detail: true,
         amount: true,
         status: true,
+        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -113,6 +116,7 @@ export default class ProductModel {
         detail: true,
         amount: true,
         status: true,
+        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -144,6 +148,7 @@ export default class ProductModel {
         detail: true,
         amount: true,
         status: true,
+        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -176,6 +181,7 @@ export default class ProductModel {
         detail: true,
         amount: true,
         status: true,
+        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -201,6 +207,7 @@ export default class ProductModel {
     categoryId: number,
     detail: string,
     amount: number,
+    quantity: number,
     status: ProductEnum,
     productImages: LocalFile[]
   ) {
@@ -219,6 +226,7 @@ export default class ProductModel {
       product.category = category;
       product.detail = detail;
       product.amount = amount;
+      product.quantity = quantity;
       product.status = status;
       await productRepository.save(product);
 
@@ -232,15 +240,7 @@ export default class ProductModel {
       return new Response(
         HttpStatusCode.CREATED,
         'Create new product successfully!',
-        {
-          shop: { name: shop.name },
-          name: product.name,
-          category: { name: category.name },
-          detail: product.detail,
-          amount: product.amount,
-          status: product.status,
-          image: productImages,
-        }
+        product
       );
     }
   }
@@ -251,6 +251,7 @@ export default class ProductModel {
     categoryId: number,
     detail: string,
     amount: number,
+    quantity: number,
     status: ProductEnum
   ) {
     const categoryRepository = ShopPDataSource.getRepository(Category);
@@ -277,6 +278,7 @@ export default class ProductModel {
           category: category,
           detail: detail,
           amount: amount,
+          quantity: quantity,
           status: status,
         }
       );
