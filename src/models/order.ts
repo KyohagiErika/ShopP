@@ -1,8 +1,9 @@
-import { should } from "chai";
 import { ShopPDataSource } from "../data";
 import { Customer } from "../entities/customer";
+import { OrderProduct } from "../entities/orderProduct";
 import { Order } from "../entities/order";
 import { Payment } from "../entities/payment";
+import { Product } from "../entities/product";
 import { Shop } from "../entities/shop";
 import { ShoppingUnit } from "../entities/shoppingUnit";
 import { Voucher } from "../entities/voucher";
@@ -14,7 +15,9 @@ const shopReposity = ShopPDataSource.getRepository(Shop)
 const paymentReposity = ShopPDataSource.getRepository(Payment)
 const shoppingUnitReposity = ShopPDataSource.getRepository(ShoppingUnit)
 const voucherReposity = ShopPDataSource.getRepository(Voucher)
-const customerReposity = ShopPDataSource.getRepository(Customer)
+const productRepository = ShopPDataSource.getRepository(Product)
+const orderProductRepository = ShopPDataSource.getRepository(OrderProduct)
+
 export default class orderModel {
     static async viewOrderForCustomer(customer: Customer) {
         const order = await orderReposity.find({
@@ -23,33 +26,7 @@ export default class orderModel {
                 shoppingUnit: true,
                 voucher: true,
                 shop: true,
-                customer: true
-            },
-            select: {
-                id: true,
-                createdAt: true,
-                deliveryStatus: true,
-                address: true,
-                shop: {
-                    name: true
-                },
-                customer: {
-                    name: true
-                },
-                payment: {
-                    name: true
-                },
-                estimateDeliveryTime: true,
-                shoppingUnit: {
-                    name: true
-                },
-                totalBill: true,
-                transportFee: true,
-                voucher: {
-                    title: true
-                },
-                totalPayment: true,
-                status: true
+                customer: true,
             },
             where: [
                 {
@@ -79,33 +56,7 @@ export default class orderModel {
                 shoppingUnit: true,
                 voucher: true,
                 shop: true,
-                customer: true
-            },
-            select: {
-                id: true,
-                createdAt: true,
-                deliveryStatus: true,
-                address: true,
-                shop: {
-                    name: true
-                },
-                customer: {
-                    name: true
-                },
-                payment: {
-                    name: true
-                },
-                estimateDeliveryTime: true,
-                shoppingUnit: {
-                    name: true
-                },
-                totalBill: true,
-                transportFee: true,
-                voucher: {
-                    title: true
-                },
-                totalPayment: true,
-                status: true
+                customer: true,
             },
             where: [
                 {
@@ -241,7 +192,7 @@ export default class orderModel {
             },
             where: {
                 status: StatusEnum.INACTIVE,
-                deliveryStatus: DeliveryStatusEnum.DELIVERED
+                deliveryStatus: DeliveryStatusEnum.CANCELLED
             }
         });
         return order ? order : false
@@ -259,8 +210,10 @@ export default class orderModel {
         shoppingUnitId: number,
         voucherId: string,
         shopId: string,
-        customer: Customer
+        customer: Customer,
+        orderProducts: OrderProduct[]
     ) {
+
         const shop = await shopReposity.findOne({
             where: {
                 id: shopId
@@ -307,14 +260,44 @@ export default class orderModel {
                 order.shoppingUnit = shoppingUnit,
                 order.voucher = voucher,
                 order.shop = shop,
-                order.customer = customer
+                order.customer = customer,
+                order.orderProducts = orderProducts
+
             await orderReposity.save(order);
+
+            const length = orderProducts.length;
+            for (let i = 0; i < length; i++) {
+                const findProduct = await productRepository.findOne({
+                    where: {
+                        id: orderProducts[i].product.id,
+                    },
+                });
+                if (findProduct == null) {
+                    return new Response(
+                        HttpStatusCode.BAD_REQUEST,
+                        'product is not exist !'
+                    );
+                }
+                if (orderProducts[i].quantity > findProduct.quantity || orderProducts[i].quantity < 1)
+                    return new Response(HttpStatusCode.BAD_REQUEST, 'quantity must be greater than 0 and less than product quantity')
+
+                let orderProduct = new OrderProduct();
+                orderProduct.price = orderProducts[i].price,
+                    orderProduct.additionalInfo = orderProducts[i].additionalInfo,
+                    orderProduct.quantity = orderProducts[i].quantity,
+                    orderProduct.product = findProduct,
+                    orderProduct.orderNumber = order
+
+                await orderProductRepository.save(orderProduct)
+            }
             return new Response(
                 HttpStatusCode.CREATED,
                 'Create new order successfully!',
                 order
             );
+
         }
+
     }
 
     static async editDeliveryStatus(id: string, deliveryStatus: DeliveryStatusEnum) {

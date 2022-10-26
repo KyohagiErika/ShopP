@@ -15,7 +15,7 @@ import { GenderEnum } from '../utils/shopp.enum';
 import { Cart } from './cart';
 import { LocalFile } from './localFile';
 import { Report } from './report';
-import { OrderProduct } from './oderProduct';
+import { OrderProduct } from './orderProduct';
 import { Order } from './order';
 
 @Entity()

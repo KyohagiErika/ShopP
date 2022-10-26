@@ -90,10 +90,16 @@ export default class OrderMiddlieware {
     })
     static async postNew(req: Request, res: Response) {
         const customer = res.locals.user.customer;
+        if (customer == null) {
+            res
+                .status(HttpStatusCode.BAD_REQUEST)
+                .send({ message: 'Can not find customer !' });
+        }
         const data = req.body;
         const totalBill = +req.body.totalBill;
         const transportFee = +req.body.transportFee;
         const totalPayment: number = totalBill + transportFee;
+
         const result = await orderModel.postNew(
             DeliveryStatusEnum.CHECKING,
             data.address.toString(),
@@ -106,7 +112,9 @@ export default class OrderMiddlieware {
             data.shoppingUintId,
             data.voucherId,
             data.shopId,
-            customer
+            customer,
+            data.orderProducts
+
         );
         if (result.getCode() === HttpStatusCode.CREATED) {
             res

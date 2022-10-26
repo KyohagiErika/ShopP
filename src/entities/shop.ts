@@ -9,7 +9,7 @@ import {
   ManyToMany,
 } from 'typeorm';
 import { LocalFile } from './localFile';
-import { OrderProduct } from './oderProduct';
+import { OrderProduct } from './orderProduct';
 import { Order } from './order';
 import { Product } from './product';
 import { Report } from './report';
