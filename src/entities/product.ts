@@ -76,9 +76,5 @@ export class Product {
   @OneToMany(() => ProductImage, productImage => productImage.product)
   @JoinColumn()
   productImage: ProductImage[];
-
-  @ManyToMany(() => Cart, cart => cart.products)
-  carts: Cart[]
-
   
 }

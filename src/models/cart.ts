@@ -1,8 +1,11 @@
+import { productsInCart } from './../interfaces/cart';
+import { Product } from './../entities/product';
 import Response from '../utils/response';
 import { StatusEnum, HttpStatusCode } from './../utils/shopp.enum';
 import { Customer } from './../entities/customer';
 import { ShopPDataSource } from './../data';
 import { Cart } from '../entities/cart';
+import { User } from '../entities/user';
 
 export default class CartModel {
   static async showCart(id: number) {
@@ -26,7 +29,7 @@ export default class CartModel {
     return new Response(HttpStatusCode.OK, 'Show Cart successfully', cart);
   }
 
-  static async postNew(customerId: string, products: object) {
+  static async postNew(user: User ) {
     const cartRepository = ShopPDataSource.getRepository(Cart);
     const customerRepository = ShopPDataSource.getRepository(Customer);
 
@@ -35,7 +38,7 @@ export default class CartModel {
         cart: true,
       },
       where: {
-        id: customerId,
+        id: user.customer.id,
       },
     });
 
@@ -47,7 +50,7 @@ export default class CartModel {
     }
 
     const cart = await cartRepository.save({
-      products,
+      product: '',
       customer: customer,
     });
 
@@ -56,5 +59,17 @@ export default class CartModel {
       'Create Cart successfully',
       cart
     );
+  }
+
+  static async update(cartId: number, products: string) {
+    const cartRepository = ShopPDataSource.getRepository(Cart);
+    const result = await cartRepository.update({
+      id: cartId
+    }, {
+      products
+    })
+    if(result.affected == 0)
+      return new Response(HttpStatusCode.BAD_REQUEST, `Update cart failed!!`);
+    return new Response(HttpStatusCode.OK, `Update cart successfully!!`);
   }
 }
