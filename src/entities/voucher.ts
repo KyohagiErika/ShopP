@@ -15,6 +15,7 @@ import {
 import { User } from './user';
 import { VoucherTypeEnum } from '../utils/shopp.enum';
 import { Customer } from './customer';
+import { VoucherCustomerResponse } from '../interfaces/voucher';
 
 @Entity()
 export class Voucher {
@@ -54,4 +55,16 @@ export class Voucher {
   @ManyToMany(() => Customer, customer => customer.voucher)
   @JoinTable()
   customer: Customer[];
+
+  static mapVoucher(voucherEntity: Voucher): VoucherCustomerResponse {
+    return {
+      id: voucherEntity.id,
+      title: voucherEntity.title,
+      type: voucherEntity.type,
+      condition: voucherEntity.condition,
+      mfgDate: voucherEntity.mfgDate,
+      expDate: voucherEntity.expDate
+    }
+  }
 }
+
