@@ -177,4 +177,35 @@ export default class CustomerMiddleware {
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ error: 'Please upload image' });
   }
+
+  @ControllerService()
+  static async followShop(req: Request, res: Response) {
+    const result = await CustomerModel.followShop(
+      res.locals.user,
+      req.params.shopId
+    );
+    res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+
+  @ControllerService()
+  static async unollowShop(req: Request, res: Response) {
+    const result = await CustomerModel.unfollowShop(
+      res.locals.user,
+      req.params.shopId
+    );
+    res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+
+  @ControllerService()
+  static async showFollowedShopsList(req: Request, res: Response) {
+    const result = await CustomerModel.showFollowedShopsList(res.locals.user);
+    if (result.getCode() == HttpStatusCode.OK)
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    else
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage() });
+  }
 }

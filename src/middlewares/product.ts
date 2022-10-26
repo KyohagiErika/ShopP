@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
+import { LocalFile } from '../entities/localFile';
 import { Shop } from '../entities/shop';
 import ProductModel from '../models/product';
+import UploadModel from '../models/upload';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 
@@ -117,7 +119,7 @@ export default class ProductMiddleware {
         type: String,
       },
       {
-        name: 'category',
+        name: 'categoryId',
         type: String,
       },
 
@@ -135,43 +137,42 @@ export default class ProductMiddleware {
           return null;
         },
       },
-      {
-        name: 'quantity',
-        type: String,
-        validator: (propName: string, value: number) => {
-          if (value < 0 || value > 100000) {
-            return `${propName} must be greater than 0 and less than 100000`;
-          }
-          return null;
-        },
-      },
     ],
   })
   static async postNew(req: Request, res: Response) {
-    const data = req.body;
-    const shop: Shop = res.locals.user.shop;
-    if (shop == null) {
+    if (req.files != undefined) {
+      const productImages: LocalFile[] = await UploadModel.uploadMultiple(
+        req.files
+      );
+
+      const data = req.body;
+      const shop: Shop = res.locals.user.shop;
+      if (shop == null) {
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'Can not find shop' });
+      }
+      const result = await ProductModel.postNew(
+        shop,
+        data.name,
+        data.categoryId,
+        data.detail.toString(),
+        data.amount,
+        ProductEnum.AVAILABLE,
+        productImages
+      );
+
+      if (result.getCode() === HttpStatusCode.CREATED) {
+        res
+          .status(result.getCode())
+          .send({ message: result.getMessage(), data: result.getData() });
+      } else {
+        res.status(result.getCode()).send({ message: result.getMessage() });
+      }
+    } else
       res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Can not find shop' });
-    }
-    const result = await ProductModel.postNew(
-      shop,
-      data.name,
-      data.categoryId,
-      data.detail.toString(),
-      data.amount,
-      data.quantity,
-      ProductEnum.AVAILABLE
-    );
-
-    if (result.getCode() === HttpStatusCode.CREATED) {
-      res
-        .status(result.getCode())
-        .send({ message: result.getMessage(), data: result.getData() });
-    } else {
-      res.status(result.getCode()).send({ message: result.getMessage() });
-    }
+        .send({ error: 'Please upload product images' });
   }
 
   @ControllerService({
@@ -194,16 +195,6 @@ export default class ProductMiddleware {
       {
         name: 'detail',
         type: String,
-      },
-      {
-        name: 'quantity',
-        type: String,
-        validator: (propName: string, value: number) => {
-          if (value < 0 || value > 100000) {
-            return `${propName} must be greater than 0 and less than 100000`;
-          }
-          return null;
-        },
       },
       {
         name: 'amount',
@@ -244,7 +235,6 @@ export default class ProductMiddleware {
       data.category,
       data.detail.toString(),
       data.amount,
-      data.quantity,
       status
     );
     if (result.getCode() === HttpStatusCode.OK) {

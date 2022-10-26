@@ -8,6 +8,7 @@ import {
   OneToOne,
   OneToMany,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 import { User } from './user';
@@ -15,8 +16,6 @@ import { GenderEnum } from '../utils/shopp.enum';
 import { Cart } from './cart';
 import { LocalFile } from './localFile';
 import { Report } from './report';
-import { OrderProduct } from './orderProduct';
-import { Order } from './order';
 
 @Entity()
 export class Customer {
@@ -59,8 +58,7 @@ export class Customer {
   @OneToMany(() => Report, report => report.id)
   report: Report[];
 
-  @OneToMany(() => Order, order => order.id)
-  order: Order[];
-  @ManyToMany(() => Shop, shop => shop.customer)
-  shop: Shop[]
+  @ManyToMany(() => Shop, shop => shop.followers)
+  @JoinTable()
+  shopsFollowed: Shop[];
 }

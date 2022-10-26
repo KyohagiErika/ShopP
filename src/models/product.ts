@@ -5,8 +5,11 @@ import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
 import { Like } from 'typeorm';
+import { LocalFile } from '../entities/localFile';
+import { ProductImage } from '../entities/productImage';
 
 const productRepository = ShopPDataSource.getRepository(Product);
+const productImageRepository = ShopPDataSource.getRepository(ProductImage);
 
 export default class ProductModel {
   static async listAll() {
@@ -14,13 +17,13 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
+        productImage: true,
       },
       select: {
         name: true,
         detail: true,
         amount: true,
         status: true,
-        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -41,13 +44,13 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
+        productImage: true,
       },
       select: {
         name: true,
         detail: true,
         amount: true,
         status: true,
-        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -72,13 +75,13 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
+        productImage: true,
       },
       select: {
         name: true,
         detail: true,
         amount: true,
         status: true,
-        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -103,13 +106,13 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
+        productImage: true,
       },
       select: {
         name: true,
         detail: true,
         amount: true,
         status: true,
-        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -134,13 +137,13 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
+        productImage: true,
       },
       select: {
         name: true,
         detail: true,
         amount: true,
         status: true,
-        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -166,13 +169,13 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
+        productImage: true,
       },
       select: {
         name: true,
         detail: true,
         amount: true,
         status: true,
-        quantity: true,
         sold: true,
         star: true,
         shop: { name: true },
@@ -198,8 +201,8 @@ export default class ProductModel {
     categoryId: number,
     detail: string,
     amount: number,
-    quantity: number,
-    status: ProductEnum
+    status: ProductEnum,
+    productImages: LocalFile[]
   ) {
     const categoryRepository = ShopPDataSource.getRepository(Category);
     const category = await categoryRepository.findOne({
@@ -208,7 +211,7 @@ export default class ProductModel {
       },
     });
     if (category == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'category not exist.');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Category not exist.');
     } else {
       let product = new Product();
       product.shop = shop;
@@ -216,15 +219,28 @@ export default class ProductModel {
       product.category = category;
       product.detail = detail;
       product.amount = amount;
-      product.quantity = quantity;
       product.status = status;
-
       await productRepository.save(product);
+
+      productImages.forEach(async productImage => {
+        await productImageRepository.insert({
+          localFile: productImage,
+          product: product,
+        });
+      });
 
       return new Response(
         HttpStatusCode.CREATED,
         'Create new product successfully!',
-        product
+        {
+          shop: { name: shop.name },
+          name: product.name,
+          category: { name: category.name },
+          detail: product.detail,
+          amount: product.amount,
+          status: product.status,
+          image: productImages,
+        }
       );
     }
   }
@@ -235,7 +251,6 @@ export default class ProductModel {
     categoryId: number,
     detail: string,
     amount: number,
-    quantity: number,
     status: ProductEnum
   ) {
     const categoryRepository = ShopPDataSource.getRepository(Category);
@@ -262,7 +277,6 @@ export default class ProductModel {
           category: category,
           detail: detail,
           amount: amount,
-          quantity: quantity,
           status: status,
         }
       );

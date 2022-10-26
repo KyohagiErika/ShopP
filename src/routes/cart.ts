@@ -3,6 +3,10 @@ import CartMiddleware from '../middlewares/cart';
 
 const routes = Router();
 
-routes.get('/:id', CartMiddleware.showCart);
+routes.get('/:cartId([0-9]+)', CartMiddleware.showCart);
+
+routes.post('/new', CartMiddleware.postNew)
+
+routes.post('/update/:cartId([0-9]+', CartMiddleware.update);
 
 export default routes;

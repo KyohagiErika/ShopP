@@ -199,8 +199,8 @@ export default class AuthModel {
       if (existOtp.otpExpiration > currentDate) {
         return new Response(HttpStatusCode.OK, 'Verify OTP successfully!');
       }
-      await AuthModel.deleteUserOtp(userId, OtpEnum.FORGET, otp);
-      return new Response(HttpStatusCode.UNAUTHORIZATION, 'OTP was expired!');
+      await AuthModel.deleteUserOtp(userId, type, otp);
+      return new Response(HttpStatusCode.BAD_REQUEST, 'OTP was expired!');
     } else {
       return new Response(HttpStatusCode.BAD_REQUEST, 'OTP was not right!');
     }

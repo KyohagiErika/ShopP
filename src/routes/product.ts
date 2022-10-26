@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import AuthMiddleware from '../middlewares/auth';
 import { checkRole } from '../middlewares/checkRole';
+import { uploadMultipleImage } from '../middlewares/fileProvider';
 import ProductMiddleware from '../middlewares/product';
 import { RoleEnum } from '../utils/shopp.enum';
 
@@ -27,6 +28,7 @@ routes.get('/search-by-shop/:shopId', ProductMiddleware.searchByShop);
 routes.post(
   '/new',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  uploadMultipleImage('productImages'),
   ProductMiddleware.postNew
 );
 
