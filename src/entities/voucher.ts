@@ -16,6 +16,7 @@ import { User } from './user';
 import { VoucherTypeEnum } from '../utils/shopp.enum';
 import { Customer } from './customer';
 import { Order } from './order';
+import { VoucherCustomerResponse } from '../interfaces/voucher';
 
 @Entity()
 export class Voucher {
@@ -70,11 +71,3 @@ export class Voucher {
   }
 }
 
-type VoucherCustomerResponse = {
-  id: string,
-  title: string,
-  type: VoucherTypeEnum,
-  condition: string,
-  mfgDate: Date,
-  expDate: Date
-}

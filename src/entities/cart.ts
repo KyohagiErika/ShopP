@@ -1,3 +1,4 @@
+import { Product } from './product';
 import {
   Entity,
   PrimaryColumn,
@@ -6,6 +7,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
+  OneToMany,
+  ManyToMany,
 } from 'typeorm';
 
 import { Customer } from './customer';
@@ -15,12 +18,12 @@ export class Cart {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
-    type: 'json',
-  })
-  products: object;
+  @Column()
+  products: string;
 
   @OneToOne(() => Customer, customer => customer.cart)
   @JoinColumn()
   customer: Customer;
 }
+
+
