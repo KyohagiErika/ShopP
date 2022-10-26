@@ -17,24 +17,5 @@ export default class OrderProductMiddleware {
         }
     }
 
-    @ControllerService()
-    static async postNew(req: Request, res: Response) {
-        const data = req.body;
-        const result = await orderProductModel.postNew(
-            data.price,
-            data.quantity,
-            data.additionalInfo,
-            data.productId,
-            data.orderNumber,
-        );
-        if (result.getCode() === HttpStatusCode.CREATED) {
-            res
-                .status(result.getCode())
-                .send({ message: result.getMessage(), data: result.getData() });
-        } else {
-            res.status(result.getCode()).send({ message: result.getMessage() });
-        }
-    }
-
 
 }

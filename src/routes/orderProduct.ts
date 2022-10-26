@@ -8,10 +8,4 @@ routes.get(
     OrderProductMiddleware.viewOrderProduct
 );
 
-routes.post(
-    '/new',
-    [AuthMiddleware.checkJwt],
-    OrderProductMiddleware.postNew
-);
-
 export default routes;
