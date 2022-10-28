@@ -1,3 +1,4 @@
+import { Cart } from './cart';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,6 +8,7 @@ import {
   JoinColumn,
   OneToMany,
   OneToOne,
+  ManyToMany,
 } from 'typeorm';
 
 import { ProductEnum } from '../utils/shopp.enum';
@@ -71,7 +73,8 @@ export class Product {
   )
   packagedProductSize: PackagedProductSize;
 
-  @OneToMany(() => ProductImage, productImage => productImage.id)
+  @OneToMany(() => ProductImage, productImage => productImage.product)
   @JoinColumn()
   productImage: ProductImage[];
+  
 }

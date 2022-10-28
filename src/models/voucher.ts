@@ -1,3 +1,4 @@
+import { Shop } from './../entities/shop';
 import { User } from './../entities/user';
 import {
   HttpStatusCode,
@@ -25,13 +26,13 @@ export default class VoucherModel {
         expDate: true,
       },
       where: {
-        mfgDate: MoreThan(now),
+        expDate: MoreThan(now),
       },
     });
     return vouchers && vouchers.length > 0 ? vouchers : false;
   }
 
-  static async listShopPVouchers() {
+  static async listAppVouchers() {
     const voucherRepository = ShopPDataSource.getRepository(Voucher);
     const now = new Date();
     const vouchers = await voucherRepository.find({
@@ -46,7 +47,7 @@ export default class VoucherModel {
       },
       where: {
         createdBy: { role: { role: Like(RoleEnum.ADMIN) } },
-        mfgDate: MoreThan(now),
+        expDate: MoreThan(now),
       },
     });
     return vouchers && vouchers.length > 0 ? vouchers : false;
@@ -67,7 +68,7 @@ export default class VoucherModel {
       },
       where: {
         createdBy: { role: { role: Like(RoleEnum.SHOP) } },
-        mfgDate: MoreThan(now),
+        expDate: MoreThan(now),
       },
     });
     return vouchers && vouchers.length > 0 ? vouchers : false;
@@ -266,7 +267,13 @@ export default class VoucherModel {
     return new Response(HttpStatusCode.BAD_REQUEST, 'Undefined error!');
   }
 
-  static async showCustomerShopPVouchers(user: User) {
+  static async templateShowCustomerVouchers(
+    user: User,
+    role: RoleEnum,
+    message: string,
+    type1?: VoucherTypeEnum,
+    type2?: VoucherTypeEnum
+  ) {
     const customerRepository = await ShopPDataSource.getRepository(Customer);
     if (user.role.role == RoleEnum.ADMIN)
       return new Response(
@@ -290,188 +297,109 @@ export default class VoucherModel {
       }
       const now = new Date();
       let voucherALL = customer.voucher;
-      let voucherShopP: object[] = [];
-      voucherALL.forEach(voucher => {
-        if (voucher.roleCreator == RoleEnum.ADMIN && voucher.mfgDate > now) {
-          voucherShopP.push({
-            id: voucher.id,
-            title: voucher.title,
-            type: voucher.type,
-            condition: voucher.condition,
-            mfgDate: voucher.mfgDate,
-            expDate: voucher.expDate,
-          });
-        }
-      });
-      if (voucherShopP.length == 0)
+      let vouchers: object[] = [];
+      if (type1 == undefined) {
+        voucherALL.forEach(voucher => {
+          if (voucher.roleCreator == role && voucher.expDate > now) {
+            vouchers.push(Voucher.mapVoucher(voucher));
+          }
+        });
+      } else if (type2 == undefined) {
+        voucherALL.forEach(voucher => {
+          if (
+            voucher.roleCreator == role &&
+            voucher.expDate > now &&
+            voucher.type == type1
+          ) {
+            vouchers.push(Voucher.mapVoucher(voucher));
+
+          }
+        });
+      } else {
+        voucherALL.forEach(voucher => {
+          if (
+            voucher.roleCreator == role &&
+            voucher.expDate > now &&
+            (voucher.type == type1 || voucher.type == type2)
+          ) {
+            vouchers.push(Voucher.mapVoucher(voucher));
+
+          }
+        });
+      }
+      if (vouchers.length == 0)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
           'unavailable vouchers!!'
         );
-      return new Response(
-        HttpStatusCode.OK,
-        'show ShopP vouchers successfully!!',
-        voucherShopP
-      );
+      return new Response(HttpStatusCode.OK, message, vouchers);
     }
+  }
+
+  static async showCustomerAppVouchers(user: User) {
+    return this.templateShowCustomerVouchers(
+      user,
+      RoleEnum.ADMIN,
+      'show App vouchers successfully!!'
+    );
   }
 
   static async showCustomerShopVouchers(user: User) {
-    const customerRepository = await ShopPDataSource.getRepository(Customer);
-    if (user.role.role == RoleEnum.ADMIN)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Unauthorized error. Invalid role!'
-      );
-    else {
-      const customer = await customerRepository.findOne({
-        relations: {
-          voucher: true,
-        },
-        where: {
-          id: user.customer.id,
-        },
-      });
-      if (customer == null) {
-        return new Response(
-          HttpStatusCode.BAD_REQUEST,
-          'must sign up customer before!'
-        );
-      }
-      const now = new Date();
-      let voucherALL = customer.voucher;
-      let voucherShop: object[] = [];
-      voucherALL.forEach(voucher => {
-        if (voucher.roleCreator == RoleEnum.SHOP && voucher.mfgDate > now) {
-          voucherShop.push({
-            id: voucher.id,
-            title: voucher.title,
-            type: voucher.type,
-            condition: voucher.condition,
-            mfgDate: voucher.mfgDate,
-            expDate: voucher.expDate,
-          });
-        }
-      });
-      if (voucherShop.length == 0)
-        return new Response(
-          HttpStatusCode.BAD_REQUEST,
-          'unavailable vouchers!!'
-        );
-      return new Response(
-        HttpStatusCode.OK,
-        'show Shop vouchers successfully!!',
-        voucherShop
-      );
-    }
+    return this.templateShowCustomerVouchers(
+      user,
+      RoleEnum.SHOP,
+      'show Shop vouchers successfully!!'
+    );
   }
 
   static async showCustomerFreeshipVouchers(user: User) {
-    const customerRepository = await ShopPDataSource.getRepository(Customer);
-    if (user.role.role == RoleEnum.ADMIN)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Unauthorized error. Invalid role!'
-      );
-    else {
-      const customer = await customerRepository.findOne({
-        relations: {
-          voucher: true,
-        },
-        where: {
-          id: user.customer.id,
-        },
-      });
-      if (customer == null) {
-        return new Response(
-          HttpStatusCode.BAD_REQUEST,
-          'must sign up customer before!'
-        );
-      }
-      const now = new Date();
-      let voucherALL = customer.voucher;
-      let freeshipVoucher: object[] = [];
-      voucherALL.forEach(voucher => {
-        if (
-          voucher.roleCreator == RoleEnum.ADMIN &&
-          voucher.mfgDate > now &&
-          voucher.type == VoucherTypeEnum.FREESHIP
-        ) {
-          freeshipVoucher.push({
-            id: voucher.id,
-            title: voucher.title,
-            type: voucher.type,
-            condition: voucher.condition,
-            mfgDate: voucher.mfgDate,
-            expDate: voucher.expDate,
-          });
-        }
-      });
-      if (freeshipVoucher.length == 0)
-        return new Response(
-          HttpStatusCode.BAD_REQUEST,
-          'unavailable vouchers!!'
-        );
-      return new Response(
-        HttpStatusCode.OK,
-        'show freeship vouchers successfully!!',
-        freeshipVoucher
-      );
-    }
+    return this.templateShowCustomerVouchers(
+      user,
+      RoleEnum.ADMIN,
+      'show Freeship vouchers successfully!!',
+      VoucherTypeEnum.FREESHIP
+    );
   }
 
   static async showCustomerDiscountVouchers(user: User) {
-    const customerRepository = await ShopPDataSource.getRepository(Customer);
+    return this.templateShowCustomerVouchers(
+      user,
+      RoleEnum.ADMIN,
+      'show Discount vouchers successfully!!',
+      VoucherTypeEnum.MONEY,
+      VoucherTypeEnum.PERCENT
+    );
+  }
+
+  static async deleteCustomerVoucher(user: User, id: string) {
     if (user.role.role == RoleEnum.ADMIN)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Unauthorized error. Invalid role!'
       );
-    else {
-      const customer = await customerRepository.findOne({
-        relations: {
-          voucher: true,
-        },
-        where: {
-          id: user.customer.id,
-        },
-      });
-      if (customer == null) {
-        return new Response(
-          HttpStatusCode.BAD_REQUEST,
-          'must sign up customer before!'
-        );
-      }
-      const now = new Date();
-      let voucherALL = customer.voucher;
-      let discountVoucher: object[] = [];
-      voucherALL.forEach(voucher => {
-        if (
-          voucher.roleCreator == RoleEnum.ADMIN &&
-          voucher.mfgDate > now &&
-          (voucher.type == VoucherTypeEnum.MONEY ||
-            voucher.type == VoucherTypeEnum.PERCENT)
-        ) {
-          discountVoucher.push({
-            id: voucher.id,
-            title: voucher.title,
-            type: voucher.type,
-            condition: voucher.condition,
-            mfgDate: voucher.mfgDate,
-            expDate: voucher.expDate,
-          });
-        }
-      });
-      if (discountVoucher.length == 0)
-        return new Response(
-          HttpStatusCode.BAD_REQUEST,
-          'unavailable vouchers!!'
-        );
-      return new Response(
-        HttpStatusCode.OK,
-        'show discount vouchers successfully!!',
-        discountVoucher
-      );
-    }
+    const customerRepository = ShopPDataSource.getRepository(Customer);
+    const now = new Date();
+    const customer = await customerRepository.findOne({
+      relations: {
+        voucher: true,
+      },
+      select: {
+        id: true,
+      },
+      where: {
+        id: user.customer.id,
+        voucher: { expDate: MoreThan(now) },
+      },
+    });
+    if (customer == null)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Customer not exist');
+    let length = customer.voucher.length;
+    customer.voucher = customer.voucher.filter(item => {
+      return item.id != id;
+    });
+    if (length == customer.voucher.length)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable voucher');
+    customerRepository.save(customer)
+    return new Response(HttpStatusCode.OK, 'Delete voucher successfully!!');
   }
 }

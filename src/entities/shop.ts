@@ -1,3 +1,4 @@
+import { Customer } from './customer';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,6 +6,7 @@ import {
   OneToOne,
   JoinColumn,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import { LocalFile } from './localFile';
 import { Product } from './product';
@@ -43,8 +45,11 @@ export class Shop {
   star: number;
 
   @Column({ default: 0 })
-  followers: number;
+  followersNumber: number;
 
   @OneToMany(() => Report, report => report.id)
   report: Report[];
+
+  @ManyToMany(() => Customer, customer => customer.shopsFollowed)
+  followers: Customer[];
 }

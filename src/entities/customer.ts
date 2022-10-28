@@ -1,3 +1,4 @@
+import { Shop } from './shop';
 import { Voucher } from './voucher';
 import {
   Entity,
@@ -7,6 +8,7 @@ import {
   OneToOne,
   OneToMany,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 import { User } from './user';
@@ -55,4 +57,8 @@ export class Customer {
 
   @OneToMany(() => Report, report => report.id)
   report: Report[];
+
+  @ManyToMany(() => Shop, shop => shop.followers)
+  @JoinTable()
+  shopsFollowed: Shop[];
 }
