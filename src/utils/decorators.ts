@@ -2,8 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 import chalk from 'chalk';
 import { HttpStatusCode } from './shopp.enum';
 import { ShopPDataSource } from '../data';
+import { EntityManager, Repository } from 'typeorm';
+import ModelResponse from '../utils/response';
 
 type AsyncFunction = (...args: any[]) => Promise<any>;
+type AsyncModelFunction = (...args: any[]) => Promise<ModelResponse>;
 
 interface ApiProperty {
   name: string;
@@ -204,12 +207,19 @@ export function ModelService() {
     propKey: PropertyKey,
     propDescriptor: PropertyDescriptor
   ) {
-    function addTransaction(func: AsyncFunction) {
-      return async function (...args: any[]) {
-        await ShopPDataSource.transaction(async entityManager => {
-          await func(...args);
-          await entityManager.save;
-        });
+    function addTransaction(func: AsyncModelFunction) {
+      return async function (...args: any): Promise<ModelResponse> {
+        const queryRunner = ShopPDataSource.createQueryRunner();
+        await queryRunner.startTransaction();
+        try {
+          args.shift();
+          const result = await func(queryRunner.manager, ...args);
+          await queryRunner.commitTransaction();
+          return result;
+        } catch (error) {
+          await queryRunner.rollbackTransaction();
+          return new ModelResponse(HttpStatusCode.UNKNOW_ERROR, 'Unkown error');
+        }
       };
     }
     propDescriptor.value = addTransaction(target[propKey]);

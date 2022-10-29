@@ -13,6 +13,10 @@ import CartModel from './cart';
 import { LocalFile } from '../entities/localFile';
 import { deleteFile } from '../utils';
 import { isNotEmpty } from 'class-validator/types/decorator/decorators';
+import UploadModel from './upload';
+import { ModelService } from '../utils/decorators';
+import { EntityManager } from 'typeorm';
+import { Cart } from '../entities/cart';
 
 export default class CustomerModel {
   static async listAll() {
@@ -102,20 +106,23 @@ export default class CustomerModel {
     return customer ? customer : false;
   }
 
+  @ModelService()
   static async postNew(
+    transactionalEntityManager: EntityManager,
     name: string,
     gender: GenderEnum,
     dob: Date,
     placeOfDelivery: string,
     user: User,
-    avatar: LocalFile
-  ) {
+    avatar: Express.Multer.File
+  ): Promise<Response> {
     if (user.role.role == RoleEnum.ADMIN)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         `Unauthorized role. Admin can not create customer role!`
       );
-    const customerRepository = ShopPDataSource.getRepository(Customer);
+    const localFile: LocalFile = await UploadModel.upload(avatar);
+
     // check user has already have customer or not
     if (user.customer != null && user.customer != undefined) {
       return new Response(
@@ -123,15 +130,19 @@ export default class CustomerModel {
         `Customer has already existed`
       );
     }
+    const customerRepository =
+      transactionalEntityManager.getRepository(Customer);
     let customer = await customerRepository.save({
       name,
       gender,
       dob,
       placeOfDelivery,
       user,
-      avatar,
+      localFile,
     });
-    CartModel.postNew(user);
+    await transactionalEntityManager.getRepository(Cart).save({
+      customer: customer,
+    });
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',
@@ -240,8 +251,8 @@ export default class CustomerModel {
     }
     shop.followersNumber++;
     customer.shopsFollowed.push(shop);
-    customerRepository.save(customer)
-    shopRepository.save(shop)
+    customerRepository.save(customer);
+    shopRepository.save(shop);
     return new Response(HttpStatusCode.OK, 'follow shop successfully!');
   }
 
@@ -256,10 +267,10 @@ export default class CustomerModel {
     const shop = await shopRepository.findOne({
       select: {
         id: true,
-        followers: true
+        followers: true,
       },
       where: {
-        id: shopId
+        id: shopId,
       },
     });
     if (shop == null)
@@ -287,8 +298,8 @@ export default class CustomerModel {
         'shop is not followed yet!'
       );
     shop.followersNumber--;
-    await customerRepository.save(customer)
-    await shopRepository.save(shop)
+    await customerRepository.save(customer);
+    await shopRepository.save(shop);
     return new Response(HttpStatusCode.OK, 'unfollow shop successfully!!');
   }
 

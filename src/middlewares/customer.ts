@@ -5,6 +5,9 @@ import { HttpStatusCode } from '../utils/shopp.enum';
 import ConvertDate from '../utils/convertDate';
 import { LocalFile } from '../entities/localFile';
 import UploadModel from '../models/upload';
+import { EntityManager } from 'typeorm';
+import { ShopPDataSource } from '../data';
+import ModelResponse from '../utils/response';
 
 export default class CustomerMiddleware {
   @ControllerService()
@@ -85,19 +88,19 @@ export default class CustomerMiddleware {
   })
   static async postNew(req: Request, res: Response) {
     if (req.file != undefined) {
-      const file = req.file;
-      const localFile: LocalFile = await UploadModel.upload(file);
+      const avatar: Express.Multer.File = req.file;
 
       const data = req.body;
       // take date
       var dateTrueFormat = ConvertDate(data.dob);
-      const result = await CustomerModel.postNew(
+      const result: ModelResponse = await CustomerModel.postNew(
+        new EntityManager(ShopPDataSource),
         data.name.toString(),
         data.gender,
         new Date(dateTrueFormat),
         data.placeOfDelivery.toString(),
         res.locals.user,
-        localFile
+        avatar
       );
       if (result.getCode() === HttpStatusCode.CREATED) {
         res
@@ -203,9 +206,6 @@ export default class CustomerMiddleware {
       res
         .status(result.getCode())
         .send({ message: result.getMessage(), data: result.getData() });
-    else
-      res
-        .status(result.getCode())
-        .send({ message: result.getMessage() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 }
