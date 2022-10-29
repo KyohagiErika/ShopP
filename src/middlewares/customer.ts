@@ -31,7 +31,6 @@ export default class CustomerMiddleware {
   static async getOneById(req: Request, res: Response) {
     const id = req.params.id.toString();
     const result = await CustomerModel.getOneById(id, res.locals.user);
-    res.status(HttpStatusCode.OK).send({ data: res.locals.user });
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
     } else {
@@ -163,7 +162,6 @@ export default class CustomerMiddleware {
     if (req.file != undefined) {
       const file = req.file;
       const data = req.body;
-      const id = req.params.id;
       // resolve dob
       var dateTrueFormat = ConvertDate(data.dob);
       const result = await CustomerModel.edit(

@@ -15,11 +15,39 @@ import report from './report';
 import order from './order';
 import payment from './payment';
 import shoppingUnit from './shoppingUnit';
-import orderProduct from './orderProduct'
+import orderProduct from './orderProduct';
 import swagger from './swagger';
 
 const routes = Router();
-
+/**
+ * @swagger
+ * components:
+ *  responses:
+ *   200OK:
+ *    type: string
+ *    description: Success
+ *   302Redirect:
+ *    type: string
+ *    description: Redirect
+ *   400BadRequest:
+ *    type: string
+ *    description: Bad Request
+ *   401Unauthorized:
+ *    type: string
+ *    description: Unauthorized
+ *   403Forbidden:
+ *    type: string
+ *    description: Forbidden
+ *   404NotFound:
+ *    type: string
+ *    description: Not Found
+ *   500InternalServerError:
+ *    type: string
+ *    description: Internal Server Error
+ *   520UnknownError:
+ *    type: string
+ *    description: Unknown Error
+ */
 routes.use('/get', async (req, res) => {
   res.send('Hello World!');
 });
@@ -40,7 +68,7 @@ routes.use('/report', report);
 routes.use('/order', order);
 routes.use('/payment', payment);
 routes.use('/shopping-unit', shoppingUnit);
-routes.use('/order-product', orderProduct)
+routes.use('/order-product', orderProduct);
 
 routes.use(async (req, res) => {
   res.status(404).send('Not found!');

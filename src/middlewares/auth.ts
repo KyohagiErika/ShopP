@@ -12,6 +12,38 @@ import { User } from '../entities/user';
 import verifyEmail from '../utils/templates/verifyEmailTemplate';
 
 class AuthMiddleware {
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   LoginRequest:
+   *    type: object
+   *    properties:
+   *     emailOrPhone:
+   *      type: string
+   *      description: email or phone of the user
+   *      example: 'shopp123@gmail.com'
+   *     password:
+   *      type: string
+   *      description: password of the user
+   *      example: 'abcABC213&'
+   * */
+  /**
+   * @swagger
+   * components:
+   *  responses:
+   *   LoginResponse:
+   *    type: object
+   *    properties:
+   *     message:
+   *      type: string
+   *      description: message
+   *      example: 'Login successfully'
+   *     token:
+   *      type: string
+   *      description: token of the user
+   *      example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImVtYWlsIjoidHRpZW52bXNlMTcwMTMwQGZwdC5lZHUudm4iLCJpYXQiOjE2NjcwNDkyMTQsImV4cCI6MTY2NzA1MjgxNH0.w4WZTxZ4Q-HQ4p1PbJ-x-tz1XNap_zNRMoOPy6xUoTo'
+   */
   @ControllerService({
     body: [
       {
@@ -58,6 +90,26 @@ class AuthMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ChangePasswordRequest:
+   *    type: object
+   *    properties:
+   *     oldPassword:
+   *      type: string
+   *      description: old password of the user
+   *      example: 'abcABC213&'
+   *     newPassword:
+   *      type: string
+   *      description: new password of the user
+   *      example: 'abcABC213&'
+   *     confirmNewPassword:
+   *      type: string
+   *      description: confirm password of the user
+   *      example: 'abcABC213&'
+   * */
   @ControllerService({
     body: [
       {
@@ -114,6 +166,26 @@ class AuthMiddleware {
     res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ForgotPasswordRequest:
+   *    type: object
+   *    properties:
+   *     oldPassword:
+   *      type: string
+   *      description: password of the user
+   *      example: 'abcABC213&'
+   *     newPassword:
+   *      type: string
+   *      description: password of the user
+   *      example: 'abcABfsdfC213&'
+   *     confirmNewPassword:
+   *      type: string
+   *      description: confirm password of the user
+   *      example: 'abcABfsdfC213&'
+   */
   @ControllerService({
     body: [
       {
@@ -221,8 +293,7 @@ class AuthMiddleware {
           html: emailTemplate.html,
         },
         function (err: any, success: any) {
-          if (err)
-            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ err: err });
+          if (err) res.status(HttpStatusCode.UNKNOW_ERROR).send({ err: err });
           else
             res.status(HttpStatusCode.OK).send({
               message:
@@ -233,6 +304,22 @@ class AuthMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   VerifyEmailRequest:
+   *    type: object
+   *    properties:
+   *     email:
+   *      type: string
+   *      description: email of the user
+   *      example: 'shopp123@gmail.com'
+   *     otp:
+   *      type: string
+   *      description: OTP from ShopP Email
+   *      example: '123456'
+   */
   @ControllerService({
     body: [
       {
@@ -267,6 +354,30 @@ class AuthMiddleware {
     return res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ResetPasswordRequest:
+   *    type: object
+   *    properties:
+   *     email:
+   *      type: string
+   *      description: email of the user
+   *      example: 'shopp123@gmail.com'
+   *     otp:
+   *      type: string
+   *      description: OTP from ShopP Email
+   *      example: '123456'
+   *     password:
+   *      type: string
+   *      description: new password of the user
+   *      example: 'abcABfsdfC213&'
+   *     confirmPassword:
+   *      type: string
+   *      description: confirm new password of the user
+   *      example: 'abcABfsdfC213&'
+   */
   @ControllerService({
     body: [
       {

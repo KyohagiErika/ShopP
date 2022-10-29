@@ -19,10 +19,14 @@ const routes = Router();
  *   responses:
  *    200:
  *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/UserListResponse'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
  *    401:
- *     description: Unauthorized
- *    404:
- *     description: Bad Request
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/list-all',
@@ -51,10 +55,14 @@ routes.get(
  *   responses:
  *    200:
  *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/UserResponse'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
  *    401:
- *     description: Unauthorized
- *    404:
- *     description: Bad Request
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get('/:id([0-9]+)', AuthMiddleware.checkJwt, UserMiddleware.getOneById);
 
@@ -70,12 +78,12 @@ routes.get('/:id([0-9]+)', AuthMiddleware.checkJwt, UserMiddleware.getOneById);
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/definitions/CreateNewUserRequest'
+ *       $ref: '#/components/schemas/CreateNewUserRequest'
  *   responses:
  *    200:
- *     description: success
- *    500:
- *     description: error
+ *     $ref: '#/components/responses/200OK'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
  */
 routes.post('/sign-up', UserMiddleware.postNew);
 
@@ -91,15 +99,12 @@ routes.post('/sign-up', UserMiddleware.postNew);
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/definitions/CreateNewUserRequest'
- *     multipart/form-data:
- *      schema:
- *       $ref: '#/definitions/CreateNewUserRequest'
+ *       $ref: '#/components/schemas/CreateNewUserRequest'
  *   responses:
  *    200:
- *     description: success
- *    404:
- *     description: error
+ *     $ref: '#/components/responses/200OK'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
  */
 routes.post('/sign-up-admin', UserMiddleware.postNewAdmin);
 
@@ -121,10 +126,14 @@ routes.post('/sign-up-admin', UserMiddleware.postNewAdmin);
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/definitions/EditUserRequest'
+ *       $ref: '#/components/schemas/EditUserRequest'
  *   responses:
  *    200:
- *     description: success
+ *     $ref: '#/components/responses/200OK'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post('/edit', AuthMiddleware.checkJwt, UserMiddleware.edit);
 
@@ -140,7 +149,11 @@ routes.post('/edit', AuthMiddleware.checkJwt, UserMiddleware.edit);
  *   description: Delete one user
  *   responses:
  *    200:
- *     description: Success
+ *     $ref: '#/components/responses/200OK'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get('/delete', AuthMiddleware.checkJwt, UserMiddleware.delete);
 
@@ -164,7 +177,11 @@ routes.get('/delete', AuthMiddleware.checkJwt, UserMiddleware.delete);
  *   description: Ban user(Admin)
  *   responses:
  *    200:
- *     description: Success
+ *     $ref: '#/components/responses/200OK'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/ban/:id([0-9]+)',

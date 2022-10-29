@@ -29,6 +29,30 @@ export default class UserMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   CreateNewUserRequest:
+   *    type: object
+   *    properties:
+   *     email:
+   *      type: string
+   *      description: email of the user
+   *      example: 'shopp123@gmail.com'
+   *     phone:
+   *      type: string
+   *      description: phone of the user
+   *      example: '0987654321'
+   *     password:
+   *      type: string
+   *      description: password of the user
+   *      example: 'abcABC213&'
+   *     confirmPassword:
+   *      type: string
+   *      description: confirm password of the user
+   *     example: 'abcABC213&'
+   */
   @ControllerService({
     body: [
       {
@@ -87,7 +111,7 @@ export default class UserMiddleware {
       data.password,
       RoleEnum.CUSTOMER
     );
-    if (result.getCode() === HttpStatusCode.CREATED) {
+    if (result.getCode() === HttpStatusCode.OK) {
       res
         .status(result.getCode())
         .send({ message: result.getMessage(), data: result.getData() });
@@ -163,6 +187,22 @@ export default class UserMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   EditUserRequest:
+   *    type: object
+   *    properties:
+   *     email:
+   *      type: string
+   *      description: email of the user
+   *      example: 'shopp123@gmail.com'
+   *     phone:
+   *      type: string
+   *      description: phone of the user
+   *      example: '0987654321'
+   */
   @ControllerService({
     body: [
       {

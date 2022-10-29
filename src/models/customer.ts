@@ -25,6 +25,7 @@ export default class CustomerModel {
       relations: {
         user: true,
         avatar: true,
+        shopsFollowed: true,
       },
       select: {
         id: true,
@@ -57,6 +58,7 @@ export default class CustomerModel {
         relations: {
           user: true,
           avatar: true,
+          shopsFollowed: true,
         },
         select: {
           id: true,
@@ -127,19 +129,21 @@ export default class CustomerModel {
     if (user.customer != null && user.customer != undefined) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        `Customer has already existed`
+        `Customer has already existed.`
       );
     }
     const customerRepository =
       transactionalEntityManager.getRepository(Customer);
-    let customer = await customerRepository.save({
-      name,
-      gender,
-      dob,
-      placeOfDelivery,
-      user,
-      localFile,
-    });
+    const customerEntity = new Customer();
+    customerEntity.name = name;
+    customerEntity.gender = gender;
+    customerEntity.dob = dob;
+    customerEntity.placeOfDelivery = placeOfDelivery;
+    customerEntity.user = user;
+    customerEntity.avatar = localFile;
+
+    const customer = await customerRepository.save(customerEntity);
+
     await transactionalEntityManager.getRepository(Cart).save({
       customer: customer,
     });
