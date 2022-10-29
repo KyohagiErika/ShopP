@@ -218,7 +218,10 @@ export function ModelService() {
           return result;
         } catch (error) {
           await queryRunner.rollbackTransaction();
-          return new ModelResponse(HttpStatusCode.UNKNOW_ERROR, 'Unkown error');
+          return new ModelResponse(
+            HttpStatusCode.UNKNOW_ERROR,
+            'Some thing went wrong!'
+          );
         }
       };
     }
