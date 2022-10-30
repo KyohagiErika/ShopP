@@ -23,7 +23,6 @@ export default class CustomerModel {
     const customerRepository = ShopPDataSource.getRepository(Customer);
     const customers = await customerRepository.find({
       relations: {
-        user: true,
         avatar: true,
         shopsFollowed: true,
       },
@@ -33,11 +32,6 @@ export default class CustomerModel {
         gender: true,
         dob: true,
         placeOfDelivery: true,
-        user: {
-          id: true,
-          email: true,
-          phone: true,
-        },
         // not need following shops
       },
       where: {
@@ -333,7 +327,7 @@ export default class CustomerModel {
     if (customer == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'customer not exist!');
     if (customer.shopsFollowed.length == 0)
-      return new Response(HttpStatusCode.OK, 'no shop followed now!');
+      return new Response(HttpStatusCode.OK, 'no shop followed now!', []);
     return new Response(
       HttpStatusCode.OK,
       'show followed shops successfully!',

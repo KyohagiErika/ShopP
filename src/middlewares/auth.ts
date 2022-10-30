@@ -454,10 +454,9 @@ class AuthMiddleware {
 
   static async checkJwt(req: Request, res: Response, next: NextFunction) {
     //Get the jwt token from the head
-    let token = <string>req.header('Authorization');
-    // console.log(token)
-    if (token == '')
-      res
+    let token = <string>req.header('Authentication');
+    if (token == undefined)
+      return res
         .status(HttpStatusCode.REDIRECT)
         .send({ message: 'Please Login to ShopP' });
     let jwtPayload;
@@ -467,16 +466,15 @@ class AuthMiddleware {
       jwtPayload = <any>jwt.verify(token, config.JWT_SECRET);
       const user: User | false = await UserModel.getOneById(jwtPayload.userId);
       if (user === false) {
-        res
+        return res
           .status(HttpStatusCode.UNAUTHORIZATION)
           .send({ message: 'Unauthorized: authentication required' });
       } else res.locals.user = user;
     } catch (error) {
       //If token is not valid, respond with 401 (unauthorized)
-      res
+      return res
         .status(HttpStatusCode.UNAUTHORIZATION)
-        .send({ message: 'Unauthorized: authentication required' });
-      return;
+        .send({ message: 'Unauthorized: authentication required!' });
     }
 
     //The token is valid for 1 hour
@@ -488,7 +486,7 @@ class AuthMiddleware {
     res.setHeader('Authentication', newToken);
 
     //Call the next middleware or controller
-    next();
+    return next();
   }
 }
 export default AuthMiddleware;

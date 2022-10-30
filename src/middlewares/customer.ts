@@ -3,8 +3,6 @@ import { Request, Response } from 'express';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
 import ConvertDate from '../utils/convertDate';
-import { LocalFile } from '../entities/localFile';
-import UploadModel from '../models/upload';
 import { EntityManager } from 'typeorm';
 import { ShopPDataSource } from '../data';
 import ModelResponse from '../utils/response';
@@ -40,6 +38,34 @@ export default class CustomerMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   CustomerRequest:
+   *    type: object
+   *    properties:
+   *     name:
+   *      type: string
+   *      description: name of customer
+   *      example: 'bello'
+   *     dob:
+   *      type: string
+   *      description: Date of birth
+   *      example: '22-03-2003'
+   *     gender:
+   *      type: string
+   *      description: gender of customer
+   *      example: 'MALE'
+   *     placeOfDelivery:
+   *      type: string
+   *      description: place of delivery
+   *      example: '34 Nguyen Van Cu, Ha Noi'
+   *     avatar:
+   *      type: string
+   *      format: binary
+   *      description: avatar of Customer
+   */
   @ControllerService({
     body: [
       {

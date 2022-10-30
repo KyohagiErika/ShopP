@@ -14,8 +14,8 @@ const routes = Router();
  *    - Account
  *   security:
  *    - bearerAuth: []
- *   summary: Get all users(Admin)
- *   description: Get all users(Admin)
+ *   summary: Get all users (Admin)
+ *   description: Get all users (Admin)
  *   responses:
  *    200:
  *     description: Success
@@ -49,6 +49,7 @@ routes.get(
  *      name: id
  *      schema:
  *       type: integer
+ *       format: int32
  *      required: true
  *      description: id of the user
  *      example: 2
@@ -118,10 +119,6 @@ routes.post('/sign-up-admin', UserMiddleware.postNewAdmin);
  *    - bearerAuth: []
  *   summary: Edit one user
  *   description: Edit one user
- *   consumes:
- *    - application/json
- *   produces:
- *    - application/json
  *   requestBody:
  *    content:
  *     application/json:

@@ -11,7 +11,7 @@ const swaggerOptions = {
       title: 'ShopP Web Application API',
       version: '1.0.0',
       description:
-        'Web Application API Documentation for ShopP E-Commerce Platform',
+        'Web Application API Documentation for ShopP E-Commerce Platform built with NodeJS, ExpressJS, TypeScript, TypeORM, and MySQL',
       servers: ['http://localhost:3001'],
       basePath: '/',
     },

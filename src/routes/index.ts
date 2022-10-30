@@ -24,29 +24,61 @@ const routes = Router();
  * components:
  *  responses:
  *   200OK:
- *    type: string
+ *    type: object
  *    description: Success
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
  *   302Redirect:
- *    type: string
+ *    type: object
  *    description: Redirect
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
  *   400BadRequest:
- *    type: string
+ *    type: object
  *    description: Bad Request
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
  *   401Unauthorized:
- *    type: string
+ *    type: object
  *    description: Unauthorized
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
  *   403Forbidden:
- *    type: string
+ *    type: object
  *    description: Forbidden
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
  *   404NotFound:
- *    type: string
+ *    type: object
  *    description: Not Found
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
  *   500InternalServerError:
- *    type: string
+ *    type: object
  *    description: Internal Server Error
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
  *   520UnknownError:
- *    type: string
+ *    type: object
  *    description: Unknown Error
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
  */
 routes.use('/get', async (req, res) => {
   res.send('Hello World!');
