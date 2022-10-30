@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 
@@ -50,6 +50,17 @@ const options = {
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 
-routes.use('/', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+routes.use(
+  '/',
+  async (req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    next();
+  },
+  swaggerUI.serve,
+  swaggerUI.setup(swaggerDocs)
+);
 
 export default routes;
