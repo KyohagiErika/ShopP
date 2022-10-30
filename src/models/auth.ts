@@ -36,10 +36,7 @@ export default class AuthModel {
     if (user !== null) {
       //Check if encrypted password match
       if (!user.checkIfUnencryptedPasswordIsValid(password)) {
-        return new Response(
-          HttpStatusCode.UNAUTHORIZATION,
-          'Wrong login password'
-        );
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Wrong login password');
       }
       //Sign JWT, valid for 1 hour
       const token = jwt.sign(
