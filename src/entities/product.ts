@@ -13,6 +13,7 @@ import {
 
 import { ProductEnum } from '../utils/shopp.enum';
 import { Category } from './category';
+import { OrderProduct } from './orderProduct';
 import { PackagedProductSize } from './packagedProductSize';
 import { ProductAdditionalInfo } from './productAdditionalInfo';
 import { ProductImage } from './productImage';
@@ -31,6 +32,9 @@ export class Product {
 
   @Column()
   amount: number;
+
+  @Column()
+  quantity: number
 
   @Column({ default: 0 })
   sold: number;
@@ -76,5 +80,7 @@ export class Product {
   @OneToMany(() => ProductImage, productImage => productImage.product)
   @JoinColumn()
   productImage: ProductImage[];
-  
+
+  @OneToMany(() => OrderProduct, orderProduct => orderProduct.id)
+  orderProduct: OrderProduct[];
 }
