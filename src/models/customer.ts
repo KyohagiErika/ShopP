@@ -19,7 +19,6 @@ export default class CustomerModel {
     const customerRepository = ShopPDataSource.getRepository(Customer);
     const customers = await customerRepository.find({
       relations: {
-        user: true,
         avatar: true,
       },
       select: {
@@ -28,11 +27,6 @@ export default class CustomerModel {
         gender: true,
         dob: true,
         placeOfDelivery: true,
-        user: {
-          id: true,
-          email: true,
-          phone: true,
-        },
         // not need following shops
       },
       where: {

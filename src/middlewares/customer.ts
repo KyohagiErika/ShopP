@@ -28,7 +28,6 @@ export default class CustomerMiddleware {
   static async getOneById(req: Request, res: Response) {
     const id = req.params.id.toString();
     const result = await CustomerModel.getOneById(id, res.locals.user);
-    res.status(HttpStatusCode.OK).send({ data: res.locals.user });
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
     } else {
