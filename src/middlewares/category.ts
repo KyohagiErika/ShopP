@@ -5,7 +5,7 @@ import UploadModel from '../models/upload';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
 
-export default class CategoryMiddleware {
+export default class ProductMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
     const result = await CategoryModel.listAll();
