@@ -46,9 +46,6 @@ export class Customer {
   @Column()
   placeOfDelivery: string;
 
-  @Column('json', { nullable: true })
-  followingShops: string;
-
   @OneToOne(() => Cart, cart => cart.customer)
   cart: Cart;
 
