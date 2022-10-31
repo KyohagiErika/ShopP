@@ -18,12 +18,10 @@ export class Cart {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ default: '' })
   products: string;
 
   @OneToOne(() => Customer, customer => customer.cart)
   @JoinColumn()
   customer: Customer;
 }
-
-
