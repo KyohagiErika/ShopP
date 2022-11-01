@@ -185,7 +185,7 @@ class AuthMiddleware {
       },
     ],
   })
-  static async sendGmailForVerifingEmail(req: Request, res: Response) {
+  static async sendGmailForVerifyingEmail(req: Request, res: Response) {
     //Get email from the body
     const email = req.body.email;
     const user = await UserModel.getOneByEmail(String(email).toLowerCase());
@@ -198,7 +198,7 @@ class AuthMiddleware {
       const otp: string = generateOtp(6);
 
       await AuthModel.postUserOtp(
-        email,
+        user,
         OtpEnum.VERIFICATION,
         otp,
         tokenExpiration
@@ -347,7 +347,7 @@ class AuthMiddleware {
     // console.log(token)
     if (token == '')
       res
-        .status(HttpStatusCode.REDIRECT)
+        .status(HttpStatusCode.UNAUTHORIZATION)
         .send({ message: 'Please Login to ShopP' });
     let jwtPayload;
     token = token?.replace('Bearer ', '');
@@ -374,7 +374,7 @@ class AuthMiddleware {
     const newToken = jwt.sign({ userId, email }, config.JWT_SECRET, {
       expiresIn: '1h',
     });
-    res.setHeader('Authentication', newToken);
+    res.setHeader('Authorization', newToken);
 
     //Call the next middleware or controller
     next();

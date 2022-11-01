@@ -124,7 +124,10 @@ router.post('/reset-password', AuthMiddleware.resetPassword);
  *    404:
  *     description: Bad Request
  */
-router.post('/send-otp/verify-email', AuthMiddleware.sendGmailForVerifingEmail);
+router.post(
+  '/send-otp/verify-email',
+  AuthMiddleware.sendGmailForVerifyingEmail
+);
 
 /**
  * @swagger

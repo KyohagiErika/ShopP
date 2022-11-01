@@ -27,5 +27,3 @@ export class Cart {
   @JoinColumn()
   customer: Customer;
 }
-
-
