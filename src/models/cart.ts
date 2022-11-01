@@ -29,7 +29,7 @@ export default class CartModel {
     return new Response(HttpStatusCode.OK, 'Show Cart successfully', cart);
   }
 
-  static async postNew(customerId: string ) {
+  static async postNew(customerId: string) {
     const cartRepository = ShopPDataSource.getRepository(Cart);
     const customerRepository = ShopPDataSource.getRepository(Customer);
 
@@ -63,12 +63,15 @@ export default class CartModel {
 
   static async update(cartId: number, products: string) {
     const cartRepository = ShopPDataSource.getRepository(Cart);
-    const result = await cartRepository.update({
-      id: cartId
-    }, {
-      products
-    })
-    if(result.affected == 0)
+    const result = await cartRepository.update(
+      {
+        id: cartId,
+      },
+      {
+        products,
+      }
+    );
+    if (result.affected == 0)
       return new Response(HttpStatusCode.BAD_REQUEST, `Update cart failed!!`);
     return new Response(HttpStatusCode.OK, `Update cart successfully!!`);
   }

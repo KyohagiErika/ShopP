@@ -228,8 +228,8 @@ export default class CustomerModel {
     }
     shop.followersNumber++;
     customer.shopsFollowed.push(shop);
-    customerRepository.save(customer)
-    shopRepository.save(shop)
+    customerRepository.save(customer);
+    shopRepository.save(shop);
     return new Response(HttpStatusCode.OK, 'Follow shop successfully!');
   }
 
@@ -244,7 +244,7 @@ export default class CustomerModel {
     const shop = await shopRepository.findOne({
       select: {
         id: true,
-        followersNumber: true
+        followersNumber: true,
       },
       where: {
         id: shopId,
@@ -274,11 +274,11 @@ export default class CustomerModel {
         HttpStatusCode.BAD_REQUEST,
         'Shop is not followed yet!'
       );
-    
-    await customerRepository.save(customer)
+
+    await customerRepository.save(customer);
     await shopRepository.update(shop.id, {
-      followersNumber: shop.followersNumber -1
-    })
+      followersNumber: shop.followersNumber - 1,
+    });
     return new Response(HttpStatusCode.OK, 'Unfollow shop successfully!!');
   }
 

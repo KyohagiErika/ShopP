@@ -15,7 +15,7 @@ import report from './report';
 import order from './order';
 import payment from './payment';
 import shoppingUnit from './shoppingUnit';
-import orderProduct from './orderProduct'
+import orderProduct from './orderProduct';
 import swagger from './swagger';
 
 const routes = Router();
@@ -40,7 +40,7 @@ routes.use('/report', report);
 routes.use('/order', order);
 routes.use('/payment', payment);
 routes.use('/shopping-unit', shoppingUnit);
-routes.use('/order-product', orderProduct)
+routes.use('/order-product', orderProduct);
 
 routes.use(async (req, res) => {
   res.status(404).send('Not found!');

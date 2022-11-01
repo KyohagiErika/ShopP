@@ -204,9 +204,6 @@ export default class CustomerMiddleware {
       res
         .status(result.getCode())
         .send({ message: result.getMessage(), data: result.getData() });
-    else
-      res
-        .status(result.getCode())
-        .send({ message: result.getMessage() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 }

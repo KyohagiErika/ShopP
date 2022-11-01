@@ -34,7 +34,7 @@ export class Product {
   amount: number;
 
   @Column()
-  quantity: number
+  quantity: number;
 
   @Column({ default: 0 })
   sold: number;

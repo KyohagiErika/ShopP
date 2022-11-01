@@ -19,7 +19,7 @@ export class Cart {
   id: number;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   products: string;
 

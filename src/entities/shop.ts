@@ -54,6 +54,7 @@ export class Shop {
 
   @OneToMany(() => Order, order => order.id)
   order: Order[];
+
   @ManyToMany(() => Customer, customer => customer.shopsFollowed)
   followers: Customer[];
 }
