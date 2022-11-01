@@ -28,16 +28,16 @@ export default class UploadModel {
       | { [fieldname: string]: Express.Multer.File[] }
   ): Promise<LocalFile[]> {
     let localFile: LocalFile;
-    let localFiles: LocalFile[] = [];
+    let localFiles = new Array<LocalFile>();
 
-    (files as Array<Express.Multer.File>).map(async file => {
+    (files as Array<Express.Multer.File>).map(file => {
       localFile = new LocalFile();
       localFile.filename = file.filename;
       localFile.mimetype = file.mimetype;
       localFile.path = file.path;
-
-      localFiles.push(await localFileRepository.save(localFile));
+      localFiles.push(localFile);
     });
+    await localFileRepository.save(localFiles);
     return localFiles;
   }
 }

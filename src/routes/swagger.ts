@@ -56,9 +56,8 @@ routes.use(
   async (req: Request, res: Response, next: NextFunction) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With');
-    res.setHeader('Cross-Origin-Embedder-Policy-Report-Only', 'require-corp');
-    res.setHeader('Cross-Origin-Opener-Policy-Report-Only', 'same-origin');
-
+    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
     next();
   },
   swaggerUI.serve,

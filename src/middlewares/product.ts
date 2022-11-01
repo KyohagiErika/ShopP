@@ -1,10 +1,13 @@
 import { Request, Response } from 'express';
+import { EntityManager } from 'typeorm';
+import { ShopPDataSource } from '../data';
 import { LocalFile } from '../entities/localFile';
 import { Shop } from '../entities/shop';
 import ProductModel from '../models/product';
 import UploadModel from '../models/upload';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
+import ModelResponse from '../utils/response';
 
 export default class ProductMiddleware {
   @ControllerService()
@@ -162,7 +165,8 @@ export default class ProductMiddleware {
           .status(HttpStatusCode.BAD_REQUEST)
           .send({ message: 'Can not find shop' });
       }
-      const result = await ProductModel.postNew(
+      const result: ModelResponse = await ProductModel.postNew(
+        new EntityManager(ShopPDataSource),
         shop,
         data.name,
         data.categoryId,
