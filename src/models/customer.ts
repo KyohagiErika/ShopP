@@ -19,7 +19,6 @@ export default class CustomerModel {
     const customerRepository = ShopPDataSource.getRepository(Customer);
     const customers = await customerRepository.find({
       relations: {
-        user: true,
         avatar: true,
       },
       select: {
@@ -28,11 +27,6 @@ export default class CustomerModel {
         gender: true,
         dob: true,
         placeOfDelivery: true,
-        user: {
-          id: true,
-          email: true,
-          phone: true,
-        },
         // not need following shops
       },
       where: {
@@ -59,6 +53,12 @@ export default class CustomerModel {
           name: true,
           gender: true,
           dob: true,
+          bio: true,
+          user: {
+            id: true,
+            email: true,
+            phone: true,
+          },
         },
         where: {
           id: customerId,
@@ -68,9 +68,9 @@ export default class CustomerModel {
     } else if (customerPayload == null)
       return new Response(
         HttpStatusCode.REDIRECT,
-        'User has not have customer yet!'
+        'User has not register customer yet!'
       );
-    else if (customerPayload.id != customerId) {
+    else {
       customer = await customerRepository.findOne({
         relations: {
           avatar: true,
@@ -80,25 +80,14 @@ export default class CustomerModel {
           name: true,
           gender: true,
           dob: true,
+          bio: true
         },
         where: {
           id: customerId,
           user: { status: StatusEnum.ACTIVE },
         },
       });
-    } else
-      customer = {
-        id: customerPayload.id,
-        name: customerPayload.name,
-        dob: customerPayload.dob,
-        avatar: customerPayload.avatar,
-        gender: customerPayload.gender,
-        user: {
-          id: user.id,
-          email: user.email,
-          phone: user.phone,
-        },
-      };
+    }
     return customer ? customer : false;
   }
 
@@ -107,8 +96,10 @@ export default class CustomerModel {
     gender: GenderEnum,
     dob: Date,
     placeOfDelivery: string,
+    bio: string,
     user: User,
-    avatar: LocalFile
+    avatar: LocalFile,
+    
   ) {
     if (user.role.role == RoleEnum.ADMIN)
       return new Response(
@@ -128,6 +119,7 @@ export default class CustomerModel {
       gender,
       dob,
       placeOfDelivery,
+      bio,
       user,
       avatar,
     });
@@ -141,11 +133,6 @@ export default class CustomerModel {
         gender: customer.gender,
         dob: customer.dob,
         placeOfDelivery: customer.placeOfDelivery,
-        user: {
-          id: user.id,
-          email: user.email,
-          phone: user.phone,
-        },
       }
     );
   }
@@ -155,8 +142,9 @@ export default class CustomerModel {
     gender: GenderEnum,
     dob: Date,
     placeOfDelivery: string,
+    bio: string,
     user: User,
-    file: Express.Multer.File
+    file: Express.Multer.File,
   ) {
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
@@ -176,6 +164,7 @@ export default class CustomerModel {
         gender,
         dob,
         placeOfDelivery,
+        bio
       }
     );
 
