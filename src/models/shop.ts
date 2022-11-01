@@ -15,6 +15,10 @@ const localFileRepository = ShopPDataSource.getRepository(LocalFile);
 export default class ShopModel {
   static async listAll() {
     const shops = await shopRepository.find({
+      relations: {
+        avatar: true
+
+      },
 
       where: {
         user: { status: StatusEnum.ACTIVE },
@@ -25,6 +29,10 @@ export default class ShopModel {
 
   static async getOneById(id: string) {
     const shop = await shopRepository.find({
+      relations: {
+        avatar: true
+
+      },
 
       where: {
         id: id,
@@ -36,6 +44,10 @@ export default class ShopModel {
 
   static async searchShop(name: string) {
     const shop = await shopRepository.find({
+      relations: {
+        avatar: true
+
+      },
 
       where: {
         name: Like(`%${name}%`),
