@@ -95,6 +95,7 @@ export default class CustomerMiddleware {
         data.gender,
         new Date(dateTrueFormat),
         data.placeOfDelivery.toString(),
+        data.bio,
         res.locals.user,
         localFile
       );
@@ -167,6 +168,7 @@ export default class CustomerMiddleware {
         data.gender,
         new Date(dateTrueFormat),
         data.placeOfDelivery,
+        data.bio,
         res.locals.user,
         file
       );
