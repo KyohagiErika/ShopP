@@ -80,7 +80,7 @@ export default class CustomerModel {
           name: true,
           gender: true,
           dob: true,
-          bio: true
+          bio: true,
         },
         where: {
           id: customerId,
@@ -98,8 +98,7 @@ export default class CustomerModel {
     placeOfDelivery: string,
     bio: string,
     user: User,
-    avatar: LocalFile,
-    
+    avatar: LocalFile
   ) {
     if (user.role.role == RoleEnum.ADMIN)
       return new Response(
@@ -144,7 +143,7 @@ export default class CustomerModel {
     placeOfDelivery: string,
     bio: string,
     user: User,
-    file: Express.Multer.File,
+    file: Express.Multer.File
   ) {
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
@@ -164,7 +163,7 @@ export default class CustomerModel {
         gender,
         dob,
         placeOfDelivery,
-        bio
+        bio,
       }
     );
 
@@ -248,7 +247,7 @@ export default class CustomerModel {
         followersNumber: true
       },
       where: {
-        id: shopId
+        id: shopId,
       },
     });
     if (shop == null)
