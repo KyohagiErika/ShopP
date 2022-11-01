@@ -374,7 +374,7 @@ class AuthMiddleware {
     const newToken = jwt.sign({ userId, email }, config.JWT_SECRET, {
       expiresIn: '1h',
     });
-    res.setHeader('Authentication', newToken);
+    res.setHeader('Authorization', newToken);
 
     //Call the next middleware or controller
     next();
