@@ -185,7 +185,7 @@ class AuthMiddleware {
       },
     ],
   })
-  static async sendGmailForVerifingEmail(req: Request, res: Response) {
+  static async sendGmailForVerifyingEmail(req: Request, res: Response) {
     //Get email from the body
     const email = req.body.email;
     const user = await UserModel.getOneByEmail(String(email).toLowerCase());
@@ -198,7 +198,7 @@ class AuthMiddleware {
       const otp: string = generateOtp(6);
 
       await AuthModel.postUserOtp(
-        email,
+        user,
         OtpEnum.VERIFICATION,
         otp,
         tokenExpiration

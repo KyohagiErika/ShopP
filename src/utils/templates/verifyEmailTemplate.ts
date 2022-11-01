@@ -102,7 +102,7 @@ const verifyEmail = function (otp: string, name: string) {
                         <p style="font-weight: 600; font-size: 18px; margin-bottom: 10px;margin-top: 10px">Hey ${name},</p>
   
                         <p style="margin: 0 0 24px;">
-                          This is the Verifing Email OTP you requested from 2ndGoods. Use to verify your 2ndGoods account email.
+                          This is the Verifing Email OTP you requested from ShopP. Use to verify your ShopP account email.
                         </p>
                         
                         <lable style="display: block; font-size: 24px; line-height: 100%; margin-bottom: 24px; --text-opacity: 1; color: #000000; text-decoration: none;">${otp}</lable>
@@ -118,7 +118,7 @@ const verifyEmail = function (otp: string, name: string) {
   
                         <p style="margin: 20px 0 2px;">
                           If you did not request this verifing email, please contact us immediately.
-                          <br>2ndGoods Support
+                          <br>ShopP Support
                         </p>
   
                         <table style="font-family: 'Montserrat',Arial,sans-serif; width: 100%;" width="100%"
