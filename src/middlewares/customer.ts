@@ -65,6 +65,10 @@ export default class CustomerMiddleware {
    *      type: string
    *      format: binary
    *      description: avatar of Customer
+   *     bio:
+   *      type: string
+   *      description: bio of customer
+   *      example: 'Dep tray'
    */
   @ControllerService({
     body: [
