@@ -133,8 +133,8 @@ const verifyEmail = function (otp: string, name: string) {
                         </table>
                         <p style="margin: 0 0 16px;">
                           Have additional questions or need direct assistance? <br /> Contact our team at 
-                          <a href="2ndgoods.ehackathon@gmail.com" class="hover-underline"
-                            style="--text-opacity: 1; color: #7367f0; text-decoration: none;">shopp123@gmail.com</a>.
+                          <a href="shopp.ts.app@gmail.com" class="hover-underline"
+                            style="--text-opacity: 1; color: #7367f0; text-decoration: none;">shopp.ts.app@gmail.com</a>.
                         </p>
                       </td>
                     </tr>
