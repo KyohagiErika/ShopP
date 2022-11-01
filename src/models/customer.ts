@@ -253,7 +253,6 @@ export default class CustomerModel {
     });
     if (shop == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable shop ID');
-    console.log(shop.followersNumber);
     const customer = await customerRepository.findOne({
       relations: {
         shopsFollowed: true,
