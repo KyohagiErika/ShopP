@@ -136,7 +136,10 @@ router.post('/reset-password', AuthMiddleware.resetPassword);
  *    520:
  *     $ref: '#/components/responses/520UnknownError'
  */
-router.post('/send-otp/verify-email', AuthMiddleware.sendGmailForVerifingEmail);
+router.post(
+  '/send-otp/verify-email',
+  AuthMiddleware.sendGmailForVerifyingEmail
+);
 
 /**
  * @swagger

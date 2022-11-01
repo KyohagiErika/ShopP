@@ -51,7 +51,7 @@ export default class UserMiddleware {
    *     confirmPassword:
    *      type: string
    *      description: confirm password of the user
-   *     example: 'abcABC213&'
+   *      example: 'abcABC213&'
    */
   @ControllerService({
     body: [
@@ -72,7 +72,7 @@ export default class UserMiddleware {
           const pwdRegExp: RegExp =
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*(\-_+=`~\?\/])(?=.{8,})/;
           if (!pwdRegExp.test(value))
-            return `${propName} must constain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
+            return `${propName} must contain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
           return null;
         },
       },
@@ -83,7 +83,7 @@ export default class UserMiddleware {
           const pwdRegExp: RegExp =
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*(\-_+=`~\?\/])(?=.{8,})/;
           if (!pwdRegExp.test(value))
-            return `${propName} must constain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
+            return `${propName} must contain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
           return null;
         },
       },
@@ -139,7 +139,7 @@ export default class UserMiddleware {
           const pwdRegExp: RegExp =
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*(\-_+=`~\?\/])(?=.{8,})/;
           if (!pwdRegExp.test(value))
-            return `${propName} must constain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
+            return `${propName} must contain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
           return null;
         },
       },
@@ -150,7 +150,7 @@ export default class UserMiddleware {
           const pwdRegExp: RegExp =
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*(\-_+=`~\?\/])(?=.{8,})/;
           if (!pwdRegExp.test(value))
-            return `${propName} must constain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
+            return `${propName} must contain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
           return null;
         },
       },

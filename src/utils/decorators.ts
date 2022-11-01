@@ -219,7 +219,7 @@ export function ModelService() {
         } catch (error) {
           await queryRunner.rollbackTransaction();
           return new ModelResponse(
-            HttpStatusCode.UNKNOW_ERROR,
+            HttpStatusCode.UNKNOWN_ERROR,
             'Some thing went wrong!'
           );
         }

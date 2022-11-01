@@ -232,7 +232,7 @@ class AuthMiddleware {
           html: emailTemplate.html,
         },
         function (err: any, success: any) {
-          if (err) res.status(HttpStatusCode.UNKNOW_ERROR).send({ err: err });
+          if (err) res.status(HttpStatusCode.UNKNOWN_ERROR).send({ err: err });
           else
             res.status(HttpStatusCode.OK).send({
               message:
@@ -257,12 +257,12 @@ class AuthMiddleware {
       },
     ],
   })
-  static async sendGmailForVerifingEmail(req: Request, res: Response) {
+  static async sendGmailForVerifyingEmail(req: Request, res: Response) {
     //Get email from the body
     const email = req.body.email;
     const user = await UserModel.getOneByEmail(String(email).toLowerCase());
     if (!user)
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Wrong email' });
+      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Invalid email' });
     else {
       let tokenExpiration: Date = new Date();
       tokenExpiration.setMinutes(10 + tokenExpiration.getMinutes());
@@ -270,7 +270,7 @@ class AuthMiddleware {
       const otp: string = generateOtp(6);
 
       await AuthModel.postUserOtp(
-        email,
+        user,
         OtpEnum.VERIFICATION,
         otp,
         tokenExpiration
@@ -293,11 +293,11 @@ class AuthMiddleware {
           html: emailTemplate.html,
         },
         function (err: any, success: any) {
-          if (err) res.status(HttpStatusCode.UNKNOW_ERROR).send({ err: err });
+          if (err) res.status(HttpStatusCode.UNKNOWN_ERROR).send({ err: err });
           else
             res.status(HttpStatusCode.OK).send({
               message:
-                'Verifing Email OTP was sent via your email successfully',
+                'Verifying Email OTP was sent via your email successfully',
             });
         }
       );

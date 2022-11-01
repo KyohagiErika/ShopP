@@ -65,11 +65,11 @@ export default class AuthModel {
       },
     });
     if (user !== null) {
-      //Check if old password matchs
+      //Check if old password matches
       if (!user.checkIfUnencryptedPasswordIsValid(oldPassword)) {
         return new Response(HttpStatusCode.BAD_REQUEST, 'Wrong password!');
       }
-      //Validate the model (password lenght)
+      //Validate the model (password length)
       user.password = newPassword;
       //Hash the new password and save
       user.hashPassword();
@@ -91,7 +91,6 @@ export default class AuthModel {
       },
     });
     if (user !== null) {
-      //Validate the model (password lenght)
       user.password = password;
       //Hash the new password and save
       user.hashPassword();
