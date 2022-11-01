@@ -347,7 +347,7 @@ class AuthMiddleware {
     // console.log(token)
     if (token == '')
       res
-        .status(HttpStatusCode.REDIRECT)
+        .status(HttpStatusCode.UNAUTHORIZATION)
         .send({ message: 'Please Login to ShopP' });
     let jwtPayload;
     token = token?.replace('Bearer ', '');

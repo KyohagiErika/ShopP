@@ -5,8 +5,8 @@ const routes = Router();
 
 routes.get('/:cartId([0-9]+)', CartMiddleware.showCart);
 
-routes.post('/new', CartMiddleware.postNew)
+routes.post('/new', CartMiddleware.postNew);
 
-routes.post('/update/:cartId([0-9]+', CartMiddleware.update);
+routes.post('/update/:cartId([0-9]+)', CartMiddleware.update);
 
 export default routes;
