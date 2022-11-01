@@ -11,8 +11,8 @@ import chalk from 'chalk';
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors({ origin: true }));
-app.use(helmet());
+app.use(cors());
+//app.use(helmet());
 app.use(routes);
 
 const server = http.createServer(app);
