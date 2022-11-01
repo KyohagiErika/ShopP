@@ -29,6 +29,7 @@ export default class ShopModel {
   static async getOneById(id: string) {
     const shop = await shopRepository.find({
       relations: {
+        user: true,
         avatar: true,
       },
       where: {
@@ -42,6 +43,7 @@ export default class ShopModel {
   static async searchShop(name: string) {
     const shop = await shopRepository.find({
       relations: {
+        user: true,
         avatar: true,
       },
       where: {
