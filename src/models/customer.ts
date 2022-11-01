@@ -123,7 +123,7 @@ export default class CustomerModel {
       user,
       avatar,
     });
-    CartModel.postNew(user);
+    await CartModel.postNew(customer.id);
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',
@@ -206,7 +206,7 @@ export default class CustomerModel {
       },
     });
     if (shop == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'unavailable shop ID');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable shop ID');
     const customer = await customerRepository.findOne({
       relations: {
         shopsFollowed: true,
@@ -219,19 +219,19 @@ export default class CustomerModel {
       },
     });
     if (customer == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'customer not exist');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Customer not exist');
     for (let item of customer.shopsFollowed) {
       if (item.id == shopId)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
-          'shop already followed!'
+          'Shop already followed!'
         );
     }
     shop.followersNumber++;
     customer.shopsFollowed.push(shop);
     customerRepository.save(customer)
     shopRepository.save(shop)
-    return new Response(HttpStatusCode.OK, 'follow shop successfully!');
+    return new Response(HttpStatusCode.OK, 'Follow shop successfully!');
   }
 
   static async unfollowShop(user: User, shopId: string) {
@@ -245,14 +245,15 @@ export default class CustomerModel {
     const shop = await shopRepository.findOne({
       select: {
         id: true,
-        followers: true
+        followersNumber: true
       },
       where: {
         id: shopId
       },
     });
     if (shop == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'unavailable shop ID');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable shop ID');
+    console.log(shop.followersNumber);
     const customer = await customerRepository.findOne({
       relations: {
         shopsFollowed: true,
@@ -265,7 +266,7 @@ export default class CustomerModel {
       },
     });
     if (customer == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'customer not exist');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Customer not exist');
     let length = customer.shopsFollowed.length;
     customer.shopsFollowed = customer.shopsFollowed.filter(item => {
       return item.id != shopId;
@@ -273,12 +274,14 @@ export default class CustomerModel {
     if (length == customer.shopsFollowed.length)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        'shop is not followed yet!'
+        'Shop is not followed yet!'
       );
-    shop.followersNumber--;
+    
     await customerRepository.save(customer)
-    await shopRepository.save(shop)
-    return new Response(HttpStatusCode.OK, 'unfollow shop successfully!!');
+    await shopRepository.update(shop.id, {
+      followersNumber: shop.followersNumber -1
+    })
+    return new Response(HttpStatusCode.OK, 'Unfollow shop successfully!!');
   }
 
   static async showFollowedShopsList(user: User) {
@@ -305,12 +308,12 @@ export default class CustomerModel {
       },
     });
     if (customer == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'customer not exist!');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Customer not exist!');
     if (customer.shopsFollowed.length == 0)
-      return new Response(HttpStatusCode.OK, 'no shop followed now!');
+      return new Response(HttpStatusCode.OK, 'No shop followed now!');
     return new Response(
       HttpStatusCode.OK,
-      'show followed shops successfully!',
+      'Show followed shops successfully!',
       customer.shopsFollowed
     );
   }

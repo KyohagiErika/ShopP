@@ -18,7 +18,9 @@ export class Cart {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   products: string;
 
   @OneToOne(() => Customer, customer => customer.cart)

@@ -29,7 +29,7 @@ export default class CartModel {
     return new Response(HttpStatusCode.OK, 'Show Cart successfully', cart);
   }
 
-  static async postNew(user: User ) {
+  static async postNew(customerId: string ) {
     const cartRepository = ShopPDataSource.getRepository(Cart);
     const customerRepository = ShopPDataSource.getRepository(Customer);
 
@@ -38,7 +38,7 @@ export default class CartModel {
         cart: true,
       },
       where: {
-        id: user.customer.id,
+        id: customerId,
       },
     });
 
