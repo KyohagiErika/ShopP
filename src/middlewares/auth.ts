@@ -454,7 +454,8 @@ class AuthMiddleware {
 
   static async checkJwt(req: Request, res: Response, next: NextFunction) {
     //Get the jwt token from the head
-    let token = <string>req.header('Authentication');
+    let token = <string>req.header('Authorization');
+    console.log(token);
     if (token == undefined)
       return res
         .status(HttpStatusCode.UNAUTHORIZATION)
@@ -483,7 +484,7 @@ class AuthMiddleware {
     const newToken = jwt.sign({ userId, email }, config.JWT_SECRET, {
       expiresIn: '1h',
     });
-    res.setHeader('Authentication', newToken);
+    res.setHeader('Authorization', newToken);
 
     //Call the next middleware or controller
     return next();
