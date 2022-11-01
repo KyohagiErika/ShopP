@@ -168,6 +168,7 @@ export default class ProductMiddleware {
         data.categoryId,
         data.detail.toString(),
         data.amount,
+        data.quantity,
         ProductEnum.AVAILABLE,
         productImages
       );
