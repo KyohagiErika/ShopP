@@ -114,15 +114,11 @@ export default class UserModel {
     await userRepository.save(user);
     await userRoleRepository.save({ role: role, user: user });
 
-    return new Response(
-      HttpStatusCode.CREATED,
-      'Create new user successfully!',
-      {
-        id: user.id,
-        email: user.email,
-        phone: user.phone,
-      }
-    );
+    return new Response(HttpStatusCode.OK, 'Create new user successfully!', {
+      id: user.id,
+      email: user.email,
+      phone: user.phone,
+    });
   }
 
   static async edit(id: number, email: string, phone: string) {

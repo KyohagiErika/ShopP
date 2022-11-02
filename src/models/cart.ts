@@ -10,8 +10,6 @@ import { User } from '../entities/user';
 export default class CartModel {
   static async showCart(id: number) {
     const cartRepository = ShopPDataSource.getRepository(Cart);
-    // const customerRepository = ShopPDataSource.getRepository(Customer)
-    // const checkExistCartOfCustomer = customerRepository.findOne()
 
     const cart = await cartRepository.findOne({
       where: {
@@ -27,38 +25,6 @@ export default class CartModel {
       );
     }
     return new Response(HttpStatusCode.OK, 'Show Cart successfully', cart);
-  }
-
-  static async postNew(customerId: string) {
-    const cartRepository = ShopPDataSource.getRepository(Cart);
-    const customerRepository = ShopPDataSource.getRepository(Customer);
-
-    const customer = await customerRepository.findOne({
-      relations: {
-        cart: true,
-      },
-      where: {
-        id: customerId,
-      },
-    });
-
-    if (customer == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, `Customer doesnt exist`);
-    }
-    if (customer.cart !== null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, `Cart existed`);
-    }
-
-    const cart = await cartRepository.save({
-      product: '',
-      customer: customer,
-    });
-
-    return new Response(
-      HttpStatusCode.CREATED,
-      'Create Cart successfully',
-      cart
-    );
   }
 
   static async update(cartId: number, products: string) {

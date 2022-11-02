@@ -13,6 +13,10 @@ import CartModel from './cart';
 import { LocalFile } from '../entities/localFile';
 import { deleteFile } from '../utils';
 import { isNotEmpty } from 'class-validator/types/decorator/decorators';
+import UploadModel from './upload';
+import { ModelService } from '../utils/decorators';
+import { EntityManager } from 'typeorm';
+import { Cart } from '../entities/cart';
 
 export default class CustomerModel {
   static async listAll() {
@@ -20,6 +24,7 @@ export default class CustomerModel {
     const customers = await customerRepository.find({
       relations: {
         avatar: true,
+        shopsFollowed: true,
       },
       select: {
         id: true,
@@ -47,6 +52,7 @@ export default class CustomerModel {
         relations: {
           user: true,
           avatar: true,
+          shopsFollowed: true,
         },
         select: {
           id: true,
@@ -91,38 +97,48 @@ export default class CustomerModel {
     return customer ? customer : false;
   }
 
+  @ModelService()
   static async postNew(
+    transactionalEntityManager: EntityManager,
     name: string,
     gender: GenderEnum,
     dob: Date,
     placeOfDelivery: string,
     bio: string,
     user: User,
-    avatar: LocalFile
-  ) {
+    avatar: Express.Multer.File
+  ): Promise<Response> {
     if (user.role.role == RoleEnum.ADMIN)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         `Unauthorized role. Admin can not create customer role!`
       );
-    const customerRepository = ShopPDataSource.getRepository(Customer);
+    const localFile: LocalFile = await UploadModel.upload(avatar);
+
     // check user has already have customer or not
     if (user.customer != null && user.customer != undefined) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        `Customer has already existed`
+        `Customer has already existed.`
       );
     }
-    let customer = await customerRepository.save({
-      name,
-      gender,
-      dob,
-      placeOfDelivery,
-      bio,
-      user,
-      avatar,
+
+    const customerRepository =
+      transactionalEntityManager.getRepository(Customer);
+    const customerEntity = new Customer();
+    customerEntity.name = name;
+    customerEntity.gender = gender;
+    customerEntity.dob = dob;
+    customerEntity.placeOfDelivery = placeOfDelivery;
+    customerEntity.user = user;
+    customerEntity.avatar = localFile;
+
+    const customer = await customerRepository.save(customerEntity);
+
+    await transactionalEntityManager.getRepository(Cart).save({
+      customer: customer,
     });
-    await CartModel.postNew(customer.id);
+
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',
@@ -274,7 +290,6 @@ export default class CustomerModel {
         HttpStatusCode.BAD_REQUEST,
         'Shop is not followed yet!'
       );
-
     await customerRepository.save(customer);
     await shopRepository.update(shop.id, {
       followersNumber: shop.followersNumber - 1,

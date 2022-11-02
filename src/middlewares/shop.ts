@@ -60,6 +60,34 @@ export default class ShopMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ShopRequest:
+   *    type: object
+   *    properties:
+   *     name:
+   *      type: string
+   *      description: name of shop
+   *      example: 'bello'
+   *     email:
+   *      type: string
+   *      description: email of Shop
+   *      example: 'buggxx@gmail.com'
+   *     phone:
+   *      type: string
+   *      description: phone of Shop
+   *      example: '0912345678'
+   *     placeOfReceipt:
+   *      type: string
+   *      description: place of Receipt of Shop
+   *      example: '12 Nguyen Van Linh, Binh Thanh, Ho Chi Minh'
+   *     avatar:
+   *      type: string
+   *      format: binary
+   *      description: avatar of Shop
+   */
   @ControllerService({
     body: [
       {

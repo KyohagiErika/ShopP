@@ -17,12 +17,16 @@ const router = Router();
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/definitions/LoginRequest'
+ *       $ref: '#/components/schemas/LoginRequest'
  *   responses:
  *    200:
  *     description: Success
- *    404:
- *     description: Bad Request
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/responses/LoginResponse'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
  */
 router.post('/login', AuthMiddleware.loginWithEmailOrPhone);
 
@@ -40,12 +44,14 @@ router.post('/login', AuthMiddleware.loginWithEmailOrPhone);
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/definitions/ForgotPasswordRequest'
+ *       $ref: '#/components/schemas/ChangePasswordRequest'
  *   responses:
  *    200:
- *     description: Success
- *    404:
- *     description: Bad Request
+ *     $ref: '#/components/responses/200OK'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 router.post(
   '/change-password',
@@ -73,9 +79,11 @@ router.post(
  *         example: 'sdferetgt@gmail.com'
  *   responses:
  *    200:
- *     description: Success
- *    404:
- *     description: Bad Request
+ *     $ref: '#/components/responses/200OK'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    520:
+ *     $ref: '#/components/responses/520UnknownError'
  */
 router.post('/forgot-password', AuthMiddleware.forgotPassword);
 
@@ -91,12 +99,14 @@ router.post('/forgot-password', AuthMiddleware.forgotPassword);
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/definitions/ResetPasswordRequest'
+ *       $ref: '#/components/schemas/ResetPasswordRequest'
  *   responses:
  *    200:
- *     description: Success
- *    404:
- *     description: Bad Request
+ *     $ref: '#/components/responses/200OK'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 router.post('/reset-password', AuthMiddleware.resetPassword);
 
@@ -120,9 +130,11 @@ router.post('/reset-password', AuthMiddleware.resetPassword);
  *         example: 'sdferetgt@gmail.com'
  *   responses:
  *    200:
- *     description: Success
- *    404:
- *     description: Bad Request
+ *     $ref: '#/components/responses/200OK'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    520:
+ *     $ref: '#/components/responses/520UnknownError'
  */
 router.post(
   '/send-otp/verify-email',
@@ -141,12 +153,12 @@ router.post(
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/definitions/VerifyEmailRequest'
+ *       $ref: '#/components/schemas/VerifyEmailRequest'
  *   responses:
  *    200:
- *     description: Success
- *    404:
- *     description: Bad Request
+ *     $ref: '#/components/responses/200OK'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
  */
 router.post('/verify-email', AuthMiddleware.verifyEmail);
 

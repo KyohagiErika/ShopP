@@ -19,7 +19,67 @@ import orderProduct from './orderProduct';
 import swagger from './swagger';
 
 const routes = Router();
-
+/**
+ * @swagger
+ * components:
+ *  responses:
+ *   200OK:
+ *    type: object
+ *    description: Success
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
+ *   302Redirect:
+ *    type: object
+ *    description: Redirect
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
+ *   400BadRequest:
+ *    type: object
+ *    description: Bad Request
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
+ *   401Unauthorized:
+ *    type: object
+ *    description: Unauthorized
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
+ *   403Forbidden:
+ *    type: object
+ *    description: Forbidden
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
+ *   404NotFound:
+ *    type: object
+ *    description: Not Found
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
+ *   500InternalServerError:
+ *    type: object
+ *    description: Internal Server Error
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
+ *   520UnknownError:
+ *    type: object
+ *    description: Unknown Error
+ *    properties:
+ *     message:
+ *      type: string
+ *      description: Message Response
+ */
 routes.use('/get', async (req, res) => {
   res.send('Hello World!');
 });

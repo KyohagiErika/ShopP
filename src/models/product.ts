@@ -4,9 +4,10 @@ import { Shop } from '../entities/shop';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
-import { Like } from 'typeorm';
+import { EntityManager, Like } from 'typeorm';
 import { LocalFile } from '../entities/localFile';
 import { ProductImage } from '../entities/productImage';
+import { ModelService } from '../utils/decorators';
 
 const productRepository = ShopPDataSource.getRepository(Product);
 const productImageRepository = ShopPDataSource.getRepository(ProductImage);
@@ -150,7 +151,9 @@ export default class ProductModel {
     return product ? product : false;
   }
 
+  @ModelService()
   static async postNew(
+    transactionalEntityManager: EntityManager,
     shop: Shop,
     name: string,
     categoryId: number,
@@ -158,18 +161,21 @@ export default class ProductModel {
     amount: number,
     quantity: number,
     status: ProductEnum,
-    productImages: LocalFile[]
-  ) {
-    const categoryRepository = ShopPDataSource.getRepository(Category);
-    const category = await categoryRepository.findOne({
-      where: {
-        id: categoryId,
-      },
-    });
+    localFiles: LocalFile[]
+  ): Promise<Response> {
+    const category = await transactionalEntityManager
+      .getRepository(Category)
+      .findOne({
+        where: {
+          id: categoryId,
+        },
+      });
     if (category == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Category not exist.');
     } else {
       let product = new Product();
+      var productImages = new Array<ProductImage>();
+      var productImage;
       product.shop = shop;
       product.name = name;
       product.category = category;
@@ -177,15 +183,15 @@ export default class ProductModel {
       product.amount = amount;
       product.quantity = quantity;
       product.status = status;
-      await productRepository.save(product);
 
-      productImages.forEach(async productImage => {
-        await productImageRepository.insert({
-          localFile: productImage,
-          product: product,
-        });
+      localFiles.forEach(localFile => {
+        productImage = new ProductImage();
+        productImage.localFile = localFile;
+        productImages.push(productImage);
       });
 
+      product.productImage = productImages;
+      await transactionalEntityManager.getRepository(Product).save(product);
       return new Response(
         HttpStatusCode.CREATED,
         'Create new product successfully!',

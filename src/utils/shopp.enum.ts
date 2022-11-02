@@ -7,7 +7,7 @@ export enum HttpStatusCode {
   FORBIDDEN = 403,
   NOT_FOUND = 404,
   INTERNAL_SERVER_ERROR = 500,
-  UNKNOW_ERROR = 520,
+  UNKNOWN_ERROR = 520,
 }
 
 export enum StatusEnum {
