@@ -27,7 +27,10 @@ export default class CartMiddleware {
 
   @ControllerService()
   static async update(req: Request, res: Response) {
-    const result = await CartModel.update(+req.params.cartId, req.body.products);
+    const result = await CartModel.update(
+      +req.params.cartId,
+      req.body.products
+    );
     res.status(result.getCode()).send({ message: result.getMessage() });
   }
 }

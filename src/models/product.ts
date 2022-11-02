@@ -114,7 +114,6 @@ export default class ProductModel {
         productImage: true,
       },
 
-
       where: [
         {
           category: { name: Like(`%${name}%`) },

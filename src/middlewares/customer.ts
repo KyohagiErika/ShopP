@@ -28,7 +28,6 @@ export default class CustomerMiddleware {
   static async getOneById(req: Request, res: Response) {
     const id = req.params.id.toString();
     const result = await CustomerModel.getOneById(id, res.locals.user);
-    res.status(HttpStatusCode.OK).send({ data: res.locals.user });
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
     } else {
@@ -96,6 +95,7 @@ export default class CustomerMiddleware {
         data.gender,
         new Date(dateTrueFormat),
         data.placeOfDelivery.toString(),
+        data.bio,
         res.locals.user,
         localFile
       );
@@ -168,6 +168,7 @@ export default class CustomerMiddleware {
         data.gender,
         new Date(dateTrueFormat),
         data.placeOfDelivery,
+        data.bio,
         res.locals.user,
         file
       );
@@ -203,9 +204,6 @@ export default class CustomerMiddleware {
       res
         .status(result.getCode())
         .send({ message: result.getMessage(), data: result.getData() });
-    else
-      res
-        .status(result.getCode())
-        .send({ message: result.getMessage() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 }

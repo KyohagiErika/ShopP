@@ -48,8 +48,11 @@ export class Customer {
   @Column()
   placeOfDelivery: string;
 
-  @Column('json', { nullable: true })
-  followingShops: string;
+  @Column({
+    nullable: true,
+    default: '',
+  })
+  bio: string;
 
   @OneToOne(() => Cart, cart => cart.customer)
   cart: Cart;
@@ -62,6 +65,7 @@ export class Customer {
 
   @OneToMany(() => Order, order => order.id)
   order: Order[];
+
   @ManyToMany(() => Shop, shop => shop.followers)
   @JoinTable()
   shopsFollowed: Shop[];
