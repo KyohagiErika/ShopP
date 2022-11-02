@@ -16,21 +16,9 @@ export default class ShopModel {
   static async listAll() {
     const shops = await shopRepository.find({
       relations: {
-        user: true,
         avatar: true,
       },
-      select: {
-        name: true,
-        email: true,
-        phone: true,
-        placeOfReceipt: true,
-        star: true,
-        followers: true,
-        user: {
-          email: true,
-          phone: true,
-        },
-      },
+
       where: {
         user: { status: StatusEnum.ACTIVE },
       },
@@ -43,14 +31,7 @@ export default class ShopModel {
       relations: {
         avatar: true,
       },
-      select: {
-        name: true,
-        email: true,
-        phone: true,
-        placeOfReceipt: true,
-        star: true,
-        followers: true,
-      },
+
       where: {
         id: id,
         user: { status: StatusEnum.ACTIVE },
@@ -64,14 +45,7 @@ export default class ShopModel {
       relations: {
         avatar: true,
       },
-      select: {
-        name: true,
-        email: true,
-        phone: true,
-        placeOfReceipt: true,
-        star: true,
-        followers: true,
-      },
+
       where: {
         name: Like(`%${name}%`),
         user: { status: StatusEnum.ACTIVE },
@@ -105,13 +79,7 @@ export default class ShopModel {
       return new Response(
         HttpStatusCode.CREATED,
         'Create new shop successfully!',
-        {
-          name: shop.name,
-          avatar: shop.avatar,
-          email: shop.email,
-          phone: shop.phone,
-          placeOfReceipt: shop.placeOfReceipt,
-        }
+        shop
       );
     }
   }

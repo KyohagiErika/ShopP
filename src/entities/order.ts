@@ -1,68 +1,77 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { DeliveryStatusEnum, StatusEnum } from "../utils/shopp.enum";
-import { Customer } from "./customer";
-import { OrderProduct } from "./orderProduct";
-import { Payment } from "./payment";
-import { Product } from "./product";
-import { Shop } from "./shop";
-import { ShoppingUnit } from "./shoppingUnit";
-import { Voucher } from "./voucher";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { DeliveryStatusEnum, StatusEnum } from '../utils/shopp.enum';
+import { Customer } from './customer';
+import { OrderProduct } from './orderProduct';
+import { Payment } from './payment';
+import { Product } from './product';
+import { Shop } from './shop';
+import { ShoppingUnit } from './shoppingUnit';
+import { Voucher } from './voucher';
 
 @Entity()
 export class Order {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @Column({
-        type: 'enum',
-        enum: DeliveryStatusEnum,
-        default: DeliveryStatusEnum.CHECKING
-    })
-    deliveryStatus: DeliveryStatusEnum;
+  @Column({
+    type: 'enum',
+    enum: DeliveryStatusEnum,
+    default: DeliveryStatusEnum.CHECKING,
+  })
+  deliveryStatus: DeliveryStatusEnum;
 
-    @Column()
-    address: string;
+  @Column()
+  address: string;
 
-    @Column()
-    estimateDeliveryTime: string;
+  @Column()
+  estimateDeliveryTime: string;
 
-    @Column()
-    totalBill: number;
+  @Column()
+  totalBill: number;
 
-    @Column()
-    transportFee: number;
+  @Column()
+  transportFee: number;
 
-    @Column()
-    totalPayment: number;
+  @Column()
+  totalPayment: number;
 
-    @Column({
-        type: 'enum',
-        enum: StatusEnum,
-        default: StatusEnum.ACTIVE
-    })
-    status: StatusEnum;
+  @Column({
+    type: 'enum',
+    enum: StatusEnum,
+    default: StatusEnum.ACTIVE,
+  })
+  status: StatusEnum;
 
-    @ManyToOne(() => Payment, payment => payment.id)
-    payment: Payment;
+  @ManyToOne(() => Payment, payment => payment.id)
+  payment: Payment;
 
-    @ManyToOne(() => ShoppingUnit, shoppingUnit => shoppingUnit.id)
-    shoppingUnit: ShoppingUnit;
+  @ManyToOne(() => ShoppingUnit, shoppingUnit => shoppingUnit.id)
+  shoppingUnit: ShoppingUnit;
 
-    @ManyToMany(() => Voucher, voucher => voucher.id)
-    @JoinTable()
-    voucher: Voucher[];
+  @ManyToMany(() => Voucher, voucher => voucher.id)
+  @JoinTable()
+  voucher: Voucher[];
 
-    @ManyToOne(() => Shop, shop => shop.id)
-    shop: Shop;
+  @ManyToOne(() => Shop, shop => shop.id)
+  shop: Shop;
 
-    @ManyToOne(() => Customer, customer => customer.id)
-    customer: Customer;
+  @ManyToOne(() => Customer, customer => customer.id)
+  customer: Customer;
 
-    @OneToMany(() => OrderProduct, orderProduct => orderProduct.id)
-    orderProducts: OrderProduct[];
-
+  @OneToMany(() => OrderProduct, orderProduct => orderProduct.id)
+  orderProducts: OrderProduct[];
 }
-

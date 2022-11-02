@@ -101,6 +101,12 @@ export class Customer {
   @Column()
   placeOfDelivery: string;
 
+  @Column({
+    nullable: true,
+    default: '',
+  })
+  bio: string;
+
   @OneToOne(() => Cart, cart => cart.customer)
   cart: Cart;
 

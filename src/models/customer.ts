@@ -59,6 +59,12 @@ export default class CustomerModel {
           name: true,
           gender: true,
           dob: true,
+          bio: true,
+          user: {
+            id: true,
+            email: true,
+            phone: true,
+          },
         },
         where: {
           id: customerId,
@@ -68,9 +74,9 @@ export default class CustomerModel {
     } else if (customerPayload == null)
       return new Response(
         HttpStatusCode.REDIRECT,
-        'User has not have customer yet!'
+        'User has not register customer yet!'
       );
-    else if (customerPayload.id != customerId) {
+    else {
       customer = await customerRepository.findOne({
         relations: {
           avatar: true,
@@ -80,25 +86,14 @@ export default class CustomerModel {
           name: true,
           gender: true,
           dob: true,
+          bio: true,
         },
         where: {
           id: customerId,
           user: { status: StatusEnum.ACTIVE },
         },
       });
-    } else
-      customer = {
-        id: customerPayload.id,
-        name: customerPayload.name,
-        dob: customerPayload.dob,
-        avatar: customerPayload.avatar,
-        gender: customerPayload.gender,
-        user: {
-          id: user.id,
-          email: user.email,
-          phone: user.phone,
-        },
-      };
+    }
     return customer ? customer : false;
   }
 
@@ -109,6 +104,7 @@ export default class CustomerModel {
     gender: GenderEnum,
     dob: Date,
     placeOfDelivery: string,
+    bio: string,
     user: User,
     avatar: Express.Multer.File
   ): Promise<Response> {
@@ -126,6 +122,7 @@ export default class CustomerModel {
         `Customer has already existed.`
       );
     }
+
     const customerRepository =
       transactionalEntityManager.getRepository(Customer);
     const customerEntity = new Customer();
@@ -141,6 +138,7 @@ export default class CustomerModel {
     await transactionalEntityManager.getRepository(Cart).save({
       customer: customer,
     });
+
     return new Response(
       HttpStatusCode.CREATED,
       'Create new customer successfully!',
@@ -150,11 +148,6 @@ export default class CustomerModel {
         gender: customer.gender,
         dob: customer.dob,
         placeOfDelivery: customer.placeOfDelivery,
-        user: {
-          id: user.id,
-          email: user.email,
-          phone: user.phone,
-        },
       }
     );
   }
@@ -164,6 +157,7 @@ export default class CustomerModel {
     gender: GenderEnum,
     dob: Date,
     placeOfDelivery: string,
+    bio: string,
     user: User,
     file: Express.Multer.File
   ) {
@@ -185,6 +179,7 @@ export default class CustomerModel {
         gender,
         dob,
         placeOfDelivery,
+        bio,
       }
     );
 
@@ -226,7 +221,7 @@ export default class CustomerModel {
       },
     });
     if (shop == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'unavailable shop ID');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable shop ID');
     const customer = await customerRepository.findOne({
       relations: {
         shopsFollowed: true,
@@ -239,19 +234,19 @@ export default class CustomerModel {
       },
     });
     if (customer == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'customer not exist');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Customer not exist');
     for (let item of customer.shopsFollowed) {
       if (item.id == shopId)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
-          'shop already followed!'
+          'Shop already followed!'
         );
     }
     shop.followersNumber++;
     customer.shopsFollowed.push(shop);
     customerRepository.save(customer);
     shopRepository.save(shop);
-    return new Response(HttpStatusCode.OK, 'follow shop successfully!');
+    return new Response(HttpStatusCode.OK, 'Follow shop successfully!');
   }
 
   static async unfollowShop(user: User, shopId: string) {
@@ -265,14 +260,14 @@ export default class CustomerModel {
     const shop = await shopRepository.findOne({
       select: {
         id: true,
-        followers: true,
+        followersNumber: true,
       },
       where: {
         id: shopId,
       },
     });
     if (shop == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'unavailable shop ID');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable shop ID');
     const customer = await customerRepository.findOne({
       relations: {
         shopsFollowed: true,
@@ -285,7 +280,7 @@ export default class CustomerModel {
       },
     });
     if (customer == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'customer not exist');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Customer not exist');
     let length = customer.shopsFollowed.length;
     customer.shopsFollowed = customer.shopsFollowed.filter(item => {
       return item.id != shopId;
@@ -293,12 +288,13 @@ export default class CustomerModel {
     if (length == customer.shopsFollowed.length)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        'shop is not followed yet!'
+        'Shop is not followed yet!'
       );
-    shop.followersNumber--;
     await customerRepository.save(customer);
-    await shopRepository.save(shop);
-    return new Response(HttpStatusCode.OK, 'unfollow shop successfully!!');
+    await shopRepository.update(shop.id, {
+      followersNumber: shop.followersNumber - 1,
+    });
+    return new Response(HttpStatusCode.OK, 'Unfollow shop successfully!!');
   }
 
   static async showFollowedShopsList(user: User) {
@@ -325,12 +321,12 @@ export default class CustomerModel {
       },
     });
     if (customer == null)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'customer not exist!');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Customer not exist!');
     if (customer.shopsFollowed.length == 0)
-      return new Response(HttpStatusCode.OK, 'no shop followed now!', []);
+      return new Response(HttpStatusCode.OK, 'No shop followed now!');
     return new Response(
       HttpStatusCode.OK,
-      'show followed shops successfully!',
+      'Show followed shops successfully!',
       customer.shopsFollowed
     );
   }
