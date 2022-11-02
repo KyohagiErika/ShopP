@@ -312,7 +312,6 @@ export default class VoucherModel {
             voucher.type == type1
           ) {
             vouchers.push(Voucher.mapVoucher(voucher));
-
           }
         });
       } else {
@@ -323,7 +322,6 @@ export default class VoucherModel {
             (voucher.type == type1 || voucher.type == type2)
           ) {
             vouchers.push(Voucher.mapVoucher(voucher));
-
           }
         });
       }
@@ -399,7 +397,7 @@ export default class VoucherModel {
     });
     if (length == customer.voucher.length)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable voucher');
-    customerRepository.save(customer)
+    customerRepository.save(customer);
     return new Response(HttpStatusCode.OK, 'Delete voucher successfully!!');
   }
 }

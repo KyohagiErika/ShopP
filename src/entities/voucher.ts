@@ -66,8 +66,7 @@ export class Voucher {
       type: voucherEntity.type,
       condition: voucherEntity.condition,
       mfgDate: voucherEntity.mfgDate,
-      expDate: voucherEntity.expDate
-    }
+      expDate: voucherEntity.expDate,
+    };
   }
 }
-
