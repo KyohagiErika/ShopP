@@ -465,7 +465,6 @@ class AuthMiddleware {
   static async checkJwt(req: Request, res: Response, next: NextFunction) {
     //Get the jwt token from the head
     let token = <string>req.header('Authorization');
-    console.log(token);
     if (token == undefined)
       return res
         .status(HttpStatusCode.UNAUTHORIZATION)
