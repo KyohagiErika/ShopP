@@ -20,17 +20,7 @@ export default class ProductModel {
         category: true,
         productImage: true,
       },
-      select: {
-        name: true,
-        detail: true,
-        amount: true,
-        status: true,
-        quantity: true,
-        sold: true,
-        star: true,
-        shop: { name: true },
-        category: { name: true },
-      },
+
       where: [
         {
           status: ProductEnum.AVAILABLE,
@@ -48,17 +38,7 @@ export default class ProductModel {
         category: true,
         productImage: true,
       },
-      select: {
-        name: true,
-        detail: true,
-        amount: true,
-        status: true,
-        quantity: true,
-        sold: true,
-        star: true,
-        shop: { name: true },
-        category: { name: true },
-      },
+
       where: [
         {
           id: id,
@@ -80,17 +60,7 @@ export default class ProductModel {
         category: true,
         productImage: true,
       },
-      select: {
-        name: true,
-        detail: true,
-        amount: true,
-        status: true,
-        quantity: true,
-        sold: true,
-        star: true,
-        shop: { name: true },
-        category: { name: true },
-      },
+
       where: [
         {
           name: Like(`%${name}%`),
@@ -144,17 +114,6 @@ export default class ProductModel {
         category: true,
         productImage: true,
       },
-      select: {
-        name: true,
-        detail: true,
-        amount: true,
-        status: true,
-        quantity: true,
-        sold: true,
-        star: true,
-        shop: { name: true },
-        category: { name: true },
-      },
 
       where: [
         {
@@ -177,17 +136,7 @@ export default class ProductModel {
         category: true,
         productImage: true,
       },
-      select: {
-        name: true,
-        detail: true,
-        amount: true,
-        status: true,
-        quantity: true,
-        sold: true,
-        star: true,
-        shop: { name: true },
-        category: { name: true },
-      },
+
       where: [
         {
           shop: { id: shopId },
