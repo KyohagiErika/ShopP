@@ -102,7 +102,29 @@ routes.use('/order', order);
 routes.use('/payment', payment);
 routes.use('/shopping-unit', shoppingUnit);
 routes.use('/order-product', orderProduct);
-routes.get('/files/:name', UploadModel.getImage);
+
+/**
+ * @swagger
+ * /file/{name}:
+ *  get:
+ *   tags:
+ *    - File
+ *   summary: Get one file
+ *   description: Get one file
+ *   parameters:
+ *    - in: path
+ *      name: name
+ *      schema:
+ *       type: string
+ *       required: true
+ *       description: filename of the file
+ *   responses:
+ *    200:
+ *     $ref: '#/components/responses/200OK'
+ *    404:
+ *     $ref: '#/components/responses/404NotFound'
+ */
+routes.get('/file/:name', UploadModel.getImage);
 
 routes.use(async (req, res) => {
   res.status(404).send('Not found!');

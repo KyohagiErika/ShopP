@@ -43,7 +43,6 @@ export default class CustomerModel {
 
   static async getOneById(customerId: string, user: User) {
     let customerPayload = user.customer;
-    return customerPayload;
     let customer;
     const customerRepository = ShopPDataSource.getRepository(Customer);
 
