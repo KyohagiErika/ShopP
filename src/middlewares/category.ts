@@ -31,6 +31,22 @@ export default class CategoryMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   CategoryRequest:
+   *    type: object
+   *    properties:
+   *     name:
+   *      type: string
+   *      description: name of category
+   *      example: 'Ao Quan'
+   *     image:
+   *      type: string
+   *      format: binary
+   *      description: image of category
+   */
   @ControllerService({
     body: [
       {

@@ -1,7 +1,6 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -27,11 +26,15 @@ import { ProductImage } from './productImage';
  *     path:
  *      type: string
  *      description: path
- *      example: 'public\\uploads\\image-1667040838083.png'
+ *      example: 'public\uploads\image-1667040838083.png'
  *     mimetype:
  *      type: string
  *      description: mimetype
  *      example: 'image/png'
+ *   LocalFileListResponse:
+ *    type: array
+ *    items:
+ *     $ref: '#/components/schemas/LocalFileResponse'
  */
 @Entity()
 export class LocalFile {
