@@ -18,7 +18,9 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
 
       where: [
@@ -36,9 +38,10 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
-
       where: [
         {
           id: id,
@@ -58,7 +61,9 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
 
       where: [
@@ -80,7 +85,9 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
         name: true,
@@ -112,7 +119,9 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
 
       where: [
@@ -134,7 +143,9 @@ export default class ProductModel {
       relations: {
         shop: true,
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
 
       where: [
@@ -184,14 +195,20 @@ export default class ProductModel {
       product.quantity = quantity;
       product.status = status;
 
+      const productEntity = await transactionalEntityManager
+        .getRepository(Product)
+        .save(product);
+
       localFiles.forEach(localFile => {
         productImage = new ProductImage();
         productImage.localFile = localFile;
+        productImage.product = productEntity;
         productImages.push(productImage);
       });
 
-      product.productImage = productImages;
-      await transactionalEntityManager.getRepository(Product).save(product);
+      transactionalEntityManager
+        .getRepository(ProductImage)
+        .save(productImages);
       return new Response(
         HttpStatusCode.CREATED,
         'Create new product successfully!',

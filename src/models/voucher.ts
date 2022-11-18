@@ -1,4 +1,3 @@
-import { Shop } from './../entities/shop';
 import { User } from './../entities/user';
 import {
   HttpStatusCode,
@@ -8,7 +7,7 @@ import {
 import { Voucher } from './../entities/voucher';
 import { ShopPDataSource } from './../data';
 import Response from '../utils/response';
-import { ArrayContains, Like, MoreThan } from 'typeorm';
+import { Like, MoreThan } from 'typeorm';
 import { Customer } from '../entities/customer';
 
 export default class VoucherModel {

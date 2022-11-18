@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { ShopPDataSource } from '../data';
 import { LocalFile } from '../entities/localFile';
 import path from 'path';
+import fs from 'fs';
+import { HttpStatusCode } from '../utils/shopp.enum';
 
 const localFileRepository = ShopPDataSource.getRepository(LocalFile);
 
@@ -10,8 +12,13 @@ export default class UploadModel {
     const fileName = req.params.name;
     const directoryPath =
       path.dirname(path.dirname(__dirname)) + '/public/uploads/';
-    res.sendFile(path.join(directoryPath, fileName));
+    if (fs.existsSync(path.join(directoryPath, fileName))) {
+      res.sendFile(path.join(directoryPath, fileName));
+    } else {
+      res.status(HttpStatusCode.NOT_FOUND).send('Not found!');
+    }
   }
+
   static async upload(file: Express.Multer.File) {
     let localFile: LocalFile = new LocalFile();
     localFile.filename = file.filename;

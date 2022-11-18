@@ -17,6 +17,7 @@ import payment from './payment';
 import shoppingUnit from './shoppingUnit';
 import orderProduct from './orderProduct';
 import swagger from './swagger';
+import UploadModel from '../models/upload';
 
 const routes = Router();
 /**
@@ -101,6 +102,7 @@ routes.use('/order', order);
 routes.use('/payment', payment);
 routes.use('/shopping-unit', shoppingUnit);
 routes.use('/order-product', orderProduct);
+routes.get('/files/:name', UploadModel.getImage);
 
 routes.use(async (req, res) => {
   res.status(404).send('Not found!');

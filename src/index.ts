@@ -7,6 +7,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import http from 'http';
 import chalk from 'chalk';
+import path from 'path';
 
 const app = express();
 app.use(bodyParser.json());
@@ -14,6 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 // app.use(helmet());
 app.use(routes);
+app.use(express.static(path.join(__dirname, 'public/uploads')));
 
 const server = http.createServer(app);
 
@@ -22,7 +24,7 @@ ShopPDataSource.initialize()
     server.listen(ShopPConfig.PORT, () => {
       console.log(
         chalk.bold(
-          chalk.magenta(`Server is listenning at port ${ShopPConfig.PORT}!`)
+          chalk.magenta(`Server is listening at port ${ShopPConfig.PORT}!`)
         )
       );
       server.emit('ok');
@@ -30,7 +32,7 @@ ShopPDataSource.initialize()
   })
   .catch(err => {
     console.error(
-      chalk.red('There are some errors while initialzing data source!')
+      chalk.red('There are some errors while initializing data source!')
     );
     console.error('Detail:');
     console.log(err);

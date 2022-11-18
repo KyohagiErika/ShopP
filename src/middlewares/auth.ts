@@ -345,13 +345,23 @@ class AuthMiddleware {
   })
   static async verifyEmail(req: Request, res: Response) {
     const data = req.body;
-
-    const result = await AuthModel.verifyOtp(
-      data.email,
-      data.otp,
-      OtpEnum.VERIFICATION
+    const user = await UserModel.getOneByEmail(
+      String(data.email).toLowerCase()
     );
-    return res.status(result.getCode()).send({ message: result.getMessage() });
+    if (user === false)
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Invalid email' });
+    else {
+      const result = await AuthModel.verifyOtp(
+        user.id,
+        data.otp,
+        OtpEnum.VERIFICATION
+      );
+      return res
+        .status(result.getCode())
+        .send({ message: result.getMessage() });
+    }
   }
 
   /**
@@ -455,7 +465,6 @@ class AuthMiddleware {
   static async checkJwt(req: Request, res: Response, next: NextFunction) {
     //Get the jwt token from the head
     let token = <string>req.header('Authorization');
-    console.log(token);
     if (token == undefined)
       return res
         .status(HttpStatusCode.UNAUTHORIZATION)

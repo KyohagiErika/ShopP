@@ -48,6 +48,10 @@ import { Order } from './order';
  *      example: '34 Nguyen Van Cu, Ha Noi'
  *     avatar:
  *      $ref: '#/components/schemas/LocalFileResponse'
+ *     bio:
+ *      type: string
+ *      description: bio of the customer
+ *      example: 'nha giau, hoc gioi'
  *   CustomerListResponse:
  *    type: array
  *    items:
