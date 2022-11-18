@@ -17,7 +17,7 @@ export default class PaymentModel {
   }
 
   static async getOneById(id: number) {
-    const payment = await PaymentRepository.find({
+    const payment = await PaymentRepository.findOne({
       select: {
         id: true,
         name: true,

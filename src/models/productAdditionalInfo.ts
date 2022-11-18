@@ -4,13 +4,13 @@ import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { ProductAdditionalInfo } from '../entities/productAdditionalInfo';
 
-const productAddtionInfoReposity = ShopPDataSource.getRepository(
+const productAdditionInfoRepository = ShopPDataSource.getRepository(
   ProductAdditionalInfo
 );
 
 export default class ProductAdditionInfoModel {
   static async listAll() {
-    const productAdditionalInfo = await productAddtionInfoReposity.find({
+    const productAdditionalInfo = await productAdditionInfoRepository.find({
       relations: {
         product: true,
       },
@@ -30,7 +30,7 @@ export default class ProductAdditionInfoModel {
   }
 
   static async getOneById(id: number) {
-    const productAdditionalInfo = await productAddtionInfoReposity.find({
+    const productAdditionalInfo = await productAdditionInfoRepository.find({
       relations: {
         product: true,
       },
@@ -69,13 +69,13 @@ export default class ProductAdditionInfoModel {
       ],
     });
     if (product == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'ProductId not exist.');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist.');
     } else {
       let productAdditionalInfo = new ProductAdditionalInfo();
       productAdditionalInfo.product = product;
       productAdditionalInfo.key = key;
       productAdditionalInfo.value = value;
-      await productAddtionInfoReposity.save(productAdditionalInfo);
+      await productAdditionInfoRepository.save(productAdditionalInfo);
 
       return new Response(
         HttpStatusCode.CREATED,
@@ -86,7 +86,7 @@ export default class ProductAdditionInfoModel {
   }
 
   static async edit(id: number, key: string, value: string) {
-    const productAdditonalInfo = await productAddtionInfoReposity.findOne({
+    const productAdditionalInfo = await productAdditionInfoRepository.findOne({
       where: [
         {
           id: id,
@@ -98,22 +98,22 @@ export default class ProductAdditionInfoModel {
         },
       ],
     });
-    if (productAdditonalInfo == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Id not exit !');
+    if (productAdditionalInfo == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exit !');
     } else {
-      const productAdditionalInfoEdit = await productAddtionInfoReposity.update(
+      const productAdditionalInfoEdit = await productAdditionInfoRepository.update(
         { id: id },
         { key: key, value: value }
       );
       if (productAdditionalInfoEdit.affected == 1) {
         return new Response(
           HttpStatusCode.OK,
-          'Edit product additonal infomation successfully!'
+          'Edit product additional information successfully!'
         );
       } else {
         return new Response(
           HttpStatusCode.BAD_REQUEST,
-          'Edit product additonal infomation failed !'
+          'Edit product additional information failed !'
         );
       }
     }

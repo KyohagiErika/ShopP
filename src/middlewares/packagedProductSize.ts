@@ -57,7 +57,7 @@ export default class PackagedProductSizeMiddleware {
         type: String,
       },
       {
-        name: 'lenght',
+        name: 'length',
         type: String,
       },
     ],
@@ -70,7 +70,7 @@ export default class PackagedProductSizeMiddleware {
       data.weight,
       data.height,
       data.width,
-      data.lenght
+      data.length
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
@@ -102,7 +102,7 @@ export default class PackagedProductSizeMiddleware {
         type: String,
       },
       {
-        name: 'lenght',
+        name: 'length',
         type: String,
       },
     ],
@@ -115,7 +115,7 @@ export default class PackagedProductSizeMiddleware {
       data.weight,
       data.height,
       data.width,
-      data.lenght
+      data.length
     );
     if (result.getCode() === HttpStatusCode.OK) {
       res

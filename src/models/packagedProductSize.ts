@@ -4,18 +4,18 @@ import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { PackagedProductSize } from '../entities/packagedProductSize';
 
-const packagedProductSizeReposity =
+const packagedProductSizeRepository =
   ShopPDataSource.getRepository(PackagedProductSize);
 
 export default class PackagedProductSizeModel {
   static async listAll() {
-    const packagedProductSize = await packagedProductSizeReposity.find({
+    const packagedProductSize = await packagedProductSizeRepository.find({
       relations: {
         product: true,
       },
       select: {
         weight: true,
-        lenght: true,
+        length: true,
         width: true,
         height: true,
         product: {
@@ -31,13 +31,13 @@ export default class PackagedProductSizeModel {
   }
 
   static async getOneById(id: number) {
-    const packagedProductSize = await packagedProductSizeReposity.find({
+    const packagedProductSize = await packagedProductSizeRepository.find({
       relations: {
         product: true,
       },
       select: {
         weight: true,
-        lenght: true,
+        length: true,
         width: true,
         height: true,
         product: {
@@ -56,7 +56,7 @@ export default class PackagedProductSizeModel {
   static async postNew(
     productId: string,
     weight: number,
-    lenght: number,
+    length: number,
     width: number,
     height: number
   ) {
@@ -78,15 +78,15 @@ export default class PackagedProductSizeModel {
       ],
     });
     if (product == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'ProductId not exist.');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist.');
     } else {
       let packagedProductSize = new PackagedProductSize();
       packagedProductSize.product = product;
       packagedProductSize.weight = weight;
-      packagedProductSize.lenght = lenght;
+      packagedProductSize.length = length;
       packagedProductSize.width = width;
       packagedProductSize.height = height;
-      await packagedProductSizeReposity.save(packagedProductSize);
+      await packagedProductSizeRepository.save(packagedProductSize);
 
       return new Response(
         HttpStatusCode.CREATED,
@@ -99,11 +99,11 @@ export default class PackagedProductSizeModel {
   static async edit(
     id: number,
     weight: number,
-    lenght: number,
+    length: number,
     width: number,
     height: number
   ) {
-    const packagedProductSize = await packagedProductSizeReposity.findOne({
+    const packagedProductSize = await packagedProductSizeRepository.findOne({
       where: [
         {
           id: id,
@@ -116,11 +116,11 @@ export default class PackagedProductSizeModel {
       ],
     });
     if (packagedProductSize == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Id not exit !');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exit !');
     } else {
-      const packagedProductSizeEdit = await packagedProductSizeReposity.update(
+      const packagedProductSizeEdit = await packagedProductSizeRepository.update(
         { id: id },
-        { weight: weight, lenght: lenght, width: width, height: height }
+        { weight: weight, length: length, width: width, height: height }
       );
       if (packagedProductSizeEdit.affected == 1) {
         return new Response(

@@ -115,6 +115,43 @@ export default class ProductMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ProductRequest:
+   *    type: object
+   *    properties:
+   *     name:
+   *      type: string
+   *      description: name of product
+   *      example: 'Ao len'
+   *     detail:
+   *      type: string
+   *      description: detail of product
+   *      example: 'Dep, ngon, bo, re'
+   *     amount:
+   *      type: integer
+   *      format: int32
+   *      description: amount of product
+   *      example: '10000'
+   *     quantity:
+   *      type: integer
+   *      format: int32
+   *      description: quantity of product
+   *      example: '123'
+   *     categoryId:
+   *      type: integer
+   *      format: int32
+   *      description: category Id of product
+   *      example: '1'
+   *     productImages:
+   *      type: array
+   *      items:
+   *       type: string
+   *       format: binary
+   *       description: images of product
+   */
   @ControllerService({
     body: [
       {

@@ -18,7 +18,7 @@ export default class ShoppingUnitModel {
   }
 
   static async getOneById(id: number) {
-    const shoppingUnit = await ShoppingUnitRepository.find({
+    const shoppingUnit = await ShoppingUnitRepository.findOne({
       select: {
         id: true,
         name: true,
