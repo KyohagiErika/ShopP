@@ -271,7 +271,7 @@ export default class VoucherMiddleware {
     const result = await VoucherModel.deleteCustomerVoucher(
       res.locals.user,
       req.params.id
-    )
-    res.status(result.getCode()).send({message: result.getMessage()})
+    );
+    res.status(result.getCode()).send({ message: result.getMessage() });
   }
 }

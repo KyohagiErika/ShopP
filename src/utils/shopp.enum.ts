@@ -7,7 +7,7 @@ export enum HttpStatusCode {
   FORBIDDEN = 403,
   NOT_FOUND = 404,
   INTERNAL_SERVER_ERROR = 500,
-  UNKNOW_ERROR = 520,
+  UNKNOWN_ERROR = 520,
 }
 
 export enum StatusEnum {
@@ -51,4 +51,14 @@ export enum TypeTransferEnum {
 export enum StatusReportEnum {
   PROCESSING = 'PROCESSING',
   PROCESSED = 'PROCESSED',
+}
+
+export enum DeliveryStatusEnum {
+  CHECKING = 'CHECKING',
+  CONFIRMED = 'CONFIRMED',
+  PACKAGING = 'PACKAGING',
+  DELIVERING = 'DELIVERING',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+  RETURNED = 'RETURNED',
 }

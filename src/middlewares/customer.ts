@@ -3,8 +3,9 @@ import { Request, Response } from 'express';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
 import ConvertDate from '../utils/convertDate';
-import { LocalFile } from '../entities/localFile';
-import UploadModel from '../models/upload';
+import { EntityManager } from 'typeorm';
+import { ShopPDataSource } from '../data';
+import ModelResponse from '../utils/response';
 
 export default class CustomerMiddleware {
   @ControllerService()
@@ -28,7 +29,6 @@ export default class CustomerMiddleware {
   static async getOneById(req: Request, res: Response) {
     const id = req.params.id.toString();
     const result = await CustomerModel.getOneById(id, res.locals.user);
-    res.status(HttpStatusCode.OK).send({ data: res.locals.user });
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
     } else {
@@ -38,6 +38,38 @@ export default class CustomerMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   CustomerRequest:
+   *    type: object
+   *    properties:
+   *     name:
+   *      type: string
+   *      description: name of customer
+   *      example: 'bello'
+   *     dob:
+   *      type: string
+   *      description: Date of birth
+   *      example: '22-03-2003'
+   *     gender:
+   *      type: string
+   *      description: gender of customer
+   *      example: 'MALE'
+   *     placeOfDelivery:
+   *      type: string
+   *      description: place of delivery
+   *      example: '34 Nguyen Van Cu, Ha Noi'
+   *     avatar:
+   *      type: string
+   *      format: binary
+   *      description: avatar of Customer
+   *     bio:
+   *      type: string
+   *      description: bio of customer
+   *      example: 'Dep tray'
+   */
   @ControllerService({
     body: [
       {
@@ -85,19 +117,20 @@ export default class CustomerMiddleware {
   })
   static async postNew(req: Request, res: Response) {
     if (req.file != undefined) {
-      const file = req.file;
-      const localFile: LocalFile = await UploadModel.upload(file);
+      const avatar: Express.Multer.File = req.file;
 
       const data = req.body;
       // take date
       var dateTrueFormat = ConvertDate(data.dob);
-      const result = await CustomerModel.postNew(
+      const result: ModelResponse = await CustomerModel.postNew(
+        new EntityManager(ShopPDataSource),
         data.name.toString(),
         data.gender,
         new Date(dateTrueFormat),
         data.placeOfDelivery.toString(),
+        data.bio,
         res.locals.user,
-        localFile
+        avatar
       );
       if (result.getCode() === HttpStatusCode.CREATED) {
         res
@@ -160,7 +193,6 @@ export default class CustomerMiddleware {
     if (req.file != undefined) {
       const file = req.file;
       const data = req.body;
-      const id = req.params.id;
       // resolve dob
       var dateTrueFormat = ConvertDate(data.dob);
       const result = await CustomerModel.edit(
@@ -168,6 +200,7 @@ export default class CustomerMiddleware {
         data.gender,
         new Date(dateTrueFormat),
         data.placeOfDelivery,
+        data.bio,
         res.locals.user,
         file
       );
@@ -203,9 +236,6 @@ export default class CustomerMiddleware {
       res
         .status(result.getCode())
         .send({ message: result.getMessage(), data: result.getData() });
-    else
-      res
-        .status(result.getCode())
-        .send({ message: result.getMessage() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 }

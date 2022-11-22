@@ -12,6 +12,38 @@ import { User } from '../entities/user';
 import verifyEmail from '../utils/templates/verifyEmailTemplate';
 
 class AuthMiddleware {
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   LoginRequest:
+   *    type: object
+   *    properties:
+   *     emailOrPhone:
+   *      type: string
+   *      description: email or phone of the user
+   *      example: 'shopp123@gmail.com'
+   *     password:
+   *      type: string
+   *      description: password of the user
+   *      example: 'abcABC213&'
+   * */
+  /**
+   * @swagger
+   * components:
+   *  responses:
+   *   LoginResponse:
+   *    type: object
+   *    properties:
+   *     message:
+   *      type: string
+   *      description: message
+   *      example: 'Login successfully'
+   *     token:
+   *      type: string
+   *      description: token of the user
+   *      example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImVtYWlsIjoidHRpZW52bXNlMTcwMTMwQGZwdC5lZHUudm4iLCJpYXQiOjE2NjcwNDkyMTQsImV4cCI6MTY2NzA1MjgxNH0.w4WZTxZ4Q-HQ4p1PbJ-x-tz1XNap_zNRMoOPy6xUoTo'
+   */
   @ControllerService({
     body: [
       {
@@ -58,6 +90,26 @@ class AuthMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ChangePasswordRequest:
+   *    type: object
+   *    properties:
+   *     oldPassword:
+   *      type: string
+   *      description: old password of the user
+   *      example: 'abcABC213&'
+   *     newPassword:
+   *      type: string
+   *      description: new password of the user
+   *      example: 'abcABC213&'
+   *     confirmNewPassword:
+   *      type: string
+   *      description: confirm password of the user
+   *      example: 'abcABC213&'
+   * */
   @ControllerService({
     body: [
       {
@@ -114,6 +166,26 @@ class AuthMiddleware {
     res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ForgotPasswordRequest:
+   *    type: object
+   *    properties:
+   *     oldPassword:
+   *      type: string
+   *      description: password of the user
+   *      example: 'abcABC213&'
+   *     newPassword:
+   *      type: string
+   *      description: password of the user
+   *      example: 'abcABfsdfC213&'
+   *     confirmNewPassword:
+   *      type: string
+   *      description: confirm password of the user
+   *      example: 'abcABfsdfC213&'
+   */
   @ControllerService({
     body: [
       {
@@ -160,7 +232,7 @@ class AuthMiddleware {
           html: emailTemplate.html,
         },
         function (err: any, success: any) {
-          if (err) res.status(HttpStatusCode.UNKNOW_ERROR).send({ err: err });
+          if (err) res.status(HttpStatusCode.UNKNOWN_ERROR).send({ err: err });
           else
             res.status(HttpStatusCode.OK).send({
               message:
@@ -185,12 +257,12 @@ class AuthMiddleware {
       },
     ],
   })
-  static async sendGmailForVerifingEmail(req: Request, res: Response) {
+  static async sendGmailForVerifyingEmail(req: Request, res: Response) {
     //Get email from the body
     const email = req.body.email;
     const user = await UserModel.getOneByEmail(String(email).toLowerCase());
     if (!user)
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Wrong email' });
+      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Invalid email' });
     else {
       let tokenExpiration: Date = new Date();
       tokenExpiration.setMinutes(10 + tokenExpiration.getMinutes());
@@ -198,7 +270,7 @@ class AuthMiddleware {
       const otp: string = generateOtp(6);
 
       await AuthModel.postUserOtp(
-        email,
+        user,
         OtpEnum.VERIFICATION,
         otp,
         tokenExpiration
@@ -221,18 +293,33 @@ class AuthMiddleware {
           html: emailTemplate.html,
         },
         function (err: any, success: any) {
-          if (err)
-            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ err: err });
+          if (err) res.status(HttpStatusCode.UNKNOWN_ERROR).send({ err: err });
           else
             res.status(HttpStatusCode.OK).send({
               message:
-                'Verifing Email OTP was sent via your email successfully',
+                'Verifying Email OTP was sent via your email successfully',
             });
         }
       );
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   VerifyEmailRequest:
+   *    type: object
+   *    properties:
+   *     email:
+   *      type: string
+   *      description: email of the user
+   *      example: 'shopp123@gmail.com'
+   *     otp:
+   *      type: string
+   *      description: OTP from ShopP Email
+   *      example: '123456'
+   */
   @ControllerService({
     body: [
       {
@@ -258,15 +345,49 @@ class AuthMiddleware {
   })
   static async verifyEmail(req: Request, res: Response) {
     const data = req.body;
-
-    const result = await AuthModel.verifyOtp(
-      data.email,
-      data.otp,
-      OtpEnum.VERIFICATION
+    const user = await UserModel.getOneByEmail(
+      String(data.email).toLowerCase()
     );
-    return res.status(result.getCode()).send({ message: result.getMessage() });
+    if (user === false)
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Invalid email' });
+    else {
+      const result = await AuthModel.verifyOtp(
+        user.id,
+        data.otp,
+        OtpEnum.VERIFICATION
+      );
+      return res
+        .status(result.getCode())
+        .send({ message: result.getMessage() });
+    }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ResetPasswordRequest:
+   *    type: object
+   *    properties:
+   *     email:
+   *      type: string
+   *      description: email of the user
+   *      example: 'shopp123@gmail.com'
+   *     otp:
+   *      type: string
+   *      description: OTP from ShopP Email
+   *      example: '123456'
+   *     password:
+   *      type: string
+   *      description: new password of the user
+   *      example: 'abcABfsdfC213&'
+   *     confirmPassword:
+   *      type: string
+   *      description: confirm new password of the user
+   *      example: 'abcABfsdfC213&'
+   */
   @ControllerService({
     body: [
       {
@@ -344,10 +465,9 @@ class AuthMiddleware {
   static async checkJwt(req: Request, res: Response, next: NextFunction) {
     //Get the jwt token from the head
     let token = <string>req.header('Authorization');
-    // console.log(token)
-    if (token == '')
-      res
-        .status(HttpStatusCode.REDIRECT)
+    if (token == undefined)
+      return res
+        .status(HttpStatusCode.UNAUTHORIZATION)
         .send({ message: 'Please Login to ShopP' });
     let jwtPayload;
     token = token?.replace('Bearer ', '');
@@ -357,16 +477,15 @@ class AuthMiddleware {
       const user: User | false = await UserModel.getOneById(jwtPayload.userId);
       console.log(user);
       if (user === false) {
-        res
+        return res
           .status(HttpStatusCode.UNAUTHORIZATION)
           .send({ message: 'Unauthorized: authentication required' });
       } else res.locals.user = user;
     } catch (error) {
       //If token is not valid, respond with 401 (unauthorized)
-      res
+      return res
         .status(HttpStatusCode.UNAUTHORIZATION)
-        .send({ message: 'Unauthorized: authentication required' });
-      return;
+        .send({ message: 'Unauthorized: authentication required!' });
     }
 
     //The token is valid for 1 hour
@@ -375,10 +494,10 @@ class AuthMiddleware {
     const newToken = jwt.sign({ userId, email }, config.JWT_SECRET, {
       expiresIn: '1h',
     });
-    res.setHeader('Authentication', newToken);
+    res.setHeader('Authorization', newToken);
 
     //Call the next middleware or controller
-    next();
+    return next();
   }
 }
 export default AuthMiddleware;

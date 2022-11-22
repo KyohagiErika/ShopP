@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 
@@ -10,7 +10,8 @@ const swaggerOptions = {
     info: {
       title: 'ShopP Web Application API',
       version: '1.0.0',
-      description: 'Employe Api for employee management',
+      description:
+        'Web Application API Documentation for ShopP E-Commerce Platform built with NodeJS, ExpressJS, TypeScript, TypeORM, and MySQL',
       servers: ['http://localhost:3001'],
       basePath: '/',
     },
@@ -50,6 +51,17 @@ const options = {
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 
-routes.use('/', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+routes.use(
+  '/',
+  async (req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    next();
+  },
+  swaggerUI.serve,
+  swaggerUI.setup(swaggerDocs)
+);
 
 export default routes;

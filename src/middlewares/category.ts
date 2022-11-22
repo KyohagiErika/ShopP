@@ -5,7 +5,7 @@ import UploadModel from '../models/upload';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
 
-export default class ProductMiddleware {
+export default class CategoryMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
     const result = await CategoryModel.listAll();
@@ -31,6 +31,22 @@ export default class ProductMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   CategoryRequest:
+   *    type: object
+   *    properties:
+   *     name:
+   *      type: string
+   *      description: name of category
+   *      example: 'Ao Quan'
+   *     image:
+   *      type: string
+   *      format: binary
+   *      description: image of category
+   */
   @ControllerService({
     body: [
       {

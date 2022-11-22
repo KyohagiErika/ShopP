@@ -2,8 +2,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
-  ManyToOne,
   OneToOne,
   JoinColumn,
 } from 'typeorm';
@@ -19,7 +17,7 @@ export class PackagedProductSize {
   weight: number;
 
   @Column()
-  lenght: number;
+  length: number;
 
   @Column()
   width: number;

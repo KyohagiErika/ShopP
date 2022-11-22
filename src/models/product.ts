@@ -4,30 +4,34 @@ import { Shop } from '../entities/shop';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
-import { Like } from 'typeorm';
+import { EntityManager, Like } from 'typeorm';
 import { LocalFile } from '../entities/localFile';
 import { ProductImage } from '../entities/productImage';
+import { ModelService } from '../utils/decorators';
 
 const productRepository = ShopPDataSource.getRepository(Product);
-const productImageRepository = ShopPDataSource.getRepository(ProductImage);
 
 export default class ProductModel {
   static async listAll() {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
+        id: true,
         name: true,
         detail: true,
         amount: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
-        shop: { name: true },
-        category: { name: true },
+        status: true,
       },
       where: [
         {
@@ -42,19 +46,23 @@ export default class ProductModel {
   static async getOneById(id: string) {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
+        id: true,
         name: true,
         detail: true,
         amount: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
-        shop: { name: true },
-        category: { name: true },
+        status: true,
       },
       where: [
         {
@@ -73,19 +81,23 @@ export default class ProductModel {
   static async searchByName(name: string) {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
+        id: true,
         name: true,
         detail: true,
         amount: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
-        shop: { name: true },
-        category: { name: true },
+        status: true,
       },
       where: [
         {
@@ -104,19 +116,23 @@ export default class ProductModel {
   static async searchByCategory(categoryId: number) {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
+        id: true,
         name: true,
         detail: true,
         amount: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
-        shop: { name: true },
-        category: { name: true },
+        status: true,
       },
       where: [
         {
@@ -135,21 +151,24 @@ export default class ProductModel {
   static async searchByCategoryName(name: string) {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
+        id: true,
         name: true,
         detail: true,
         amount: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
-        shop: { name: true },
-        category: { name: true },
+        status: true,
       },
-
       where: [
         {
           category: { name: Like(`%${name}%`) },
@@ -167,19 +186,23 @@ export default class ProductModel {
   static async searchByShop(shopId: string) {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
-        productImage: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
+        id: true,
         name: true,
         detail: true,
         amount: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
-        shop: { name: true },
-        category: { name: true },
+        status: true,
       },
       where: [
         {
@@ -195,52 +218,57 @@ export default class ProductModel {
     return product ? product : false;
   }
 
+  @ModelService()
   static async postNew(
+    transactionalEntityManager: EntityManager,
     shop: Shop,
     name: string,
     categoryId: number,
     detail: string,
     amount: number,
+    quantity: number,
     status: ProductEnum,
-    productImages: LocalFile[]
-  ) {
-    const categoryRepository = ShopPDataSource.getRepository(Category);
-    const category = await categoryRepository.findOne({
-      where: {
-        id: categoryId,
-      },
-    });
+    localFiles: LocalFile[]
+  ): Promise<Response> {
+    const category = await transactionalEntityManager
+      .getRepository(Category)
+      .findOne({
+        where: {
+          id: categoryId,
+        },
+      });
     if (category == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Category not exist.');
     } else {
       let product = new Product();
+      var productImages = new Array<ProductImage>();
+      var productImage;
       product.shop = shop;
       product.name = name;
       product.category = category;
       product.detail = detail;
       product.amount = amount;
+      product.quantity = quantity;
       product.status = status;
-      await productRepository.save(product);
 
-      productImages.forEach(async productImage => {
-        await productImageRepository.insert({
-          localFile: productImage,
-          product: product,
-        });
+      const productEntity = await transactionalEntityManager
+        .getRepository(Product)
+        .save(product);
+
+      localFiles.forEach(localFile => {
+        productImage = new ProductImage();
+        productImage.localFile = localFile;
+        productImage.product = productEntity;
+        productImages.push(productImage);
       });
 
+      transactionalEntityManager
+        .getRepository(ProductImage)
+        .save(productImages);
       return new Response(
         HttpStatusCode.CREATED,
         'Create new product successfully!',
-        {
-          shop: { name: shop.name },
-          name: product.name,
-          category: { name: category.name },
-          detail: product.detail,
-          amount: product.amount,
-          status: product.status,
-          image: productImages,
-        }
+        product
       );
     }
   }
@@ -251,6 +279,7 @@ export default class ProductModel {
     categoryId: number,
     detail: string,
     amount: number,
+    quantity: number,
     status: ProductEnum
   ) {
     const categoryRepository = ShopPDataSource.getRepository(Category);
@@ -277,6 +306,7 @@ export default class ProductModel {
           category: category,
           detail: detail,
           amount: amount,
+          quantity: quantity,
           status: status,
         }
       );

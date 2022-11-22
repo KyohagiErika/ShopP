@@ -1,4 +1,3 @@
-import { Shop } from './../entities/shop';
 import { User } from './../entities/user';
 import {
   HttpStatusCode,
@@ -8,7 +7,7 @@ import {
 import { Voucher } from './../entities/voucher';
 import { ShopPDataSource } from './../data';
 import Response from '../utils/response';
-import { ArrayContains, Like, MoreThan } from 'typeorm';
+import { Like, MoreThan } from 'typeorm';
 import { Customer } from '../entities/customer';
 
 export default class VoucherModel {
@@ -262,7 +261,7 @@ export default class VoucherModel {
       }
       voucher.customer.push(user.customer);
       voucherRepository.save(voucher);
-      return new Response(HttpStatusCode.OK, 'save voucher successfully!');
+      return new Response(HttpStatusCode.OK, 'Save voucher successfully!');
     }
     return new Response(HttpStatusCode.BAD_REQUEST, 'Undefined error!');
   }
@@ -292,7 +291,7 @@ export default class VoucherModel {
       if (customer == null) {
         return new Response(
           HttpStatusCode.BAD_REQUEST,
-          'must sign up customer before!'
+          'Must sign up customer before!'
         );
       }
       const now = new Date();
@@ -312,7 +311,6 @@ export default class VoucherModel {
             voucher.type == type1
           ) {
             vouchers.push(Voucher.mapVoucher(voucher));
-
           }
         });
       } else {
@@ -323,14 +321,13 @@ export default class VoucherModel {
             (voucher.type == type1 || voucher.type == type2)
           ) {
             vouchers.push(Voucher.mapVoucher(voucher));
-
           }
         });
       }
       if (vouchers.length == 0)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
-          'unavailable vouchers!!'
+          'Unavailable vouchers!!'
         );
       return new Response(HttpStatusCode.OK, message, vouchers);
     }
@@ -340,7 +337,7 @@ export default class VoucherModel {
     return this.templateShowCustomerVouchers(
       user,
       RoleEnum.ADMIN,
-      'show App vouchers successfully!!'
+      'Show App vouchers successfully!!'
     );
   }
 
@@ -348,7 +345,7 @@ export default class VoucherModel {
     return this.templateShowCustomerVouchers(
       user,
       RoleEnum.SHOP,
-      'show Shop vouchers successfully!!'
+      'Show Shop vouchers successfully!!'
     );
   }
 
@@ -356,7 +353,7 @@ export default class VoucherModel {
     return this.templateShowCustomerVouchers(
       user,
       RoleEnum.ADMIN,
-      'show Freeship vouchers successfully!!',
+      'Show Freeship vouchers successfully!!',
       VoucherTypeEnum.FREESHIP
     );
   }
@@ -365,7 +362,7 @@ export default class VoucherModel {
     return this.templateShowCustomerVouchers(
       user,
       RoleEnum.ADMIN,
-      'show Discount vouchers successfully!!',
+      'Show Discount vouchers successfully!!',
       VoucherTypeEnum.MONEY,
       VoucherTypeEnum.PERCENT
     );
@@ -399,7 +396,7 @@ export default class VoucherModel {
     });
     if (length == customer.voucher.length)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable voucher');
-    customerRepository.save(customer)
+    customerRepository.save(customer);
     return new Response(HttpStatusCode.OK, 'Delete voucher successfully!!');
   }
 }
