@@ -10,5 +10,6 @@ export const ShopPDataSource = new DataSource({
   password: ShopPConfig.DATABASE_PASSWORD,
   database: ShopPConfig.DATABASE_NAME,
   entities: [path.resolve(__dirname + '/entities/{*.js,*.ts}')],
+  migrations: [path.resolve(__dirname + '/migrations/{*.js,*.ts}')],
   logger: new AdvancedConsoleLogger('all'),
 });

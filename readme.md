@@ -61,4 +61,6 @@ npm run <cli>
 * `build` - build the project.
 * `start` - start the project.
 * `init-database` - synchronize the database with the entities.
-* `generate-migration` - generate migration files with schema changes
+* `generate-migration` - generate migration files with schema changes.
+* `run-migration` - execute all pending migrations.
+* `revert-migration` - revert the changes.
