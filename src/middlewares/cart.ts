@@ -6,8 +6,7 @@ import { HttpStatusCode } from '../utils/shopp.enum';
 export default class CartMiddleware {
   @ControllerService()
   static async showCart(req: Request, res: Response) {
-    const cartId = +req.params.cartId;
-    const result = await CartModel.showCart(cartId);
+    const result = await CartModel.showCart(res.locals.user);
     if (result.getCode() == HttpStatusCode.OK)
       res
         .status(HttpStatusCode.OK)
@@ -18,7 +17,7 @@ export default class CartMiddleware {
   @ControllerService()
   static async update(req: Request, res: Response) {
     const result = await CartModel.update(
-      +req.params.cartId,
+      res.locals.user,
       req.body.products
     );
     res.status(result.getCode()).send({ message: result.getMessage() });
