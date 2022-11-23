@@ -84,10 +84,7 @@ export default class OrderMiddlieware {
         name: 'shoppingUintId',
         type: String,
       },
-      {
-        name: 'shopId',
-        type: String,
-      },
+
     ],
   })
   static async postNew(req: Request, res: Response) {
@@ -113,7 +110,6 @@ export default class OrderMiddlieware {
       data.paymentId,
       data.shoppingUintId,
       data.voucherId,
-      data.shopId,
       customer,
       data.orderProducts
     );

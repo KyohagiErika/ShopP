@@ -109,7 +109,7 @@ export class Product {
   @Column({ nullable: true })
   deletedAt: Date;
 
-  @ManyToOne(() => Shop, shop => shop.id)
+  @ManyToOne(() => Shop, shop => shop.products)
   @JoinColumn()
   shop: Shop;
 
@@ -134,6 +134,6 @@ export class Product {
   @JoinColumn()
   productImage: ProductImage[];
 
-  @OneToMany(() => OrderProduct, orderProduct => orderProduct.id)
+  @OneToMany(() => OrderProduct, orderProduct => orderProduct.product)
   orderProduct: OrderProduct[];
 }

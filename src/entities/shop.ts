@@ -73,7 +73,7 @@ export class Shop {
   @JoinColumn()
   user: User;
 
-  @OneToMany(() => Product, product => product.id)
+  @OneToMany(() => Product, product => product.shop)
   products: Product[];
 
   @Column()
@@ -94,8 +94,8 @@ export class Shop {
   @OneToMany(() => Report, report => report.id)
   report: Report[];
 
-  @OneToMany(() => Order, order => order.id)
-  order: Order[];
+  // @OneToMany(() => Order, order => order.id)
+  // order: Order[];
 
   @ManyToMany(() => Customer, customer => customer.shopsFollowed)
   followers: Customer[];

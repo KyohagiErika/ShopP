@@ -29,7 +29,6 @@ export default class orderModel {
         payment: true,
         shoppingUnit: true,
         voucher: true,
-        shop: true,
         customer: true,
       },
       where: [
@@ -54,17 +53,18 @@ export default class orderModel {
   }
 
   static async viewOrderForShop(shop: Shop) {
+
     const order = await orderReposity.find({
       relations: {
         payment: true,
         shoppingUnit: true,
         voucher: true,
-        shop: true,
         customer: true,
+        orderProducts: true
       },
       where: [
         {
-          shop: { id: shop.id },
+          orderProducts: { product: { shop: { id: shop.id } } },
           status: StatusEnum.ACTIVE,
           deliveryStatus: DeliveryStatusEnum.CHECKING,
         },
@@ -79,7 +79,6 @@ export default class orderModel {
         payment: true,
         shoppingUnit: true,
         voucher: true,
-        shop: true,
         customer: true,
       },
       select: {
@@ -87,9 +86,6 @@ export default class orderModel {
         createdAt: true,
         deliveryStatus: true,
         address: true,
-        shop: {
-          name: true,
-        },
         customer: {
           name: true,
         },
@@ -122,7 +118,6 @@ export default class orderModel {
         payment: true,
         shoppingUnit: true,
         voucher: true,
-        shop: true,
         customer: true,
       },
       select: {
@@ -130,9 +125,6 @@ export default class orderModel {
         createdAt: true,
         deliveryStatus: true,
         address: true,
-        shop: {
-          name: true,
-        },
         customer: {
           name: true,
         },
@@ -165,7 +157,6 @@ export default class orderModel {
         payment: true,
         shoppingUnit: true,
         voucher: true,
-        shop: true,
         customer: true,
       },
       select: {
@@ -173,9 +164,6 @@ export default class orderModel {
         createdAt: true,
         deliveryStatus: true,
         address: true,
-        shop: {
-          name: true,
-        },
         customer: {
           name: true,
         },
@@ -213,19 +201,9 @@ export default class orderModel {
     paymentId: number,
     shoppingUnitId: number,
     voucherId: string,
-    shopId: string,
     customer: Customer,
     orderProducts: OrderProduct[]
   ) {
-    const shop = await shopReposity.findOne({
-      where: {
-        id: shopId,
-      },
-    });
-    if (shop == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'shop not exist.');
-    }
-
     const payment = await paymentReposity.findOne({
       where: {
         id: paymentId,
@@ -246,93 +224,107 @@ export default class orderModel {
         'shopping unit not exist.'
       );
     }
-    const voucher = await voucherReposity.find({
-      where: {
-        id: voucherId,
-      },
-    });
-    if (voucher == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'voucher not exist.');
+    let voucher = null;
+    let order = new Order();
+    if (voucherId == null) {
+      voucher = null;
     } else {
-      let order = new Order();
-      (order.deliveryStatus = deliveryStatus),
-        (order.address = address),
-        (order.estimateDeliveryTime = estimateDeliveryTime),
-        (order.status = status),
-        (order.totalBill = totalBill),
-        (order.transportFee = transportFee),
-        (order.totalPayment = totalPayment),
-        (order.payment = payment),
-        (order.shoppingUnit = shoppingUnit),
-        (order.voucher = voucher),
-        (order.shop = shop),
-        (order.customer = customer),
-        (order.orderProducts = orderProducts);
+      voucher = await voucherReposity.find({
+        where: {
+          id: voucherId,
+        },
+      });
+      if (voucher == null) {
+        return new Response(HttpStatusCode.BAD_REQUEST, 'voucher not exist.');
+      } else {
+        (order.deliveryStatus = deliveryStatus),
+          (order.address = address),
+          (order.estimateDeliveryTime = estimateDeliveryTime),
+          (order.status = status),
+          (order.totalBill = totalBill),
+          (order.transportFee = transportFee),
+          (order.totalPayment = totalPayment),
+          (order.payment = payment),
+          (order.shoppingUnit = shoppingUnit),
+          (order.voucher = voucher),
+          (order.customer = customer),
+          (order.orderProducts = orderProducts);
 
-      await orderReposity.save(order);
+        await orderReposity.save(order);
 
-      const length = orderProducts.length;
-      for (let i = 0; i < length; i++) {
-        const findProduct = await productRepository.findOne({
-          where: {
-            id: orderProducts[i].product.id,
-          },
-        });
-        if (findProduct == null) {
-          return new Response(
-            HttpStatusCode.BAD_REQUEST,
-            'product is not exist !'
-          );
+        const length = orderProducts.length;
+        for (let i = 0; i < length; i++) {
+          const findProduct = await productRepository.findOne({
+            where: {
+              id: orderProducts[i].product.id,
+            },
+          });
+          if (findProduct == null) {
+            return new Response(
+              HttpStatusCode.BAD_REQUEST,
+              'product is not exist !'
+            );
+          }
+          if (
+            orderProducts[i].quantity > findProduct.quantity ||
+            orderProducts[i].quantity < 1
+          )
+            return new Response(
+              HttpStatusCode.BAD_REQUEST,
+              'quantity must be greater than 0 and less than product quantity'
+            );
+
+          let orderProduct = new OrderProduct();
+          (orderProduct.price = orderProducts[i].price),
+            (orderProduct.additionalInfo = orderProducts[i].additionalInfo),
+            (orderProduct.quantity = orderProducts[i].quantity),
+            (orderProduct.product = findProduct),
+            (orderProduct.orderNumber = order);
+
+          await orderProductRepository.save(orderProduct);
         }
-        if (
-          orderProducts[i].quantity > findProduct.quantity ||
-          orderProducts[i].quantity < 1
-        )
-          return new Response(
-            HttpStatusCode.BAD_REQUEST,
-            'quantity must be greater than 0 and less than product quantity'
-          );
-
-        let orderProduct = new OrderProduct();
-        (orderProduct.price = orderProducts[i].price),
-          (orderProduct.additionalInfo = orderProducts[i].additionalInfo),
-          (orderProduct.quantity = orderProducts[i].quantity),
-          (orderProduct.product = findProduct),
-          (orderProduct.orderNumber = order);
-
-        await orderProductRepository.save(orderProduct);
       }
-      return new Response(
-        HttpStatusCode.CREATED,
-        'Create new order successfully!',
-        order
-      );
-    }
+    } return new Response(
+      HttpStatusCode.CREATED,
+      'Create new order successfully!',
+      order
+    );
+
   }
 
   static async editDeliveryStatus(
     id: string,
     deliveryStatus: DeliveryStatusEnum
   ) {
-    if (deliveryStatus == DeliveryStatusEnum.DELIVERED) {
-      const order = await orderReposity.update(
-        { id: id },
-        { deliveryStatus: deliveryStatus, status: StatusEnum.INACTIVE }
-      );
-      if (order.affected == 1) {
-        return new Response(HttpStatusCode.OK, 'Done!');
-      } else {
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
+    const order = await orderReposity.findOne({
+      where: {
+        id: id
       }
+    })
+    if (order != null && deliveryStatus <= order.deliveryStatus) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Cannot change status backward')
+
     } else {
-      const order = await orderReposity.update(
-        { id: id },
-        { deliveryStatus: deliveryStatus, status: StatusEnum.ACTIVE }
-      );
-      if (order.affected == 1) {
-        return new Response(HttpStatusCode.OK, 'Done!');
+      if (deliveryStatus == DeliveryStatusEnum.DELIVERED) {
+        const order = await orderReposity.update(
+          { id: id },
+          { deliveryStatus: deliveryStatus, status: StatusEnum.INACTIVE }
+        );
+        if (order.affected == 1) {
+          return new Response(HttpStatusCode.OK, 'Done!');
+        } else {
+          return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
+        }
       } else {
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
+        const order = await orderReposity.update(
+          { id: id },
+          { deliveryStatus: deliveryStatus, status: StatusEnum.ACTIVE }
+        );
+        if (order.affected == 1) {
+          return new Response(HttpStatusCode.OK, 'Done!');
+        } else {
+          return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
+        }
       }
     }
   }
