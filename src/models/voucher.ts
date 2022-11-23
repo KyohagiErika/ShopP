@@ -304,7 +304,6 @@ export default class VoucherModel {
           }
         });
       } else if (type2 == undefined) {
-        console.log("okay zo");
         voucherALL.forEach(voucher => {
           if (
             voucher.roleCreator == role &&
