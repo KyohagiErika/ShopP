@@ -13,6 +13,8 @@ import {
   HttpStatusCode,
   StatusEnum,
 } from '../utils/shopp.enum';
+import { In } from 'typeorm';
+import { OrderRequest } from '../interfaces/orderRequest';
 
 const orderReposity = ShopPDataSource.getRepository(Order);
 const shopReposity = ShopPDataSource.getRepository(Shop);
@@ -53,24 +55,46 @@ export default class orderModel {
   }
 
   static async viewOrderForShop(shop: Shop) {
-
-    const order = await orderReposity.find({
+    const findOrderProduct = await orderProductRepository.find({
       relations: {
-        payment: true,
-        shoppingUnit: true,
-        voucher: true,
-        customer: true,
-        orderProducts: true
+        product: { shop: true },
+        orderNumber: true,
       },
-      where: [
+      select: {
+        id: true,
+      },
+      where: {
+        product: { shop: { id: shop.id } },
+
+      }
+    })
+    //return findOrderProduct ? findOrderProduct : false;
+    const length = findOrderProduct.length;
+    let order: Order[] = [];
+    for (let i = 0; i < length; i++) {
+      let findOrder = await orderReposity.findOne({
+        relations: {
+          payment: true,
+          shoppingUnit: true,
+          voucher: true,
+          customer: true,
+          orderProducts: true,
+        },
+        where:
         {
-          orderProducts: { product: { shop: { id: shop.id } } },
+          // id: In([...findOrderProduct]),
+          orderProducts: { id: findOrderProduct[i].id },
           status: StatusEnum.ACTIVE,
           deliveryStatus: DeliveryStatusEnum.CHECKING,
         },
-      ],
-    });
+      });
+      if (findOrder != null) {
+        order.push(findOrder);
+      }
+
+    }
     return order ? order : false;
+
   }
 
   static async viewOrderDeliver() {
@@ -191,19 +215,12 @@ export default class orderModel {
   }
 
   static async postNew(
-    deliveryStatus: DeliveryStatusEnum,
     address: string,
-    estimateDeliveryTime: string,
-    totalBill: number,
-    transportFee: number,
-    totalPayment: number,
-    status: StatusEnum,
     paymentId: number,
-    shoppingUnitId: number,
-    voucherId: string,
+    orders: OrderRequest[],
     customer: Customer,
-    orderProducts: OrderProduct[]
   ) {
+
     const payment = await paymentReposity.findOne({
       where: {
         id: paymentId,
@@ -213,83 +230,91 @@ export default class orderModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'payment not exist.');
     }
 
-    const shoppingUnit = await shoppingUnitReposity.findOne({
-      where: {
-        id: shoppingUnitId,
-      },
-    });
-    if (shoppingUnit == null) {
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'shopping unit not exist.'
-      );
-    }
-    let voucher = null;
-    let order = new Order();
-    if (voucherId == null) {
-      voucher = null;
-    } else {
-      voucher = await voucherReposity.find({
+    orders.forEach(async (order) => {
+
+
+      const shoppingUnit = await shoppingUnitReposity.findOne({
         where: {
-          id: voucherId,
+          id: order.shoppingUnitId,
         },
       });
-      if (voucher == null) {
-        return new Response(HttpStatusCode.BAD_REQUEST, 'voucher not exist.');
+      if (shoppingUnit == null) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'shopping unit not exist.'
+        );
+      }
+      const shop = await shopReposity.findOne({
+        where: {
+          id: order.shopId,
+        },
+      });
+      if (shop == null) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'shop not exist.'
+        );
+      }
+
+
+      let voucher = null;
+      let findOrder = new Order();
+      if (order.voucherId == null) {
+        voucher = null;
       } else {
-        (order.deliveryStatus = deliveryStatus),
-          (order.address = address),
-          (order.estimateDeliveryTime = estimateDeliveryTime),
-          (order.status = status),
-          (order.totalBill = totalBill),
-          (order.transportFee = transportFee),
-          (order.totalPayment = totalPayment),
-          (order.payment = payment),
-          (order.shoppingUnit = shoppingUnit),
-          (order.voucher = voucher),
-          (order.customer = customer),
-          (order.orderProducts = orderProducts);
+        voucher = await voucherReposity.find({
+          where: {
+            id: order.voucherId,
+          },
+        });
+        if (voucher == null) {
+          return new Response(HttpStatusCode.BAD_REQUEST, 'voucher not exist.');
+        } else {
+          (findOrder.deliveryStatus = DeliveryStatusEnum.CHECKING),
+            (findOrder.address = address),
+            (findOrder.estimateDeliveryTime = order.estimateDeliveryTime),
+            (findOrder.status = StatusEnum.ACTIVE),
+            (findOrder.totalBill = order.totalBill),
+            (findOrder.transportFee = order.transportFee),
+            (findOrder.totalPayment = parseInt(order.totalBill.toString()) + parseInt(order.transportFee.toString())),
+            (findOrder.payment = payment),
+            (findOrder.shoppingUnit = shoppingUnit),
+            (findOrder.voucher = voucher),
+            (findOrder.shop = shop),
+            (findOrder.customer = customer);
+          const orderFinal = await orderReposity.save(findOrder);
+          order.orderProducts.forEach(async (orderProduct) => {
+            let orderProductEntity = new OrderProduct()
+            const product = await productRepository.findOne({
+              where: {
+                id: orderProduct.productId,
+              },
+            });
+            if (product == null) {
+              return new Response(
+                HttpStatusCode.BAD_REQUEST,
+                'product not exist.'
+              );
+            }
+            orderProductEntity.additionalInfo = orderProduct.additionalInfo,
+              orderProductEntity.price = orderProduct.price,
+              orderProductEntity.quantity = orderProduct.quantity,
+              orderProductEntity.product = product,
+              orderProductEntity.orderNumber = orderFinal
 
-        await orderReposity.save(order);
+            return await orderProductRepository.save(orderProductEntity)
 
-        const length = orderProducts.length;
-        for (let i = 0; i < length; i++) {
-          const findProduct = await productRepository.findOne({
-            where: {
-              id: orderProducts[i].product.id,
-            },
-          });
-          if (findProduct == null) {
-            return new Response(
-              HttpStatusCode.BAD_REQUEST,
-              'product is not exist !'
-            );
-          }
-          if (
-            orderProducts[i].quantity > findProduct.quantity ||
-            orderProducts[i].quantity < 1
-          )
-            return new Response(
-              HttpStatusCode.BAD_REQUEST,
-              'quantity must be greater than 0 and less than product quantity'
-            );
+          })
 
-          let orderProduct = new OrderProduct();
-          (orderProduct.price = orderProducts[i].price),
-            (orderProduct.additionalInfo = orderProducts[i].additionalInfo),
-            (orderProduct.quantity = orderProducts[i].quantity),
-            (orderProduct.product = findProduct),
-            (orderProduct.orderNumber = order);
-
-          await orderProductRepository.save(orderProduct);
         }
       }
-    } return new Response(
+      return;
+    })
+
+    return new Response(
       HttpStatusCode.CREATED,
       'Create new order successfully!',
-      order
     );
-
   }
 
   static async editDeliveryStatus(

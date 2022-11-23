@@ -62,12 +62,12 @@ export class Order {
   @ManyToOne(() => ShoppingUnit, shoppingUnit => shoppingUnit.id)
   shoppingUnit: ShoppingUnit;
 
-  @ManyToMany(() => Voucher, voucher => voucher.id, { nullable: true })
+  @ManyToMany(() => Voucher, voucher => voucher.id)
   @JoinTable()
   voucher: Voucher[];
 
-  // @ManyToOne(() => Shop, shop => shop.id)
-  // shop: Shop;
+  @ManyToOne(() => Shop, shop => shop.id)
+  shop: Shop;
 
   @ManyToOne(() => Customer, customer => customer.id)
   customer: Customer;

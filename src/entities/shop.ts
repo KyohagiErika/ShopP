@@ -94,8 +94,8 @@ export class Shop {
   @OneToMany(() => Report, report => report.id)
   report: Report[];
 
-  // @OneToMany(() => Order, order => order.id)
-  // order: Order[];
+  @OneToMany(() => Order, order => order.id)
+  order: Order[];
 
   @ManyToMany(() => Customer, customer => customer.shopsFollowed)
   followers: Customer[];

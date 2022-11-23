@@ -52,38 +52,13 @@ export default class OrderMiddleware {
         name: 'address',
         type: String,
       },
-      {
-        name: 'estimateDeliveryTime',
-        type: String,
-      },
-      {
-        name: 'totalBill',
-        type: String,
-        validator: (propName: string, value: number) => {
-          if (value < 0 || value > 100000000) {
-            return `${propName} must be greater than 0 and less than 100000000`;
-          }
-          return null;
-        },
-      },
-      {
-        name: 'transportFee',
-        type: String,
-        validator: (propName: string, value: number) => {
-          if (value < 0 || value > 100000000) {
-            return `${propName} must be greater than 0 and less than 100000000`;
-          }
-          return null;
-        },
-      },
+
+
       {
         name: 'paymentId',
         type: String,
       },
-      {
-        name: 'shoppingUnitId',
-        type: String,
-      },
+
 
     ],
   })
@@ -95,23 +70,12 @@ export default class OrderMiddleware {
         .send({ message: 'Can not find customer !' });
     }
     const data = req.body;
-    const totalBill = +req.body.totalBill;
-    const transportFee = +req.body.transportFee;
-    const totalPayment: number = totalBill + transportFee;
 
     const result = await orderModel.postNew(
-      DeliveryStatusEnum.CHECKING,
       data.address.toString(),
-      data.estimateDeliveryTime,
-      totalBill,
-      transportFee,
-      totalPayment,
-      StatusEnum.ACTIVE,
       data.paymentId,
-      data.shoppingUnitId,
-      data.voucherId,
+      data.orders,
       customer,
-      data.orderProducts
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
