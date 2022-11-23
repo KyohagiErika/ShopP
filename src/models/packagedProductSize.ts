@@ -53,6 +53,29 @@ export default class PackagedProductSizeModel {
     return packagedProductSize ? packagedProductSize : false;
   }
 
+  static async getOneByProductId(id: string) {
+    const packagedProductSize = await packagedProductSizeRepository.find({
+      relations: {
+        product: true,
+      },
+      select: {
+        weight: true,
+        length: true,
+        width: true,
+        height: true,
+        product: {
+          name: true,
+          detail: true,
+          amount: true,
+        },
+      },
+      where: {
+        product: { id: id },
+      },
+    });
+    return packagedProductSize ? packagedProductSize : false;
+  }
+
   static async postNew(
     productId: string,
     weight: number,
@@ -80,19 +103,27 @@ export default class PackagedProductSizeModel {
     if (product == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist.');
     } else {
-      let packagedProductSize = new PackagedProductSize();
-      packagedProductSize.product = product;
-      packagedProductSize.weight = weight;
-      packagedProductSize.length = length;
-      packagedProductSize.width = width;
-      packagedProductSize.height = height;
-      await packagedProductSizeRepository.save(packagedProductSize);
-
-      return new Response(
-        HttpStatusCode.CREATED,
-        'Add packaged size successfully!',
-        packagedProductSize
-      );
+      const findPackaged = await packagedProductSizeRepository.findOne({
+        where: {
+          product: { id: product.id }
+        }
+      })
+      if (findPackaged) {
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Product already have package size!')
+      } else {
+        let packagedProductSize = new PackagedProductSize();
+        packagedProductSize.product = product;
+        packagedProductSize.weight = weight;
+        packagedProductSize.length = length;
+        packagedProductSize.width = width;
+        packagedProductSize.height = height;
+        await packagedProductSizeRepository.save(packagedProductSize);
+        return new Response(
+          HttpStatusCode.CREATED,
+          'Add packaged size successfully!',
+          packagedProductSize
+        );
+      }
     }
   }
 

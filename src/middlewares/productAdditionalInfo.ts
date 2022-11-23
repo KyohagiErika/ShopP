@@ -39,6 +39,26 @@ export default class ProductAddInfoMiddleware {
   @ControllerService({
     params: [
       {
+        name: 'id',
+        type: String,
+      },
+    ],
+  })
+  static async getOneByProductId(req: Request, res: Response) {
+    const id = req.params.id;
+    const result = await ProductAdditionInfoModel.getOneByProductId(id);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get Product Information failed!' });
+    }
+  }
+
+  @ControllerService({
+    params: [
+      {
         name: 'productId',
         type: String,
       },

@@ -18,6 +18,12 @@ routes.get(
   ProductAdditionalInfo.getOneById
 );
 
+routes.get(
+  '/get-product-information-of-product/:id',
+  AuthMiddleware.checkJwt,
+  ProductAdditionalInfo.getOneByProductId
+);
+
 routes.post(
   '/new/:productId',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],

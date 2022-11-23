@@ -14,6 +14,12 @@ routes.get(
   PackagedProductSize.getOneById
 );
 
+routes.get(
+  '/get-packaged-product-size-of-product/:id',
+  AuthMiddleware.checkJwt,
+  PackagedProductSize.getOneByProductId
+);
+
 routes.post(
   '/new/:productId',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
