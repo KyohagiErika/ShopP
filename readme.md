@@ -26,8 +26,8 @@ This is a `Typescript` web application server powered by [Express](https://expre
 * Run the project by the following terminal command:
 ```
 npm install
-npm run init-database
 npm run build
+npm run init-database
 npm start
 ```
 ### Prerequisites
@@ -46,6 +46,7 @@ The `root` dir of the project is the `src` folder which has the following struct
 * `routes` - where to specify routes.
 * `middlewares` - place to push middlewares.
 * `entities` - contains the specifications of models (TypeOrm Entity).
+* `migrations` - contains the migrations.
 * `models` - contains the models.
 
 Outside the `src` dir, we also want to specify the `.env` which contains the environment variables.
@@ -60,3 +61,4 @@ npm run <cli>
 * `build` - build the project.
 * `start` - start the project.
 * `init-database` - synchronize the database with the entities.
+* `generate-migration` - generate migration files with schema changes
