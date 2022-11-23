@@ -45,6 +45,41 @@ export default class EventMiddleware {
         .send({ message: result.getMessage(), data: result.getData() });
     else res.status(result.getCode()).send({ message: result.getMessage() });
   }
+  
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   EventRequest:
+   *    type: object
+   *    properties:
+   *     name:
+   *      type: string
+   *      description: name of event
+   *      example: Tom
+   *     startingDate:
+   *      type: string
+   *      description: starting date of event
+   *      example: 20/8/2020
+   *     endingDate:
+   *      type: string
+   *      description: ending date of event
+   *      example: 23/10/2020
+   *     additionalInfo:
+   *      type: object
+   *      description: additional info of event
+   *      properties:
+   *       name:
+   *        type: string
+   *        example: Jon Doe
+   *       email:
+   *        type: string
+   *        example: jon@doe.com
+   *       address:
+   *        type: string
+   *        example: 123 Doe Street
+   */
+
   @ControllerService({
     body: [
       {
