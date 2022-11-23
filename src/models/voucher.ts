@@ -304,6 +304,7 @@ export default class VoucherModel {
           }
         });
       } else if (type2 == undefined) {
+        console.log("okay zo");
         voucherALL.forEach(voucher => {
           if (
             voucher.roleCreator == role &&
@@ -353,6 +354,7 @@ export default class VoucherModel {
     return this.templateShowCustomerVouchers(
       user,
       RoleEnum.ADMIN,
+      
       'Show Freeship vouchers successfully!!',
       VoucherTypeEnum.FREESHIP
     );
