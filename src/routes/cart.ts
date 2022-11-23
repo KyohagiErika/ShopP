@@ -6,8 +6,8 @@ import { RoleEnum } from '../utils/shopp.enum';
 
 const routes = Router();
 
-routes.get('/:cartId([0-9]+)', [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)], CartMiddleware.showCart);
+routes.get('/', [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)], CartMiddleware.showCart);
 
-routes.post('/update/:cartId([0-9]+)', [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)], CartMiddleware.update);
+routes.post('/update', [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)], CartMiddleware.update);
 
 export default routes;
