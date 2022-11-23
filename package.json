@@ -9,6 +9,9 @@
     "test": "mocha -r ts-node/register test/**/*.ts",
     "init-database": "typeorm schema:sync -d ./dist/data.js",
     "format-code": "prettier --write .",
+    "generate-migration": "typeorm-ts-node-esm migration:generate ./src/migrations/seed -d ./src/data.ts",
+    "run-migration": "typeorm-ts-node-esm migration:run -d ./src/data.ts",
+    "revert-migration": "typeorm-ts-node-esm migration:revert -d ./src/data.ts",
     "dev": "nodemon"
   },
   "author": "Le Thanh Long",
