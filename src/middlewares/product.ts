@@ -1,7 +1,13 @@
 import { Request, Response } from 'express';
+import { EntityManager } from 'typeorm';
+import { ShopPDataSource } from '../data';
+import { LocalFile } from '../entities/localFile';
+import { Shop } from '../entities/shop';
 import ProductModel from '../models/product';
+import UploadModel from '../models/upload';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
+import ModelResponse from '../utils/response';
 
 export default class ProductMiddleware {
   @ControllerService()
@@ -98,7 +104,7 @@ export default class ProductMiddleware {
     ],
   })
   static async searchByShop(req: Request, res: Response) {
-    const shopId = req.params.id;
+    const shopId = req.params.shopId;
     const result = await ProductModel.searchByShop(shopId);
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
@@ -109,22 +115,54 @@ export default class ProductMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ProductRequest:
+   *    type: object
+   *    properties:
+   *     name:
+   *      type: string
+   *      description: name of product
+   *      example: 'Ao len'
+   *     detail:
+   *      type: string
+   *      description: detail of product
+   *      example: 'Dep, ngon, bo, re'
+   *     amount:
+   *      type: integer
+   *      format: int32
+   *      description: amount of product
+   *      example: '10000'
+   *     quantity:
+   *      type: integer
+   *      format: int32
+   *      description: quantity of product
+   *      example: '123'
+   *     categoryId:
+   *      type: integer
+   *      format: int32
+   *      description: category Id of product
+   *      example: '1'
+   *     productImages:
+   *      type: array
+   *      items:
+   *       type: string
+   *       format: binary
+   *       description: images of product
+   */
   @ControllerService({
-    params: [
-      {
-        name: 'shopId',
-        type: String,
-      },
-    ],
     body: [
-      {
-        name: 'category',
-        type: String,
-      },
       {
         name: 'name',
         type: String,
       },
+      {
+        name: 'categoryId',
+        type: String,
+      },
+
       {
         name: 'detail',
         type: String,
@@ -132,27 +170,61 @@ export default class ProductMiddleware {
       {
         name: 'amount',
         type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value > 100000000) {
+            return `${propName} must be greater than 0 and less than 100000000`;
+          }
+          return null;
+        },
+      },
+      {
+        name: 'quantity',
+        type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value > 100000) {
+            return `${propName} must be greater than 0 and less than 100000`;
+          }
+          return null;
+        },
       },
     ],
   })
   static async postNew(req: Request, res: Response) {
-    const data = req.body;
-    const shopId = req.params.shopId;
-    const result = await ProductModel.postNew(
-      shopId,
-      data.name,
-      data.category,
-      data.detail.toString(),
-      data.amount,
-      ProductEnum.AVAILABLE
-    );
-    if (result.getCode() === HttpStatusCode.CREATED) {
+    if (req.files != undefined) {
+      const productImages: LocalFile[] = await UploadModel.uploadMultiple(
+        req.files
+      );
+
+      const data = req.body;
+      const shop: Shop = res.locals.user.shop;
+      if (shop == null) {
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'Can not find shop' });
+      }
+      const result: ModelResponse = await ProductModel.postNew(
+        new EntityManager(ShopPDataSource),
+        shop,
+        data.name,
+        data.categoryId,
+        data.detail.toString(),
+        data.amount,
+        data.quantity,
+        ProductEnum.AVAILABLE,
+        productImages
+      );
+
+      if (result.getCode() === HttpStatusCode.CREATED) {
+        res
+          .status(result.getCode())
+          .send({ message: result.getMessage(), data: result.getData() });
+      } else {
+        res.status(result.getCode()).send({ message: result.getMessage() });
+      }
+    } else
       res
-        .status(result.getCode())
-        .send({ message: result.getMessage(), data: result.getData() });
-    } else {
-      res.status(result.getCode()).send({ message: result.getMessage() });
-    }
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ error: 'Please upload product images' });
   }
 
   @ControllerService({
@@ -177,8 +249,24 @@ export default class ProductMiddleware {
         type: String,
       },
       {
+        name: 'quantity',
+        type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value > 100000) {
+            return `${propName} must be greater than 0 and less than 100000`;
+          }
+          return null;
+        },
+      },
+      {
         name: 'amount',
         type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value > 100000000) {
+            return `${propName} must be greater than 0 and less than 100000000`;
+          }
+          return null;
+        },
       },
       {
         name: 'status',
@@ -209,6 +297,7 @@ export default class ProductMiddleware {
       data.category,
       data.detail.toString(),
       data.amount,
+      data.quantity,
       status
     );
     if (result.getCode() === HttpStatusCode.OK) {

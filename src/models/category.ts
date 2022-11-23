@@ -1,14 +1,17 @@
 import { ShopPDataSource } from '../data';
-import { Product } from '../entities/product';
 import { HttpStatusCode } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
+import { LocalFile } from '../entities/localFile';
 
 const categoryRepository = ShopPDataSource.getRepository(Category);
 
 export default class CategoryModel {
   static async listAll() {
     const category = await categoryRepository.find({
+      relations: {
+        image: true,
+      },
       select: {
         id: true,
         name: true,
@@ -19,6 +22,9 @@ export default class CategoryModel {
 
   static async getOneById(id: number) {
     const category = await categoryRepository.find({
+      relations: {
+        image: true,
+      },
       select: {
         id: true,
         name: true,
@@ -30,15 +36,34 @@ export default class CategoryModel {
     return category ? category : false;
   }
 
-  static async postNew(name: string, description: string) {
-    let category = new Category();
-    category.name = name;
-    await categoryRepository.save(category);
+  static async postNew(name: string, image: LocalFile) {
+    const category = await categoryRepository.findOne({
+      select: {
+        id: true,
+        name: true,
+      },
+      where: {
+        name: name,
+      },
+    });
 
-    return new Response(
-      HttpStatusCode.CREATED,
-      'Create new category successfully!',
-      category
-    );
+    if (!(category == null)) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Category already exist !',
+        category
+      );
+    } else {
+      let newCategory = new Category();
+      newCategory.name = name;
+      newCategory.image = image;
+      await categoryRepository.save(newCategory);
+
+      return new Response(
+        HttpStatusCode.CREATED,
+        'Create new category successfully!',
+        newCategory
+      );
+    }
   }
 }

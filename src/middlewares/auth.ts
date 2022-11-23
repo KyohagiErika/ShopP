@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { ControllerService } from '../utils/decorators';
-import { HttpStatusCode, OtpEnum } from '../utils/shopp.enum';
+import { HttpStatusCode, OtpEnum, StatusEnum } from '../utils/shopp.enum';
 import AuthModel from '../models/auth';
 import config from '../utils/shopp.config';
 import resetPasswordTemplate from '../utils/templates/resetPasswordTemplate';
@@ -9,17 +9,52 @@ import SendGmailMiddleware from './sendGmail';
 import UserModel from '../models/user';
 import { generateOtp } from '../utils';
 import { User } from '../entities/user';
+import verifyEmail from '../utils/templates/verifyEmailTemplate';
 
 class AuthMiddleware {
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   LoginRequest:
+   *    type: object
+   *    properties:
+   *     emailOrPhone:
+   *      type: string
+   *      description: email or phone of the user
+   *      example: 'shopp123@gmail.com'
+   *     password:
+   *      type: string
+   *      description: password of the user
+   *      example: 'abcABC213&'
+   * */
+  /**
+   * @swagger
+   * components:
+   *  responses:
+   *   LoginResponse:
+   *    type: object
+   *    properties:
+   *     message:
+   *      type: string
+   *      description: message
+   *      example: 'Login successfully'
+   *     token:
+   *      type: string
+   *      description: token of the user
+   *      example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImVtYWlsIjoidHRpZW52bXNlMTcwMTMwQGZwdC5lZHUudm4iLCJpYXQiOjE2NjcwNDkyMTQsImV4cCI6MTY2NzA1MjgxNH0.w4WZTxZ4Q-HQ4p1PbJ-x-tz1XNap_zNRMoOPy6xUoTo'
+   */
   @ControllerService({
     body: [
       {
-        name: 'email',
+        name: 'emailOrPhone',
         type: String,
         validator: (propName: string, value: string) => {
+          const phoneRegExp: RegExp = /^(01|03|05|07|08|09)+([0-9]{8})\b/;
           const emailRegExp: RegExp = /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
           if (!emailRegExp.test(value))
-            return `${propName} must be valid email`;
+            if (!phoneRegExp.test(value))
+              return `Email or Phone must be valid.`;
           return null;
         },
       },
@@ -36,12 +71,17 @@ class AuthMiddleware {
       },
     ],
   })
-  static async loginWithEmail(req: Request, res: Response) {
+  static async loginWithEmailOrPhone(req: Request, res: Response) {
     const data = req.body;
-    const result = await AuthModel.loginWithEmail(data.email, data.password);
+    let flag: boolean = false;
+    if (String(data.emailOrPhone).includes('@')) flag = true;
+    const result = await AuthModel.loginWithEmailOrPhone(
+      String(data.emailOrPhone).toLowerCase(),
+      data.password,
+      flag
+    );
     if (result.getCode() === HttpStatusCode.OK) {
       //Send the jwt in the response
-      res.setHeader('Authentication', 'Bearer ' + result.getData());
       res
         .status(result.getCode())
         .send({ message: result.getMessage(), token: result.getData() });
@@ -50,6 +90,26 @@ class AuthMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ChangePasswordRequest:
+   *    type: object
+   *    properties:
+   *     oldPassword:
+   *      type: string
+   *      description: old password of the user
+   *      example: 'abcABC213&'
+   *     newPassword:
+   *      type: string
+   *      description: new password of the user
+   *      example: 'abcABC213&'
+   *     confirmNewPassword:
+   *      type: string
+   *      description: confirm password of the user
+   *      example: 'abcABC213&'
+   * */
   @ControllerService({
     body: [
       {
@@ -74,14 +134,29 @@ class AuthMiddleware {
           return null;
         },
       },
+      {
+        name: 'confirmNewPassword',
+        type: String,
+        validator: (propName: string, value: string) => {
+          const pwdRegExp: RegExp =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
+          if (!pwdRegExp.test(value))
+            return `${propName} must constain 8 characters or longer, at least one lowercase, one uppercase, one number and one special character`;
+          return null;
+        },
+      },
     ],
   })
   static async changePassword(req: Request, res: Response) {
     //Get ID from JWT
-    const id = res.locals.jwtPayload.userId;
+    const id = res.locals.user;
 
     //Get parameters from the body
     const data = req.body;
+    if (data.oldPassword !== data.confirmNewPassword)
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Wrong confirm new password' });
 
     const result = await AuthModel.changePassword(
       id,
@@ -91,6 +166,26 @@ class AuthMiddleware {
     res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ForgotPasswordRequest:
+   *    type: object
+   *    properties:
+   *     oldPassword:
+   *      type: string
+   *      description: password of the user
+   *      example: 'abcABC213&'
+   *     newPassword:
+   *      type: string
+   *      description: password of the user
+   *      example: 'abcABfsdfC213&'
+   *     confirmNewPassword:
+   *      type: string
+   *      description: confirm password of the user
+   *      example: 'abcABfsdfC213&'
+   */
   @ControllerService({
     body: [
       {
@@ -107,20 +202,24 @@ class AuthMiddleware {
   })
   static async forgotPassword(req: Request, res: Response) {
     //Get parameters from the body
-    const data = req.body;
+    const email = req.body.email;
 
-    const user = await UserModel.getOneByEmail(data.email);
+    const user = await UserModel.getOneByEmail(String(email).toLowerCase());
     if (!user)
       res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Wrong email' });
     else {
       let tokenExpiration: Date = new Date();
-      tokenExpiration.setMinutes(5 + tokenExpiration.getMinutes());
+      tokenExpiration.setMinutes(10 + tokenExpiration.getMinutes());
 
       const otp: string = generateOtp(6);
 
       await AuthModel.postUserOtp(user, OtpEnum.FORGET, otp, tokenExpiration);
+      let name = '';
+      if (user.customer == null || user.customer.name == null)
+        name = 'Our Customer';
+      else name = user.customer.name;
 
-      const emailTemplate = resetPasswordTemplate(otp, user.customer.name);
+      const emailTemplate = resetPasswordTemplate(otp, name);
 
       const sendGmail = SendGmailMiddleware.getInstance();
       await sendGmail.createConnection();
@@ -133,7 +232,7 @@ class AuthMiddleware {
           html: emailTemplate.html,
         },
         function (err: any, success: any) {
-          if (err) res.status(HttpStatusCode.UNKNOW_ERROR).send({ err: err });
+          if (err) res.status(HttpStatusCode.UNKNOWN_ERROR).send({ err: err });
           else
             res.status(HttpStatusCode.OK).send({
               message:
@@ -144,6 +243,83 @@ class AuthMiddleware {
     }
   }
 
+  @ControllerService({
+    body: [
+      {
+        name: 'email',
+        type: String,
+        validator: (propName: string, value: string) => {
+          const emailRegExp: RegExp = /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+          if (!emailRegExp.test(value))
+            return `${propName} must be valid email`;
+          return null;
+        },
+      },
+    ],
+  })
+  static async sendGmailForVerifyingEmail(req: Request, res: Response) {
+    //Get email from the body
+    const email = req.body.email;
+    const user = await UserModel.getOneByEmail(String(email).toLowerCase());
+    if (!user)
+      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Invalid email' });
+    else {
+      let tokenExpiration: Date = new Date();
+      tokenExpiration.setMinutes(10 + tokenExpiration.getMinutes());
+
+      const otp: string = generateOtp(6);
+
+      await AuthModel.postUserOtp(
+        user,
+        OtpEnum.VERIFICATION,
+        otp,
+        tokenExpiration
+      );
+      let name = '';
+      if (user.customer == null || user.customer.name == null)
+        name = 'Our Customer';
+      else name = user.customer.name;
+
+      const emailTemplate = verifyEmail(otp, name);
+
+      const sendGmail = SendGmailMiddleware.getInstance();
+      await sendGmail.createConnection();
+      await sendGmail.sendMail(
+        {
+          from: config.SMTP_SENDER,
+          to: email,
+          subject: 'Verify Your Login Email',
+          text: 'Hello from ShopP',
+          html: emailTemplate.html,
+        },
+        function (err: any, success: any) {
+          if (err) res.status(HttpStatusCode.UNKNOWN_ERROR).send({ err: err });
+          else
+            res.status(HttpStatusCode.OK).send({
+              message:
+                'Verifying Email OTP was sent via your email successfully',
+            });
+        }
+      );
+    }
+  }
+
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   VerifyEmailRequest:
+   *    type: object
+   *    properties:
+   *     email:
+   *      type: string
+   *      description: email of the user
+   *      example: 'shopp123@gmail.com'
+   *     otp:
+   *      type: string
+   *      description: OTP from ShopP Email
+   *      example: '123456'
+   */
   @ControllerService({
     body: [
       {
@@ -167,21 +343,51 @@ class AuthMiddleware {
       },
     ],
   })
-  static async verifyForgotPassword(req: Request, res: Response) {
+  static async verifyEmail(req: Request, res: Response) {
     const data = req.body;
-    const user = await UserModel.getOneByEmail(data.email);
-    if (!user)
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Wrong email' });
+    const user = await UserModel.getOneByEmail(
+      String(data.email).toLowerCase()
+    );
+    if (user === false)
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Invalid email' });
     else {
       const result = await AuthModel.verifyOtp(
         user.id,
         data.otp,
-        OtpEnum.FORGET
+        OtpEnum.VERIFICATION
       );
-      res.status(result.getCode()).send({ message: result.getMessage() });
+      return res
+        .status(result.getCode())
+        .send({ message: result.getMessage() });
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ResetPasswordRequest:
+   *    type: object
+   *    properties:
+   *     email:
+   *      type: string
+   *      description: email of the user
+   *      example: 'shopp123@gmail.com'
+   *     otp:
+   *      type: string
+   *      description: OTP from ShopP Email
+   *      example: '123456'
+   *     password:
+   *      type: string
+   *      description: new password of the user
+   *      example: 'abcABfsdfC213&'
+   *     confirmPassword:
+   *      type: string
+   *      description: confirm new password of the user
+   *      example: 'abcABfsdfC213&'
+   */
   @ControllerService({
     body: [
       {
@@ -234,7 +440,9 @@ class AuthMiddleware {
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'Wrong confirm password' });
 
-    const user = await UserModel.getOneByEmail(data.email);
+    const user = await UserModel.getOneByEmail(
+      String(data.email).toLowerCase()
+    );
     if (!user)
       res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Wrong email' });
     else {
@@ -257,10 +465,10 @@ class AuthMiddleware {
   static async checkJwt(req: Request, res: Response, next: NextFunction) {
     //Get the jwt token from the head
     let token = <string>req.header('Authorization');
-    if (token == '')
-      res
+    if (token == undefined)
+      return res
         .status(HttpStatusCode.UNAUTHORIZATION)
-        .send({ message: 'Unauthorized error, Token is missing' });
+        .send({ message: 'Please Login to ShopP' });
     let jwtPayload;
     token = token?.replace('Bearer ', '');
     //Try to validate the token and get data
@@ -268,16 +476,15 @@ class AuthMiddleware {
       jwtPayload = <any>jwt.verify(token, config.JWT_SECRET);
       const user: User | false = await UserModel.getOneById(jwtPayload.userId);
       if (user === false) {
-        res
+        return res
           .status(HttpStatusCode.UNAUTHORIZATION)
-          .send({ message: 'Unauthorized error, User not exist!' });
+          .send({ message: 'Unauthorized: authentication required' });
       } else res.locals.user = user;
     } catch (error) {
       //If token is not valid, respond with 401 (unauthorized)
-      res
+      return res
         .status(HttpStatusCode.UNAUTHORIZATION)
-        .send({ message: 'Unauthorized error, token is invalid!' });
-      return;
+        .send({ message: 'Unauthorized: authentication required!' });
     }
 
     //The token is valid for 1 hour
@@ -286,10 +493,10 @@ class AuthMiddleware {
     const newToken = jwt.sign({ userId, email }, config.JWT_SECRET, {
       expiresIn: '1h',
     });
-    res.setHeader('Authentication', 'Bearer ' + newToken);
+    res.setHeader('Authorization', newToken);
 
     //Call the next middleware or controller
-    next();
+    return next();
   }
 }
 export default AuthMiddleware;

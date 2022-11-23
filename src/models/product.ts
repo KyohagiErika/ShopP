@@ -4,7 +4,10 @@ import { Shop } from '../entities/shop';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
-import { Like, MoreThanOrEqual } from 'typeorm';
+import { EntityManager, Like } from 'typeorm';
+import { LocalFile } from '../entities/localFile';
+import { ProductImage } from '../entities/productImage';
+import { ModelService } from '../utils/decorators';
 
 const productRepository = ShopPDataSource.getRepository(Product);
 
@@ -12,18 +15,23 @@ export default class ProductModel {
   static async listAll() {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
         id: true,
         name: true,
         detail: true,
         amount: true,
-        createdAt: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
+        status: true,
       },
       where: [
         {
@@ -38,17 +46,23 @@ export default class ProductModel {
   static async getOneById(id: string) {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
+        id: true,
         name: true,
         detail: true,
         amount: true,
-        createdAt: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
+        status: true,
       },
       where: [
         {
@@ -67,17 +81,23 @@ export default class ProductModel {
   static async searchByName(name: string) {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
+        id: true,
         name: true,
         detail: true,
         amount: true,
-        createdAt: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
+        status: true,
       },
       where: [
         {
@@ -96,17 +116,23 @@ export default class ProductModel {
   static async searchByCategory(categoryId: number) {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
+        id: true,
         name: true,
         detail: true,
         amount: true,
-        createdAt: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
+        status: true,
       },
       where: [
         {
@@ -125,19 +151,24 @@ export default class ProductModel {
   static async searchByCategoryName(name: string) {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
+        id: true,
         name: true,
         detail: true,
         amount: true,
-        createdAt: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
+        status: true,
       },
-
       where: [
         {
           category: { name: Like(`%${name}%`) },
@@ -152,28 +183,34 @@ export default class ProductModel {
     return product ? product : false;
   }
 
-  static async searchByShop(shop: string) {
+  static async searchByShop(shopId: string) {
     const product = await productRepository.find({
       relations: {
-        shop: true,
+        shop: {
+          avatar: true,
+        },
         category: true,
+        productImage: {
+          localFile: true,
+        },
       },
       select: {
+        id: true,
         name: true,
         detail: true,
         amount: true,
-        createdAt: true,
-        status: true,
+        quantity: true,
         sold: true,
         star: true,
+        status: true,
       },
       where: [
         {
-          shop: { id: shop },
+          shop: { id: shopId },
           status: ProductEnum.AVAILABLE,
         },
         {
-          shop: { id: shop },
+          shop: { id: shopId },
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],
@@ -181,51 +218,56 @@ export default class ProductModel {
     return product ? product : false;
   }
 
+  @ModelService()
   static async postNew(
-    shopId: string,
+    transactionalEntityManager: EntityManager,
+    shop: Shop,
     name: string,
     categoryId: number,
     detail: string,
     amount: number,
-    status: ProductEnum
-  ) {
-    const shopRepository = ShopPDataSource.getRepository(Shop);
-    const shop = await shopRepository.findOne({
-      select: {
-        id: true,
-      },
-      where: {
-        id: shopId,
-      },
-    });
-    const categoryRepository = ShopPDataSource.getRepository(Category);
-    const category = await categoryRepository.findOne({
-      select: {
-        id: true,
-      },
-      where: {
-        id: categoryId,
-      },
-    });
-    if (shop == null || category == null) {
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'shopId or categoryId not exist.'
-      );
+    quantity: number,
+    status: ProductEnum,
+    localFiles: LocalFile[]
+  ): Promise<Response> {
+    const category = await transactionalEntityManager
+      .getRepository(Category)
+      .findOne({
+        where: {
+          id: categoryId,
+        },
+      });
+    if (category == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Category not exist.');
     } else {
       let product = new Product();
+      var productImages = new Array<ProductImage>();
+      var productImage;
       product.shop = shop;
       product.name = name;
       product.category = category;
       product.detail = detail;
       product.amount = amount;
+      product.quantity = quantity;
       product.status = status;
 
-      await productRepository.save(product);
+      const productEntity = await transactionalEntityManager
+        .getRepository(Product)
+        .save(product);
 
+      localFiles.forEach(localFile => {
+        productImage = new ProductImage();
+        productImage.localFile = localFile;
+        productImage.product = productEntity;
+        productImages.push(productImage);
+      });
+
+      transactionalEntityManager
+        .getRepository(ProductImage)
+        .save(productImages);
       return new Response(
         HttpStatusCode.CREATED,
-        'Create new shop successfully!',
+        'Create new product successfully!',
         product
       );
     }
@@ -237,33 +279,25 @@ export default class ProductModel {
     categoryId: number,
     detail: string,
     amount: number,
+    quantity: number,
     status: ProductEnum
   ) {
     const categoryRepository = ShopPDataSource.getRepository(Category);
     const category = await categoryRepository.findOne({
-      select: {
-        id: true,
-      },
       where: {
         id: categoryId,
       },
     });
     if (category == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'categoryId not exist.');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'category not exist.');
     }
     const product = await productRepository.findOne({
-      relations: {
-        shop: true,
-      },
-      select: {
-        id: true,
-      },
       where: {
         id: id,
       },
     });
     if (product == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Id not exist.');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'product not exist.');
     } else {
       const productEdit = await productRepository.update(
         { id: id },
@@ -272,6 +306,7 @@ export default class ProductModel {
           category: category,
           detail: detail,
           amount: amount,
+          quantity: quantity,
           status: status,
         }
       );
@@ -299,8 +334,8 @@ export default class ProductModel {
     const result = await productRepository.update(
       {
         id: productId,
-        status: ProductEnum.AVAILABLE || ProductEnum.OUT_OF_ORDER,
       },
+
       { status: ProductEnum.DELETED }
     );
     if (result.affected == 1) {

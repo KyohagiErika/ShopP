@@ -3,6 +3,7 @@ import { User } from '../entities/user';
 import { UserRole } from '../entities/userRole';
 import { StatusEnum, RoleEnum, HttpStatusCode } from '../utils/shopp.enum';
 import Response from '../utils/response';
+import { In, LessThan } from 'typeorm';
 
 const userRepository = ShopPDataSource.getRepository(User);
 const userRoleRepository = ShopPDataSource.getRepository(UserRole);
@@ -12,15 +13,17 @@ export default class UserModel {
     const users = await userRepository.find({
       relations: {
         role: true,
-        customer: true,
+        customer: {
+          avatar: true,
+        },
+        shop: {
+          avatar: true,
+        },
       },
       select: {
         id: true,
         email: true,
         phone: true,
-        role: {
-          role: true,
-        },
       },
       where: {
         status: StatusEnum.ACTIVE,
@@ -33,8 +36,12 @@ export default class UserModel {
     const user = await userRepository.findOne({
       relations: {
         role: true,
-        shop: true,
-        customer: true,
+        shop: {
+          avatar: true,
+        },
+        customer: {
+          avatar: true,
+        },
       },
       select: {
         id: true,
@@ -52,15 +59,16 @@ export default class UserModel {
   static async getOneByEmail(userEmail: string) {
     const user = await userRepository.findOne({
       relations: {
+        role: true,
+        shop: {
+          avatar: true,
+        },
         customer: true,
       },
       select: {
         id: true,
         email: true,
         phone: true,
-        customer: {
-          name: true,
-        },
       },
       where: {
         email: userEmail,
@@ -106,11 +114,11 @@ export default class UserModel {
     await userRepository.save(user);
     await userRoleRepository.save({ role: role, user: user });
 
-    return new Response(
-      HttpStatusCode.CREATED,
-      'Create new user successfully!',
-      user
-    );
+    return new Response(HttpStatusCode.OK, 'Create new user successfully!', {
+      id: user.id,
+      email: user.email,
+      phone: user.phone,
+    });
   }
 
   static async edit(id: number, email: string, phone: string) {
@@ -180,6 +188,37 @@ export default class UserModel {
       return new Response(HttpStatusCode.OK, 'Delete user successfully!');
     } else {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Delete user failed!');
+    }
+  }
+
+  static async ban(userId: number) {
+    const user: User | null = await userRepository.findOne({
+      relations: {
+        role: true,
+      },
+      where: {
+        id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    if (user == null || user.role.role == RoleEnum.ADMIN) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'User not exist.');
+    }
+
+    const result = await userRepository.update(
+      {
+        id: userId,
+        status: StatusEnum.ACTIVE,
+      },
+      { status: StatusEnum.LOCKED, lockedAt: new Date() }
+    );
+    if (result.affected == 1) {
+      return new Response(
+        HttpStatusCode.OK,
+        'User has been banned successfully!'
+      );
+    } else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Ban user failed!');
     }
   }
 }

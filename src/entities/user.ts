@@ -1,3 +1,4 @@
+import { Voucher } from './voucher';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -14,6 +15,45 @@ import { StatusEnum } from '../utils/shopp.enum';
 import { Shop } from './shop';
 import { Event } from './event';
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   UserResponse:
+ *    type: object
+ *    properties:
+ *     id:
+ *      type: integer
+ *      format: int32
+ *      description: id of the user
+ *      example: '1'
+ *     email:
+ *      type: string
+ *      description: email of the user
+ *      example: 'shopp123@gmail.com'
+ *     phone:
+ *      type: string
+ *      description: phone of the user
+ *      example: '0987654321'
+ *     role:
+ *      type: object
+ *      description: role of the user
+ *     shop:
+ *      type: object
+ *      description: shop information of the user
+ *     customer:
+ *      type: object
+ *      description: customer information of the user
+ */
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   UserListResponse:
+ *    type: array
+ *    items:
+ *     $ref: '#/components/schemas/UserResponse'
+ */
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -53,6 +93,9 @@ export class User {
 
   @OneToMany(() => Event, event => event.createdBy)
   event: Event[];
+
+  @OneToMany(() => Voucher, voucher => voucher.createdBy)
+  voucher: Voucher[];
 
   hashPassword() {
     this.password = bcrypt.hashSync(this.password, 8);

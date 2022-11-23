@@ -1,23 +1,23 @@
-import { Shop } from './../entities/shop';
+import { productsInCart } from './../interfaces/cart';
+import { Product } from './../entities/product';
 import Response from '../utils/response';
 import { StatusEnum, HttpStatusCode } from './../utils/shopp.enum';
 import { Customer } from './../entities/customer';
 import { ShopPDataSource } from './../data';
 import { Cart } from '../entities/cart';
+import { User } from '../entities/user';
 
 export default class CartModel {
-  static async showCart(id: number) {
+  static async showCart(user: User) {
     const cartRepository = ShopPDataSource.getRepository(Cart);
-    // const customerRepository = ShopPDataSource.getRepository(Customer)
-    // const checkExistCartOfCustomer = customerRepository.findOne()
-
     const cart = await cartRepository.findOne({
       where: {
-        id,
-        customer: { user: { status: StatusEnum.ACTIVE } },
+        customer: { 
+          user: { status: StatusEnum.ACTIVE },
+          id: user.customer.id
+        },
       },
     });
-
     if (cart == null) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
@@ -27,35 +27,32 @@ export default class CartModel {
     return new Response(HttpStatusCode.OK, 'Show Cart successfully', cart);
   }
 
-  static async postNew(customerId: string, products: object) {
+  static async update(user: User, products: string) {
     const cartRepository = ShopPDataSource.getRepository(Cart);
-    const customerRepository = ShopPDataSource.getRepository(Customer);
-
-    const customer = await customerRepository.findOne({
-      relations: {
-        cart: true,
-      },
+    const cart = await cartRepository.findOne({
       where: {
-        id: customerId,
+        customer: {
+          user: { status: StatusEnum.ACTIVE },
+          id: user.customer.id,
+        },
       },
     });
-
-    if (customer == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, `Customer doesnt exist`);
+    if (cart == null) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        `This Cart doesn't exist`
+      );
     }
-    if (customer.cart !== null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, `Cart existed`);
-    }
-
-    const cart = await cartRepository.save({
-      products,
-      customer: customer,
-    });
-
-    return new Response(
-      HttpStatusCode.CREATED,
-      'Create Cart successfully',
-      cart
+    const result = await cartRepository.update(
+      {
+        id: cart.id,
+      },
+      {
+        products,
+      }
     );
+    if (result.affected == 0)
+      return new Response(HttpStatusCode.BAD_REQUEST, `Update cart failed!!`);
+    return new Response(HttpStatusCode.OK, `Update cart successfully!!`);
   }
 }

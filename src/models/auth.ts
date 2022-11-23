@@ -10,22 +10,33 @@ const userRepository = ShopPDataSource.getRepository(User);
 const UserOtpRepository = ShopPDataSource.getRepository(UserOtp);
 
 export default class AuthModel {
-  static async loginWithEmail(email: string, password: string) {
+  static async loginWithEmailOrPhone(
+    emailOrPhone: string,
+    password: string,
+    flag: boolean
+  ) {
     //Get user from database
-    const user: User | null = await userRepository.findOne({
-      where: {
-        email: email,
-        status: StatusEnum.ACTIVE,
-      },
-    });
+    var user: User | null = new User();
+    if (flag == true) {
+      user = await userRepository.findOne({
+        where: {
+          email: emailOrPhone,
+          status: StatusEnum.ACTIVE,
+        },
+      });
+    } else {
+      user = await userRepository.findOne({
+        where: {
+          phone: emailOrPhone,
+          status: StatusEnum.ACTIVE,
+        },
+      });
+    }
 
     if (user !== null) {
       //Check if encrypted password match
       if (!user.checkIfUnencryptedPasswordIsValid(password)) {
-        return new Response(
-          HttpStatusCode.UNAUTHORIZATION,
-          'Wrong login password'
-        );
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Wrong login password');
       }
       //Sign JWT, valid for 1 hour
       const token = jwt.sign(
@@ -35,7 +46,10 @@ export default class AuthModel {
       );
       return new Response(HttpStatusCode.OK, 'Login successfully', token);
     } else
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Wrong login email!');
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Email or Phone is wrong!'
+      );
   }
 
   static async changePassword(
@@ -51,11 +65,11 @@ export default class AuthModel {
       },
     });
     if (user !== null) {
-      //Check if old password matchs
+      //Check if old password matches
       if (!user.checkIfUnencryptedPasswordIsValid(oldPassword)) {
         return new Response(HttpStatusCode.BAD_REQUEST, 'Wrong password!');
       }
-      //Validate the model (password lenght)
+      //Validate the model (password length)
       user.password = newPassword;
       //Hash the new password and save
       user.hashPassword();
@@ -77,7 +91,6 @@ export default class AuthModel {
       },
     });
     if (user !== null) {
-      //Validate the model (password lenght)
       user.password = password;
       //Hash the new password and save
       user.hashPassword();
@@ -182,8 +195,8 @@ export default class AuthModel {
       if (existOtp.otpExpiration > currentDate) {
         return new Response(HttpStatusCode.OK, 'Verify OTP successfully!');
       }
-      await AuthModel.deleteUserOtp(userId, OtpEnum.FORGET, otp);
-      return new Response(HttpStatusCode.UNAUTHORIZATION, 'OTP was expired!');
+      await AuthModel.deleteUserOtp(userId, type, otp);
+      return new Response(HttpStatusCode.BAD_REQUEST, 'OTP was expired!');
     } else {
       return new Response(HttpStatusCode.BAD_REQUEST, 'OTP was not right!');
     }

@@ -1,8 +1,6 @@
 import {
   Entity,
-  PrimaryColumn,
   Column,
-  CreateDateColumn,
   OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
@@ -16,9 +14,9 @@ export class Cart {
   id: number;
 
   @Column({
-    type: 'json',
+    nullable: true,
   })
-  products: object;
+  products: string;
 
   @OneToOne(() => Customer, customer => customer.cart)
   @JoinColumn()

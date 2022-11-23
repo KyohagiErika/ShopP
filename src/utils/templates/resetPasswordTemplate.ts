@@ -133,8 +133,8 @@ const resetPassword = function (otp: string, firstName: string) {
                       </table>
                       <p style="margin: 0 0 16px;">
                         Have additional questions or need direct assistance? <br /> Contact our team at 
-                        <a href="shopp123@gmail.com" class="hover-underline"
-                          style="--text-opacity: 1; color: #7367f0; text-decoration: none;">shopp123@gmail.com</a>.
+                        <a href="shopp.ts.app@gmail.com" class="hover-underline"
+                          style="--text-opacity: 1; color: #7367f0; text-decoration: none;">shopp.ts.app@gmail.com</a>.
                       </p>
                     </td>
                   </tr>
@@ -156,10 +156,10 @@ const resetPassword = function (otp: string, firstName: string) {
 
 </html>`;
   const text = `
-        Reset Password, You recently requested to reset your password for your node-typescript-boilerplate account. Copy and paste it for reset password:
+        Reset Password, You recently requested to reset your password for your ShopP account. Copy and paste it for reset password:
         ${otp}
 
-If you did not requested a password reset, please ignore this email or reply to let us know. This password reset is only valid for the next 2 hours.`;
+If you did not requested a password reset, please ignore this email or reply to let us know. This password reset is only valid for the next 10 minutes.`;
   return {
     html: html,
     text: text,

@@ -1,8 +1,6 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
-  OneToMany,
   ManyToOne,
   OneToOne,
   JoinColumn,
@@ -20,6 +18,6 @@ export class ProductImage {
   @JoinColumn()
   localFile: LocalFile;
 
-  @ManyToOne(() => Product, product => product.id)
+  @ManyToOne(() => Product, product => product.productImage)
   product: Product;
 }
