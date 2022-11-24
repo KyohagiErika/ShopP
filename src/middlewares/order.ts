@@ -29,6 +29,57 @@ export default class OrderMiddleware {
     }
   }
 
+  static async viewOrderDeliverForCus(req: Request, res: Response) {
+    const customer: Customer = res.locals.user.customer;
+    if (customer == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find customer !' });
+    }
+    const result = await orderModel.viewOrderDeliverForCus(customer);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
+  static async viewHistoryForCus(req: Request, res: Response) {
+    const customer: Customer = res.locals.user.customer;
+    if (customer == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find customer !' });
+    }
+    const result = await orderModel.viewHistoryForCus(customer);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
+  static async viewCancelOrderForCus(req: Request, res: Response) {
+    const customer: Customer = res.locals.user.customer;
+    if (customer == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find customer !' });
+    }
+    const result = await orderModel.viewCancelOrderForCus(customer);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
   static async viewOrderForShop(req: Request, res: Response) {
     const shop: Shop = res.locals.user.shop;
     if (shop == null) {
@@ -37,6 +88,57 @@ export default class OrderMiddleware {
         .send({ message: 'Can not find shop !' });
     }
     const result = await orderModel.viewOrderForShop(shop);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
+  static async viewConfirmOrderForShop(req: Request, res: Response) {
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
+    const result = await orderModel.viewConfirmOrderForShop(shop);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
+  static async viewOrderDeliverForShop(req: Request, res: Response) {
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
+    const result = await orderModel.viewOrderDeliverForShop(shop);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
+  static async viewHistoryForShop(req: Request, res: Response) {
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
+    const result = await orderModel.viewHistoryForShop(shop);
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
     } else {

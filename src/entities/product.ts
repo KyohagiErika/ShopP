@@ -119,14 +119,13 @@ export class Product {
 
   @OneToMany(
     () => ProductAdditionalInfo,
-    productAdditionalInfo => productAdditionalInfo.id
+    productAdditionalInfo => productAdditionalInfo.product
   )
-  @JoinColumn()
   productAdditionalInfo: ProductAdditionalInfo[];
 
   @OneToOne(
     () => PackagedProductSize,
-    packagedProductSize => packagedProductSize.id
+    packagedProductSize => packagedProductSize.product
   )
   packagedProductSize: PackagedProductSize;
 

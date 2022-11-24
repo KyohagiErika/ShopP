@@ -54,11 +54,11 @@ export enum StatusReportEnum {
 }
 
 export enum DeliveryStatusEnum {
-  CHECKING = 0,
-  CONFIRMED = 1,
-  PACKAGING = 2,
-  DELIVERING = 3,
-  DELIVERED = 4,
-  CANCELLED = 5,
-  RETURNED = 6,
+  CHECKING = '0',
+  CONFIRMED = '1',
+  PACKAGING = '2',
+  DELIVERING = '3',
+  DELIVERED = '4',
+  CANCELLED = '5',
+  RETURNED = '6',
 }

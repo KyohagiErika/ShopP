@@ -13,7 +13,6 @@ import {
   HttpStatusCode,
   StatusEnum,
 } from '../utils/shopp.enum';
-import { In } from 'typeorm';
 import { OrderRequest } from '../interfaces/order';
 
 const orderReposity = ShopPDataSource.getRepository(Order);
@@ -22,7 +21,6 @@ const paymentReposity = ShopPDataSource.getRepository(Payment);
 const shoppingUnitReposity = ShopPDataSource.getRepository(ShoppingUnit);
 const voucherReposity = ShopPDataSource.getRepository(Voucher);
 const productRepository = ShopPDataSource.getRepository(Product);
-const orderProductRepository = ShopPDataSource.getRepository(OrderProduct);
 
 export default class orderModel {
   static async viewOrderForCustomer(customer: Customer) {
@@ -55,45 +53,6 @@ export default class orderModel {
   }
 
   static async viewOrderForShop(shop: Shop) {
-    const findOrderProduct = await orderProductRepository.find({
-      relations: {
-        product: { shop: true },
-        orderNumber: true,
-      },
-      select: {
-        id: true,
-      },
-      where: {
-        product: { shop: { id: shop.id } },
-      },
-    });
-    //return findOrderProduct ? findOrderProduct : false;
-    const length = findOrderProduct.length;
-    let order: Order[] = [];
-    for (let i = 0; i < length; i++) {
-      let findOrder = await orderReposity.findOne({
-        relations: {
-          payment: true,
-          shoppingUnit: true,
-          voucher: true,
-          customer: true,
-          orderProducts: true,
-        },
-        where: {
-          // id: In([...findOrderProduct]),
-          orderProducts: { id: findOrderProduct[i].id },
-          status: StatusEnum.ACTIVE,
-          deliveryStatus: DeliveryStatusEnum.CHECKING,
-        },
-      });
-      if (findOrder != null) {
-        order.push(findOrder);
-      }
-    }
-    return order ? order : false;
-  }
-
-  static async viewOrderDeliver() {
     const order = await orderReposity.find({
       relations: {
         payment: true,
@@ -101,30 +60,53 @@ export default class orderModel {
         voucher: true,
         customer: true,
       },
-      select: {
-        id: true,
-        createdAt: true,
-        deliveryStatus: true,
-        address: true,
-        customer: {
-          name: true,
-        },
-        payment: {
-          name: true,
-        },
-        estimateDeliveryTime: true,
-        shoppingUnit: {
-          name: true,
-        },
-        totalBill: true,
-        transportFee: true,
-        voucher: {
-          title: true,
-        },
-        totalPayment: true,
-        status: true,
+      where:
+      {
+        shop: { id: shop.id },
+        status: StatusEnum.ACTIVE,
+        deliveryStatus: DeliveryStatusEnum.CHECKING,
       },
+
+    });
+    return order ? order : false;
+  }
+
+  static async viewConfirmOrderForShop(shop: Shop) {
+    const order = await orderReposity.find({
+      relations: {
+        payment: true,
+        shoppingUnit: true,
+        voucher: true,
+        customer: true,
+      },
+      where: [
+
+        {
+          shop: { id: shop.id },
+          status: StatusEnum.ACTIVE,
+          deliveryStatus: DeliveryStatusEnum.CONFIRMED,
+        },
+        {
+          shop: { id: shop.id },
+          status: StatusEnum.ACTIVE,
+          deliveryStatus: DeliveryStatusEnum.PACKAGING,
+        },
+      ],
+    });
+    return order ? order : false;
+  }
+
+  static async viewOrderDeliverForCus(customer: Customer) {
+    const order = await orderReposity.find({
+      relations: {
+        payment: true,
+        shoppingUnit: true,
+        voucher: true,
+        customer: true,
+      },
+
       where: {
+        customer: { id: customer.id },
         status: StatusEnum.ACTIVE,
         deliveryStatus: DeliveryStatusEnum.DELIVERING,
       },
@@ -132,7 +114,7 @@ export default class orderModel {
     return order ? order : false;
   }
 
-  static async viewHistory() {
+  static async viewOrderDeliverForShop(shop: Shop) {
     const order = await orderReposity.find({
       relations: {
         payment: true,
@@ -140,30 +122,26 @@ export default class orderModel {
         voucher: true,
         customer: true,
       },
-      select: {
-        id: true,
-        createdAt: true,
-        deliveryStatus: true,
-        address: true,
-        customer: {
-          name: true,
-        },
-        payment: {
-          name: true,
-        },
-        estimateDeliveryTime: true,
-        shoppingUnit: {
-          name: true,
-        },
-        totalBill: true,
-        transportFee: true,
-        voucher: {
-          title: true,
-        },
-        totalPayment: true,
-        status: true,
+
+      where: {
+        shop: { id: shop.id },
+        status: StatusEnum.ACTIVE,
+        deliveryStatus: DeliveryStatusEnum.DELIVERING,
+      },
+    });
+    return order ? order : false;
+  }
+
+  static async viewHistoryForCus(customer: Customer) {
+    const order = await orderReposity.find({
+      relations: {
+        payment: true,
+        shoppingUnit: true,
+        voucher: true,
+        customer: true,
       },
       where: {
+        customer: { id: customer.id },
         status: StatusEnum.INACTIVE,
         deliveryStatus: DeliveryStatusEnum.DELIVERED,
       },
@@ -171,7 +149,7 @@ export default class orderModel {
     return order ? order : false;
   }
 
-  static async viewCancelOrder() {
+  static async viewHistoryForShop(shop: Shop) {
     const order = await orderReposity.find({
       relations: {
         payment: true,
@@ -179,30 +157,27 @@ export default class orderModel {
         voucher: true,
         customer: true,
       },
-      select: {
-        id: true,
-        createdAt: true,
-        deliveryStatus: true,
-        address: true,
-        customer: {
-          name: true,
-        },
-        payment: {
-          name: true,
-        },
-        estimateDeliveryTime: true,
-        shoppingUnit: {
-          name: true,
-        },
-        totalBill: true,
-        transportFee: true,
-        voucher: {
-          title: true,
-        },
-        totalPayment: true,
-        status: true,
-      },
       where: {
+        shop: { id: shop.id },
+        status: StatusEnum.INACTIVE,
+        deliveryStatus: DeliveryStatusEnum.DELIVERED,
+      },
+    });
+    return order ? order : false;
+  }
+
+
+  static async viewCancelOrderForCus(customer: Customer) {
+    const order = await orderReposity.find({
+      relations: {
+        payment: true,
+        shoppingUnit: true,
+        voucher: true,
+        customer: true,
+      },
+
+      where: {
+        customer: { id: customer.id },
         status: StatusEnum.INACTIVE,
         deliveryStatus: DeliveryStatusEnum.CANCELLED,
       },

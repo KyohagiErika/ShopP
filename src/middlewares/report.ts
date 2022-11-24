@@ -11,8 +11,8 @@ import {
 
 export default class ReportMiddleware {
   @ControllerService()
-  static async listAll(req: Request, res: Response) {
-    const result = await ReportModel.listAll();
+  static async listAllReportInProcess(req: Request, res: Response) {
+    const result = await ReportModel.listAllReportInProcess();
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
     } else {
@@ -23,9 +23,8 @@ export default class ReportMiddleware {
   }
 
   @ControllerService()
-  static async getOneById(req: Request, res: Response) {
-    const id = +req.params.id;
-    const result = await ReportModel.getOneById(id);
+  static async listAllReportProcessed(req: Request, res: Response) {
+    const result = await ReportModel.listAllReportProcessed();
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
     } else {

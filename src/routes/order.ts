@@ -13,9 +13,45 @@ routes.get(
 );
 
 routes.get(
+  '/view-order-deliver-for-customer',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  OrderMiddleware.viewOrderDeliverForCus
+);
+
+routes.get(
+  '/view-history-for-customer',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  OrderMiddleware.viewHistoryForCus
+);
+
+routes.get(
+  '/view-cancel-order-for-customer',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  OrderMiddleware.viewCancelOrderForCus
+);
+
+routes.get(
   '/view-order-for-shopp',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   OrderMiddleware.viewOrderForShop
+);
+
+routes.get(
+  '/view-confirm-order-for-shopp',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  OrderMiddleware.viewConfirmOrderForShop
+);
+
+routes.get(
+  '/view-deliver-order-for-shopp',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  OrderMiddleware.viewOrderDeliverForShop
+);
+
+routes.get(
+  '/view-history-for-shopp',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  OrderMiddleware.viewHistoryForShop
 );
 
 routes.post('/new', [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)], OrderMiddleware.postNew);

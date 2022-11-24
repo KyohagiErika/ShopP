@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Shop } from '../entities/shop';
 import ProductAdditionInfoModel from '../models/productAdditionalInfo';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
@@ -77,10 +78,12 @@ export default class ProductAddInfoMiddleware {
   static async postNew(req: Request, res: Response) {
     const data = req.body;
     const productId = req.params.productId;
+    const shop: Shop = res.locals.user.shop;
     const result = await ProductAdditionInfoModel.postNew(
       productId,
       data.key,
-      data.value
+      data.value,
+      shop.id
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
@@ -112,10 +115,12 @@ export default class ProductAddInfoMiddleware {
   static async edit(req: Request, res: Response) {
     const data = req.body;
     const id = +req.params.id;
+    const shop: Shop = res.locals.user.shop;
     const result = await ProductAdditionInfoModel.edit(
       id,
       data.key,
-      data.value
+      data.value,
+      shop.id
     );
     if (result.getCode() === HttpStatusCode.OK) {
       res
