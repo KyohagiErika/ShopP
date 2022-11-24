@@ -19,7 +19,7 @@ export class OrderProduct {
   @Column()
   additionalInfo: string;
 
-  @ManyToOne(() => Order, orderNumber => orderNumber.orderProducts)
+  @ManyToOne((type) => Order, orderNumber => orderNumber.orderProducts)
   orderNumber: Order;
 
   @Column()
