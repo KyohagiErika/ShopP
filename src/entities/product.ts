@@ -8,7 +8,6 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-
 import { ProductEnum } from '../utils/shopp.enum';
 import { Category } from './category';
 import { OrderProduct } from './orderProduct';

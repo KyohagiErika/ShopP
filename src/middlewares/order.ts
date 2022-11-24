@@ -1,4 +1,3 @@
-import { validate } from 'class-validator';
 import { Request, Response } from 'express';
 import { Customer } from '../entities/customer';
 import { Shop } from '../entities/shop';
@@ -7,7 +6,6 @@ import { ControllerService } from '../utils/decorators';
 import {
   DeliveryStatusEnum,
   HttpStatusCode,
-  StatusEnum,
 } from '../utils/shopp.enum';
 
 export default class OrderMiddleware {
@@ -173,7 +171,7 @@ export default class OrderMiddleware {
       data.address.toString(),
       data.paymentId,
       data.orders,
-      customer,
+      customer
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res

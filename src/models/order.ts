@@ -60,13 +60,11 @@ export default class orderModel {
         voucher: true,
         customer: true,
       },
-      where:
-      {
+      where: {
         shop: { id: shop.id },
         status: StatusEnum.ACTIVE,
         deliveryStatus: DeliveryStatusEnum.CHECKING,
       },
-
     });
     return order ? order : false;
   }
@@ -80,7 +78,6 @@ export default class orderModel {
         customer: true,
       },
       where: [
-
         {
           shop: { id: shop.id },
           status: StatusEnum.ACTIVE,
@@ -165,7 +162,6 @@ export default class orderModel {
     });
     return order ? order : false;
   }
-
 
   static async viewCancelOrderForCus(customer: Customer) {
     const order = await orderReposity.find({

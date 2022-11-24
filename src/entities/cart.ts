@@ -5,7 +5,6 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
 } from 'typeorm';
-
 import { Customer } from './customer';
 
 @Entity()

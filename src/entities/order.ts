@@ -2,19 +2,16 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DeliveryStatusEnum, StatusEnum } from '../utils/shopp.enum';
 import { Customer } from './customer';
 import { OrderProduct } from './orderProduct';
 import { Payment } from './payment';
-import { Product } from './product';
 import { Shop } from './shop';
 import { ShoppingUnit } from './shoppingUnit';
 import { Voucher } from './voucher';
