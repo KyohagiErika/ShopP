@@ -1,3 +1,4 @@
+import { Product } from './product';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,6 +8,8 @@ import {
   OneToOne,
   ManyToOne,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 import { User } from './user';
@@ -62,4 +65,7 @@ export class Event {
     eventAdditionalInfo => eventAdditionalInfo.event
   )
   additionalInfo: EventAdditionalInfo[];
+
+  @ManyToMany(() => Product, product => product.events)
+  products: Product[];
 }

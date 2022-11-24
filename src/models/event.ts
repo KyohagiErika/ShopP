@@ -1,3 +1,6 @@
+import { productsInCart } from './../interfaces/cart';
+import { Product } from './../entities/product';
+import { Shop } from './../entities/shop';
 import { User } from './../entities/user';
 import { LocalFile } from './../entities/localFile';
 import { EventAdditionalInfo } from './../entities/eventAdditionalInfo';
@@ -6,7 +9,7 @@ import { Event } from './../entities/event';
 import { ShopPDataSource } from './../data';
 import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
-import { Like } from 'typeorm';
+import { ArrayContainedBy, ArrayContains, IsNull, Like, Not } from 'typeorm';
 
 export default class EventModel {
   static async listAdminEvents() {
@@ -299,6 +302,119 @@ export default class EventModel {
     if (result.affected != 0)
       return new Response(HttpStatusCode.OK, 'Edit Event successfully!');
     return new Response(HttpStatusCode.BAD_REQUEST, 'Edit Event failed!');
+  }
+
+  static async joinEvent(eventId: number, productIdList: string[], discount: number , user: User) {
+    if(user.role.role == RoleEnum.ADMIN || user.role.role == RoleEnum.CUSTOMER) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only shop can access!'
+      );
+    }
+    const eventRepository = ShopPDataSource.getRepository(Event);
+    const productRepository = ShopPDataSource.getRepository(Product)
+    let productListThatEligible: Product[] = [];
+    let productIdListThatNotExist: string[] = [];
+    const event = await eventRepository.findOne({
+      relations: {
+        products: true
+      },
+      where: {
+        id: eventId
+      }
+    })
+    if(!event) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Event not exist!'
+      );
+    }
+    const productListOfUserAlreadyInThisEvent = await productRepository.find({
+      relations: {
+        events: true,
+      },
+      where: {
+        events: ArrayContains([event]) && !IsNull(),
+        shop: { id: user.shop.id },
+      },
+    });
+    if(productListOfUserAlreadyInThisEvent.length == 0) console.log('oh no');
+    productListOfUserAlreadyInThisEvent.forEach(product => {
+      console.log(product.id);
+    })
+    let productIdListDuplicate : string[] = []
+    productListOfUserAlreadyInThisEvent.forEach(product => {
+      if(productIdList.includes(product.id))
+        productIdListDuplicate.push(product.id)
+    })
+    if(productIdListDuplicate.length != 0) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'The following products id you request have been already exist on this event: ', productIdListDuplicate);
+    }
+    else {
+      for(let i = 0; i < productIdList.length; i++) {
+        let product = await productRepository.findOne({
+          relations: {
+            events: true,
+          },
+          where: {
+            id: productIdList[i],
+          },
+        })
+        if (!product) productIdListThatNotExist.push(productIdList[i]);
+        else {
+          product.discount = +discount;
+          console.log(product.discount);
+          product.events.push(event)
+          productListThatEligible.push(product)
+          console.log("length of productListEligible is: " + productListThatEligible.length);
+          console.log(product.id);
+        }
+      }
+      if(productIdListThatNotExist.length != 0) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'The following products id you request that not exist:',
+          productIdListThatNotExist
+        );  
+      } else {
+        console.log(productListThatEligible.length);
+        console.log("oke meomeo");
+        for (let i = 0; i < productListThatEligible.length; i++) {
+          console.log('success');
+          console.log(productListThatEligible[i].discount);
+          
+          await productRepository.save(productListThatEligible[i]);
+        }
+        return new Response(
+          HttpStatusCode.OK,
+          'Register this event successfully!'
+        );
+      }
+    }
+  }
+
+  
+
+  static async showAllProductsOfEvent(eventId: number) {
+    const eventRepository = ShopPDataSource.getRepository(Event);
+    const event = await eventRepository.findOne({
+      relations: {
+        products: true
+      },
+      select: {
+        createdAt: false,
+        roleCreator: false
+      },
+      where: {
+        id: eventId
+      }
+    })
+    if(!event) return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
+    if(event.status == StatusEnum.INACTIVE || event.status == StatusEnum.LOCKED)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!')
+    if(event.products.length == 0)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'No products available!');
+    return new Response(HttpStatusCode.OK, 'Show products successfully!', event.products)
   }
 
   static async deleteEvent(id: number, user: User) {

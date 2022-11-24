@@ -183,6 +183,53 @@ export default class EventMiddleware {
   }
 
   @ControllerService()
+  static async showAllProductsOfEvent(req: Request, res: Response) {
+    const eventId = +req.params.eventId;
+    const result = await EventModel.showAllProductsOfEvent(eventId);
+    if (result.getCode() == HttpStatusCode.OK)
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+
+  @ControllerService({
+    body: [
+      {
+        name: 'discount',
+        // type: Number,
+        validator: (propName: string, value: string) => {
+          if (value.length == 0) return `${propName} must be filled in`;
+          if(!Number(value)) return `${propName} must be number`;
+          return null;
+        },
+      },
+      {
+        name: 'productIdList',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (value.length == 0) return `${propName} must be filled in`;
+          return null;
+        },
+      },
+    ],
+  })
+  static async joinEvent(req: Request, res: Response) {
+    const eventId = +req.params.eventId;
+    const discount = +req.body.discount;
+    const productIdList = req.body.productIdList.split(' ').join('').split(',');
+    const result = await EventModel.joinEvent(
+      eventId,
+      productIdList,
+      discount,
+      res.locals.user
+    );
+    res
+      .status(result.getCode())
+      .send({ message: result.getMessage(), data: result.getData() });
+  }
+
+  @ControllerService()
   static async deleteEvent(req: Request, res: Response) {
     const id = +req.params.id;
     const result = await EventModel.deleteEvent(id, res.locals.user);
