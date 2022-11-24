@@ -87,6 +87,11 @@ export default class PackagedProductSizeMiddleware {
     const data = req.body;
     const productId = req.params.productId;
     const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
     const result = await PackagedProductSizeModel.postNew(
       productId,
       data.weight,
@@ -134,6 +139,11 @@ export default class PackagedProductSizeMiddleware {
     const data = req.body;
     const id = +req.params.id;
     const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
     const result = await PackagedProductSizeModel.edit(
       id,
       data.weight,

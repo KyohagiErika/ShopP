@@ -79,6 +79,11 @@ export default class ProductAddInfoMiddleware {
     const data = req.body;
     const productId = req.params.productId;
     const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
     const result = await ProductAdditionInfoModel.postNew(
       productId,
       data.key,
@@ -116,6 +121,11 @@ export default class ProductAddInfoMiddleware {
     const data = req.body;
     const id = +req.params.id;
     const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
     const result = await ProductAdditionInfoModel.edit(
       id,
       data.key,
