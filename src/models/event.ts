@@ -304,117 +304,309 @@ export default class EventModel {
     return new Response(HttpStatusCode.BAD_REQUEST, 'Edit Event failed!');
   }
 
-  static async joinEvent(eventId: number, productIdList: string[], discount: number , user: User) {
-    if(user.role.role == RoleEnum.ADMIN || user.role.role == RoleEnum.CUSTOMER) {
+  static async joinEvent(
+    eventId: number,
+    productIdList: string[],
+    discount: number,
+    user: User
+  ) {
+    if (
+      user.role.role == RoleEnum.ADMIN ||
+      user.role.role == RoleEnum.CUSTOMER
+    ) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Unauthorized role. Only shop can access!'
       );
     }
     const eventRepository = ShopPDataSource.getRepository(Event);
-    const productRepository = ShopPDataSource.getRepository(Product)
+    const productRepository = ShopPDataSource.getRepository(Product);
     let productListThatEligible: Product[] = [];
     let productIdListThatNotExist: string[] = [];
+    let productIdListAlreadyExistInThisEvent: string[] = [];
+    let productIdListThatIsNotYours: string[] = [];
     const event = await eventRepository.findOne({
       relations: {
-        products: true
+        products: true,
       },
       where: {
-        id: eventId
-      }
-    })
-    if(!event) {
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Event not exist!'
-      );
-    }
-    const productListOfUserAlreadyInThisEvent = await productRepository.find({
-      relations: {
-        events: true,
-      },
-      where: {
-        events: ArrayContains([event]) && !IsNull(),
-        shop: { id: user.shop.id },
+        id: eventId,
       },
     });
-    if(productListOfUserAlreadyInThisEvent.length == 0) console.log('oh no');
-    productListOfUserAlreadyInThisEvent.forEach(product => {
-      console.log(product.id);
-    })
-    let productIdListDuplicate : string[] = []
-    productListOfUserAlreadyInThisEvent.forEach(product => {
-      if(productIdList.includes(product.id))
-        productIdListDuplicate.push(product.id)
-    })
-    if(productIdListDuplicate.length != 0) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'The following products id you request have been already exist on this event: ', productIdListDuplicate);
+    if (!event) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
     }
-    else {
-      for(let i = 0; i < productIdList.length; i++) {
-        let product = await productRepository.findOne({
-          relations: {
-            events: true,
-          },
-          where: {
-            id: productIdList[i],
-          },
-        })
-        if (!product) productIdListThatNotExist.push(productIdList[i]);
-        else {
-          product.discount = +discount;
-          console.log(product.discount);
-          product.events.push(event)
-          productListThatEligible.push(product)
-          console.log("length of productListEligible is: " + productListThatEligible.length);
-          console.log(product.id);
-        }
+    if (
+      event.status == StatusEnum.INACTIVE ||
+      event.status == StatusEnum.LOCKED
+    )
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    for (let i = 0; i < productIdList.length; i++) {
+      const product = await productRepository.findOne({
+        relations: {
+          events: true,
+          shop: true,
+        },
+        where: {
+          id: productIdList[i],
+          // shop: { id: user.shop.id },
+        },
+      });
+      if (!product) {
+        productIdListThatNotExist.push(productIdList[i]);
+        continue;
       }
-      if(productIdListThatNotExist.length != 0) {
-        return new Response(
-          HttpStatusCode.BAD_REQUEST,
-          'The following products id you request that not exist:',
-          productIdListThatNotExist
-        );  
-      } else {
-        console.log(productListThatEligible.length);
-        console.log("oke meomeo");
-        for (let i = 0; i < productListThatEligible.length; i++) {
-          console.log('success');
-          console.log(productListThatEligible[i].discount);
-          
-          await productRepository.save(productListThatEligible[i]);
+      if (product.shop.id != user.shop.id) {
+        productIdListThatIsNotYours.push(product.id);
+        continue;
+      }
+      let eventIdListContainProduct: number[] = product.events.map(
+        eventItem => {
+          return eventItem.id;
         }
-        return new Response(
-          HttpStatusCode.OK,
-          'Register this event successfully!'
-        );
+      );
+      if (eventIdListContainProduct.includes(event.id))
+        productIdListAlreadyExistInThisEvent.push(product.id);
+      else {
+        product.discount = discount;
+        product.events.push(event);
+        productListThatEligible.push(product);
       }
     }
+    if (productIdListThatNotExist.length != 0)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'The following products id you request that not exist:',
+        productIdListThatNotExist
+      );
+    if (productIdListThatIsNotYours.length != 0)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'The following products id you request that are not yours:',
+        productIdListThatIsNotYours
+      );
+    if (productIdListAlreadyExistInThisEvent.length != 0)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'The following products id you request that already exist in this event:',
+        productIdListAlreadyExistInThisEvent
+      );
+    for (let i = 0; i < productListThatEligible.length; i++) {
+      await productRepository.save(productListThatEligible[i]);
+    }
+    return new Response(HttpStatusCode.OK, 'Register event successfully!');
   }
 
-  
+  static async editProductDiscountFromEvent(
+    eventId: number,
+    productIdList: string[],
+    discount: number,
+    user: User
+  ) {
+    if (
+      user.role.role == RoleEnum.ADMIN ||
+      user.role.role == RoleEnum.CUSTOMER
+    ) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only shop can access!'
+      );
+    }
+    const eventRepository = ShopPDataSource.getRepository(Event);
+    const productRepository = ShopPDataSource.getRepository(Product);
+    let productListThatEligible: Product[] = [];
+    let productIdListThatNotExist: string[] = [];
+    let productIdListNotExistInThisEvent: string[] = [];
+    let productIdListThatIsNotYours: string[] = [];
+    const event = await eventRepository.findOne({
+      relations: {
+        products: true,
+      },
+      where: {
+        id: eventId,
+      },
+    });
+    if (!event)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
+    if (
+      event.status == StatusEnum.INACTIVE ||
+      event.status == StatusEnum.LOCKED
+    )
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    for (let i = 0; i < productIdList.length; i++) {
+      const product = await productRepository.findOne({
+        relations: {
+          events: true,
+          shop: true,
+        },
+        where: {
+          id: productIdList[i],
+          // shop: { id: user.shop.id },
+        },
+      });
+      if (!product) {
+        productIdListThatNotExist.push(productIdList[i]);
+        continue;
+      }
+      if (product.shop.id != user.shop.id) {
+        productIdListThatIsNotYours.push(product.id);
+        continue;
+      }
+      let eventIdListContainProduct: number[] = product.events.map(
+        eventItem => {
+          return eventItem.id;
+        }
+      );
+      if (!eventIdListContainProduct.includes(event.id))
+        productIdListNotExistInThisEvent.push(product.id);
+      else {
+        product.discount = discount;
+        productListThatEligible.push(product);
+      }
+    }
+    if (productIdListThatNotExist.length != 0)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'The following products id you request that not exist:',
+        productIdListThatNotExist
+      );
+    if (productIdListThatIsNotYours.length != 0)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'The following products id you request that are not yours:',
+        productIdListThatIsNotYours
+      );
+    if (productIdListNotExistInThisEvent.length != 0)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'The following products id you request that not exist in this event:',
+        productIdListNotExistInThisEvent
+      );
+    for (let i = 0; i < productListThatEligible.length; i++) {
+      await productRepository.save(productListThatEligible[i]);
+    }
+    return new Response(HttpStatusCode.OK, 'Edit successfully!');
+  }
+
+  static async deleteProductsOfEvent(
+    eventId: number,
+    productIdList: string[],
+    user: User
+  ) {
+    if (
+      user.role.role == RoleEnum.ADMIN ||
+      user.role.role == RoleEnum.CUSTOMER
+    ) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only shop can access!'
+      );
+    }
+    const eventRepository = ShopPDataSource.getRepository(Event);
+    const productRepository = ShopPDataSource.getRepository(Product);
+    let productListThatEligible: Product[] = [];
+    let productIdListThatNotExist: string[] = [];
+    let productIdListNotExistInThisEvent: string[] = [];
+    let productIdListThatIsNotYours: string[] = [];
+    const event = await eventRepository.findOne({
+      relations: {
+        products: true,
+      },
+      where: {
+        id: eventId,
+      },
+    });
+    if (!event)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
+    if (
+      event.status == StatusEnum.INACTIVE ||
+      event.status == StatusEnum.LOCKED
+    )
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    for (let i = 0; i < productIdList.length; i++) {
+      const product = await productRepository.findOne({
+        relations: {
+          events: true,
+          shop: true,
+        },
+        where: {
+          id: productIdList[i],
+          // shop: { id: user.shop.id },
+        },
+      });
+      if (!product) {
+        productIdListThatNotExist.push(productIdList[i]);
+        continue;
+      }
+      if (product.shop.id != user.shop.id) {
+        productIdListThatIsNotYours.push(product.id);
+        continue;
+      }
+      let eventIdListContainProduct: number[] = product.events.map(
+        eventItem => {
+          return eventItem.id;
+        }
+      );
+      if (!eventIdListContainProduct.includes(event.id))
+        productIdListNotExistInThisEvent.push(product.id);
+      else {
+        productListThatEligible.push(product);
+      }
+    }
+    if (productIdListThatNotExist.length != 0)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'The following products id you request that not exist:',
+        productIdListThatNotExist
+      );
+    if (productIdListThatIsNotYours.length != 0)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'The following products id you request that are not yours:',
+        productIdListThatIsNotYours
+      );
+    if (productIdListNotExistInThisEvent.length != 0)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'The following products id you request that not exist in this event:',
+        productIdListNotExistInThisEvent
+      );
+    for (let i = 0; i < productListThatEligible.length; i++) {
+      productListThatEligible[i].events = productListThatEligible[
+        i
+      ].events.filter(eventItem => {
+        return eventItem.id != eventId;
+      });
+      productListThatEligible[i].discount = 0;
+      await productRepository.save(productListThatEligible[i]);
+    }
+    return new Response(HttpStatusCode.OK, 'Delete successfully!');
+  }
 
   static async showAllProductsOfEvent(eventId: number) {
     const eventRepository = ShopPDataSource.getRepository(Event);
     const event = await eventRepository.findOne({
       relations: {
-        products: true
-      },
-      select: {
-        createdAt: false,
-        roleCreator: false
+        products: true,
       },
       where: {
-        id: eventId
-      }
-    })
-    if(!event) return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
-    if(event.status == StatusEnum.INACTIVE || event.status == StatusEnum.LOCKED)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!')
-    if(event.products.length == 0)
+        id: eventId,
+      },
+    });
+    if (!event)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
+    if (
+      event.status == StatusEnum.INACTIVE ||
+      event.status == StatusEnum.LOCKED
+    )
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    if (event.products.length == 0)
       return new Response(HttpStatusCode.BAD_REQUEST, 'No products available!');
-    return new Response(HttpStatusCode.OK, 'Show products successfully!', event.products)
+    return new Response(
+      HttpStatusCode.OK,
+      'Show products successfully!',
+      event.products
+    );
   }
 
   static async deleteEvent(id: number, user: User) {

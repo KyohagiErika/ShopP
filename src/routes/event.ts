@@ -54,6 +54,20 @@ routes.post(
   EventMiddleware.joinEvent
 );
 
+// edit products discount of event
+routes.post(
+  '/edit-products-discount/:eventId([0-9]+)',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  EventMiddleware.editProductDiscountFromEvent
+);
+
+// delete products of event
+routes.post(
+  '/delete-products/:eventId([0-9]+)',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  EventMiddleware.deleteProductsOfEvent
+);
+
 // show products of event
 routes.get(
   '/show-products/:eventId([0-9]+)',

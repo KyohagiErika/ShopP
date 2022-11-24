@@ -200,7 +200,7 @@ export default class EventMiddleware {
         // type: Number,
         validator: (propName: string, value: string) => {
           if (value.length == 0) return `${propName} must be filled in`;
-          if(!Number(value)) return `${propName} must be number`;
+          if (!Number(value)) return `${propName} must be number`;
           return null;
         },
       },
@@ -224,6 +224,63 @@ export default class EventMiddleware {
       discount,
       res.locals.user
     );
+    res
+      .status(result.getCode())
+      .send({ message: result.getMessage(), data: result.getData() });
+  }
+
+  @ControllerService({
+    body: [
+      {
+        name: 'discount',
+        // type: Number,
+        validator: (propName: string, value: string) => {
+          if (value.length == 0) return `${propName} must be filled in`;
+          if (!Number(value)) return `${propName} must be number`;
+          return null;
+        },
+      },
+      {
+        name: 'productIdList',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (value.length == 0) return `${propName} must be filled in`;
+          return null;
+        },
+      },
+    ],
+  })
+  static async editProductDiscountFromEvent(req: Request, res: Response) {
+    const eventId = +req.params.eventId;
+    const discount = +req.body.discount;
+    const productIdList = req.body.productIdList.split(' ').join('').split(',');
+    const result = await EventModel.editProductDiscountFromEvent(
+      eventId,
+      productIdList,
+      discount,
+      res.locals.user
+    );
+    res
+      .status(result.getCode())
+      .send({ message: result.getMessage(), data: result.getData() });
+  }
+
+  @ControllerService({
+    body: [
+      {
+        name: 'productIdList',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (value.length == 0) return `${propName} must be filled in`;
+          return null;
+        },
+      },
+    ],
+  })
+  static async deleteProductsOfEvent(req: Request, res: Response) {
+    const eventId = +req.params.eventId;
+    const productIdList = req.body.productIdList.split(' ').join('').split(',');
+    const result = await EventModel.deleteProductsOfEvent(eventId, productIdList, res.locals.user)
     res
       .status(result.getCode())
       .send({ message: result.getMessage(), data: result.getData() });
