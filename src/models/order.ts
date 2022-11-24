@@ -14,7 +14,7 @@ import {
   StatusEnum,
 } from '../utils/shopp.enum';
 import { In } from 'typeorm';
-import { OrderRequest } from '../interfaces/orderRequest';
+import { OrderRequest } from '../interfaces/order';
 
 const orderReposity = ShopPDataSource.getRepository(Order);
 const shopReposity = ShopPDataSource.getRepository(Shop);
@@ -65,9 +65,8 @@ export default class orderModel {
       },
       where: {
         product: { shop: { id: shop.id } },
-
-      }
-    })
+      },
+    });
     //return findOrderProduct ? findOrderProduct : false;
     const length = findOrderProduct.length;
     let order: Order[] = [];
@@ -80,8 +79,7 @@ export default class orderModel {
           customer: true,
           orderProducts: true,
         },
-        where:
-        {
+        where: {
           // id: In([...findOrderProduct]),
           orderProducts: { id: findOrderProduct[i].id },
           status: StatusEnum.ACTIVE,
@@ -91,10 +89,8 @@ export default class orderModel {
       if (findOrder != null) {
         order.push(findOrder);
       }
-
     }
     return order ? order : false;
-
   }
 
   static async viewOrderDeliver() {
@@ -218,102 +214,111 @@ export default class orderModel {
     address: string,
     paymentId: number,
     orders: OrderRequest[],
-    customer: Customer,
+    customer: Customer
   ) {
-
+    //check payment
     const payment = await paymentReposity.findOne({
       where: {
         id: paymentId,
       },
     });
     if (payment == null) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'payment not exist.');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Payment not exist.');
     }
 
-    orders.forEach(async (order) => {
-
-
+    //For loop ORDER
+    const orderArr: Order[] = [];
+    for (let i = 0; i < orders.length; i++) {
+      let totalBill = orders[i].totalBill;
+      //check shopping unit
       const shoppingUnit = await shoppingUnitReposity.findOne({
         where: {
-          id: order.shoppingUnitId,
+          id: orders[i].shoppingUnitId,
         },
       });
       if (shoppingUnit == null) {
         return new Response(
           HttpStatusCode.BAD_REQUEST,
-          'shopping unit not exist.'
+          'Shopping unit not exist.'
         );
       }
+      //check valid shop
       const shop = await shopReposity.findOne({
         where: {
-          id: order.shopId,
+          id: orders[i].shopId,
         },
       });
       if (shop == null) {
-        return new Response(
-          HttpStatusCode.BAD_REQUEST,
-          'shop not exist.'
-        );
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Shop not exist.');
       }
-
-
-      let voucher = null;
       let findOrder = new Order();
-      if (order.voucherId == null) {
+
+      //check voucher
+      let voucher = null;
+      if (orders[i].voucherId == null) {
         voucher = null;
       } else {
         voucher = await voucherReposity.find({
           where: {
-            id: order.voucherId,
+            id: orders[i].voucherId,
           },
         });
         if (voucher == null) {
-          return new Response(HttpStatusCode.BAD_REQUEST, 'voucher not exist.');
+          return new Response(HttpStatusCode.BAD_REQUEST, 'Voucher not exist.');
         } else {
           (findOrder.deliveryStatus = DeliveryStatusEnum.CHECKING),
             (findOrder.address = address),
-            (findOrder.estimateDeliveryTime = order.estimateDeliveryTime),
+            (findOrder.estimateDeliveryTime = orders[i].estimateDeliveryTime),
             (findOrder.status = StatusEnum.ACTIVE),
-            (findOrder.totalBill = order.totalBill),
-            (findOrder.transportFee = order.transportFee),
-            (findOrder.totalPayment = parseInt(order.totalBill.toString()) + parseInt(order.transportFee.toString())),
+            (findOrder.totalBill = orders[i].totalBill),
+            (findOrder.transportFee = orders[i].transportFee),
+            (findOrder.totalPayment =
+              +orders[i].totalBill + +orders[i].transportFee),
             (findOrder.payment = payment),
             (findOrder.shoppingUnit = shoppingUnit),
             (findOrder.voucher = voucher),
             (findOrder.shop = shop),
             (findOrder.customer = customer);
-          const orderFinal = await orderReposity.save(findOrder);
-          order.orderProducts.forEach(async (orderProduct) => {
-            let orderProductEntity = new OrderProduct()
+
+          let orderProductArr: OrderProduct[] = [];
+          const orderProduct = orders[i].orderProducts;
+          //For loop ORDER PRODUCT
+          for (let j = 0; j < orderProduct.length; j++) {
+            let orderProductEntity = new OrderProduct();
             const product = await productRepository.findOne({
               where: {
-                id: orderProduct.productId,
+                id: orderProduct[j].productId,
               },
             });
             if (product == null) {
               return new Response(
                 HttpStatusCode.BAD_REQUEST,
-                'product not exist.'
+                'Product not exist.'
               );
+            } else {
+              (orderProductEntity.additionalInfo =
+                orderProduct[j].additionalInfo),
+                (orderProductEntity.price = orderProduct[j].price),
+                (orderProductEntity.quantity = orderProduct[j].quantity),
+                (orderProductEntity.product = product),
+                (totalBill -= orderProduct[j].price * orderProduct[j].quantity);
+              orderProductArr.push(orderProductEntity);
             }
-            orderProductEntity.additionalInfo = orderProduct.additionalInfo,
-              orderProductEntity.price = orderProduct.price,
-              orderProductEntity.quantity = orderProduct.quantity,
-              orderProductEntity.product = product,
-              orderProductEntity.orderNumber = orderFinal
-
-            return await orderProductRepository.save(orderProductEntity)
-
-          })
-
+          }
+          if (totalBill != 0) {
+            return new Response(HttpStatusCode.BAD_REQUEST, 'Invalid invoice.');
+          }
+          findOrder.orderProducts = orderProductArr;
+          orderArr.push(findOrder);
         }
       }
-      return;
-    })
+    }
+    const order: Order[] = await orderReposity.save(orderArr);
 
     return new Response(
       HttpStatusCode.CREATED,
       'Create new order successfully!',
+      order
     );
   }
 
@@ -323,12 +328,14 @@ export default class orderModel {
   ) {
     const order = await orderReposity.findOne({
       where: {
-        id: id
-      }
-    })
+        id: id,
+      },
+    });
     if (order != null && deliveryStatus <= order.deliveryStatus) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Cannot change status backward')
-
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Cannot change status backward'
+      );
     } else {
       if (deliveryStatus == DeliveryStatusEnum.DELIVERED) {
         const order = await orderReposity.update(

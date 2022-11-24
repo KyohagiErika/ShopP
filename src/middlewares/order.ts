@@ -52,14 +52,10 @@ export default class OrderMiddleware {
         name: 'address',
         type: String,
       },
-
-
       {
         name: 'paymentId',
         type: String,
       },
-
-
     ],
   })
   static async postNew(req: Request, res: Response) {

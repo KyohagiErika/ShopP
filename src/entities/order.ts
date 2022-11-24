@@ -72,6 +72,8 @@ export class Order {
   @ManyToOne(() => Customer, customer => customer.id)
   customer: Customer;
 
-  @OneToMany(() => OrderProduct, orderProduct => orderProduct.orderNumber)
+  @OneToMany(type => OrderProduct, orderProduct => orderProduct.orderNumber, {
+    cascade: ['insert'],
+  })
   orderProducts: OrderProduct[];
 }
