@@ -328,6 +328,7 @@ export default class EventModel {
     const event = await eventRepository.findOne({
       relations: {
         products: true,
+        createdBy: true
       },
       where: {
         id: eventId,
@@ -341,6 +342,8 @@ export default class EventModel {
       event.status == StatusEnum.LOCKED
     )
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    if(event.roleCreator == RoleEnum.SHOP && event.createdBy.id != user.id)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized access to this event!');
     for (let i = 0; i < productIdList.length; i++) {
       const product = await productRepository.findOne({
         relations: {
@@ -433,6 +436,11 @@ export default class EventModel {
       event.status == StatusEnum.LOCKED
     )
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    if (event.roleCreator == RoleEnum.SHOP && event.createdBy.id != user.id)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized access to this event!'
+      );
     for (let i = 0; i < productIdList.length; i++) {
       const product = await productRepository.findOne({
         relations: {
@@ -523,6 +531,11 @@ export default class EventModel {
       event.status == StatusEnum.LOCKED
     )
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    if (event.roleCreator == RoleEnum.SHOP && event.createdBy.id != user.id)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized access to this event!'
+      );
     for (let i = 0; i < productIdList.length; i++) {
       const product = await productRepository.findOne({
         relations: {
