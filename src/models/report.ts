@@ -21,9 +21,8 @@ export default class ReportModel {
         customer: true,
       },
       where: {
-        status: StatusReportEnum.PROCESSING
-      }
-
+        status: StatusReportEnum.PROCESSING,
+      },
     });
     return report && report.length > 0 ? report : false;
   }
@@ -36,7 +35,7 @@ export default class ReportModel {
       },
 
       where: {
-        status: StatusReportEnum.PROCESSED
+        status: StatusReportEnum.PROCESSED,
       },
     });
     return report ? report : false;
@@ -153,7 +152,6 @@ export default class ReportModel {
         HttpStatusCode.CREATED,
         'Create new report successfully !',
         newReport
-
       );
     }
   }

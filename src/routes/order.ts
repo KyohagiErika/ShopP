@@ -54,7 +54,11 @@ routes.get(
   OrderMiddleware.viewHistoryForShop
 );
 
-routes.post('/new', [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)], OrderMiddleware.postNew);
+routes.post(
+  '/new',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  OrderMiddleware.postNew
+);
 
 routes.post(
   '/cancel-order/:id',

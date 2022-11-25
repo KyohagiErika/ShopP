@@ -3,25 +3,19 @@ import { Product } from '../entities/product';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { ProductAdditionalInfo } from '../entities/productAdditionalInfo';
-import { response } from 'express';
 import { Shop } from '../entities/shop';
 
 const productAdditionInfoRepository = ShopPDataSource.getRepository(
   ProductAdditionalInfo
-);
-const shopRepository = ShopPDataSource.getRepository(
-  Shop
 );
 const productRepository = ShopPDataSource.getRepository(Product);
 
 export default class ProductAdditionInfoModel {
   static async listAll() {
     const productAdditionalInfo = await productAdditionInfoRepository.find({
-
       select: {
         key: true,
         value: true,
-
       },
     });
     return productAdditionalInfo && productAdditionalInfo.length > 0
@@ -31,11 +25,9 @@ export default class ProductAdditionInfoModel {
 
   static async getOneById(id: number) {
     const productAdditionalInfo = await productAdditionInfoRepository.find({
-
       select: {
         key: true,
         value: true,
-
       },
       where: {
         id: id,
@@ -46,11 +38,9 @@ export default class ProductAdditionInfoModel {
 
   static async getOneByProductId(productId: string) {
     const productAdditionalInfo = await productAdditionInfoRepository.find({
-
       select: {
         key: true,
         value: true,
-
       },
       where: {
         product: { id: productId },
@@ -59,15 +49,20 @@ export default class ProductAdditionInfoModel {
     return productAdditionalInfo ? productAdditionalInfo : false;
   }
 
-  static async postNew(productId: string, key: string, value: string, shopId: string) {
+  static async postNew(
+    productId: string,
+    key: string,
+    value: string,
+    shopId: string
+  ) {
     const findAdditionalInfo = await productAdditionInfoRepository.findOne({
       where: {
         key: key,
-        product: { id: productId }
-      }
-    })
+        product: { id: productId },
+      },
+    });
     if (findAdditionalInfo) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'key already exist !')
+      return new Response(HttpStatusCode.BAD_REQUEST, 'key already exist !');
     }
 
     const product = await productRepository.findOne({
@@ -93,11 +88,14 @@ export default class ProductAdditionInfoModel {
       const findShop = await productRepository.findOne({
         where: {
           shop: { id: shopId },
-          id: productId
-        }
-      })
-      if (!(findShop)) {
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist in shop.');
+          id: productId,
+        },
+      });
+      if (!findShop) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Product not exist in shop.'
+        );
       }
       let productAdditionalInfo = new ProductAdditionalInfo();
       productAdditionalInfo.product = product;
@@ -131,21 +129,24 @@ export default class ProductAdditionInfoModel {
     } else {
       const findShop = await productRepository.findOne({
         relations: {
-          productAdditionalInfo: true
-
+          productAdditionalInfo: true,
         },
         where: {
           shop: { id: shopId },
-          productAdditionalInfo: { id: id }
-        }
-      })
-      if (!(findShop)) {
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist in shop.');
+          productAdditionalInfo: { id: id },
+        },
+      });
+      if (!findShop) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Product not exist in shop.'
+        );
       }
-      const productAdditionalInfoEdit = await productAdditionInfoRepository.update(
-        { id: id },
-        { key: key, value: value }
-      );
+      const productAdditionalInfoEdit =
+        await productAdditionInfoRepository.update(
+          { id: id },
+          { key: key, value: value }
+        );
       if (productAdditionalInfoEdit.affected == 1) {
         return new Response(
           HttpStatusCode.OK,
