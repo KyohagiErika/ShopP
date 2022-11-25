@@ -10,7 +10,7 @@ import {
   StatusEnum,
 } from '../utils/shopp.enum';
 
-export default class OrderMiddlieware {
+export default class OrderMiddleware {
   @ControllerService()
   static async viewOrderForCustomer(req: Request, res: Response) {
     const customer: Customer = res.locals.user.customer;
@@ -81,7 +81,7 @@ export default class OrderMiddlieware {
         type: String,
       },
       {
-        name: 'shoppingUintId',
+        name: 'shoppingUnitId',
         type: String,
       },
       {
@@ -111,7 +111,7 @@ export default class OrderMiddlieware {
       totalPayment,
       StatusEnum.ACTIVE,
       data.paymentId,
-      data.shoppingUintId,
+      data.shoppingUnitId,
       data.voucherId,
       data.shopId,
       customer,
