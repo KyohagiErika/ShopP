@@ -7,49 +7,49 @@ import { RoleEnum } from '../utils/shopp.enum';
 const routes = Router();
 
 routes.get(
-  '/view-order-for-customer',
+  '/customer',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   OrderMiddleware.viewOrderForCustomer
 );
 
 routes.get(
-  '/view-order-deliver-for-customer',
+  '/customer-deliver',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   OrderMiddleware.viewOrderDeliverForCus
 );
 
 routes.get(
-  '/view-history-for-customer',
+  '/customer-history',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   OrderMiddleware.viewHistoryForCus
 );
 
 routes.get(
-  '/view-cancel-order-for-customer',
+  '/customer-cancel',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   OrderMiddleware.viewCancelOrderForCus
 );
 
 routes.get(
-  '/view-order-for-shopp',
+  '/shop',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   OrderMiddleware.viewOrderForShop
 );
 
 routes.get(
-  '/view-confirm-order-for-shopp',
+  '/shop-confirm',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   OrderMiddleware.viewConfirmOrderForShop
 );
 
 routes.get(
-  '/view-deliver-order-for-shopp',
+  '/shop-deliver',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   OrderMiddleware.viewOrderDeliverForShop
 );
 
 routes.get(
-  '/view-history-for-shopp',
+  '/shop-history',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   OrderMiddleware.viewHistoryForShop
 );
