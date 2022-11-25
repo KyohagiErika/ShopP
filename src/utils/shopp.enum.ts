@@ -26,6 +26,7 @@ export enum GenderEnum {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
 }
+
 export enum OtpEnum {
   FORGET = 'FORGET',
   VERIFICATION = 'VERIFICATION',
