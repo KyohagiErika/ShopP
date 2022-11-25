@@ -8,7 +8,6 @@ import { Shop } from '../entities/shop';
 const productAdditionInfoRepository = ShopPDataSource.getRepository(
   ProductAdditionalInfo
 );
-const shopRepository = ShopPDataSource.getRepository(Shop);
 const productRepository = ShopPDataSource.getRepository(Product);
 
 export default class ProductAdditionInfoModel {

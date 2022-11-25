@@ -14,6 +14,7 @@ import {
   StatusEnum,
 } from '../utils/shopp.enum';
 import { OrderRequest } from '../interfaces/order';
+import { In, LessThan, MoreThan } from 'typeorm';
 
 const orderReposity = ShopPDataSource.getRepository(Order);
 const shopReposity = ShopPDataSource.getRepository(Shop);
@@ -225,65 +226,75 @@ export default class orderModel {
       let findOrder = new Order();
 
       //check voucher
-      let voucher = null;
-      if (orders[i].voucherId == null) {
-        voucher = null;
-      } else {
+      let voucher: Voucher[] = [];
+      if (orders[i].voucherIds !== undefined && orders[i].voucherIds.length !== 0) {
+        const now = new Date();
         voucher = await voucherReposity.find({
           where: {
-            id: orders[i].voucherId,
-          },
+            id: In(orders[i].voucherIds),
+            //mfgDate: LessThan(now),
+            //expDate: MoreThan(now),
+          }
         });
-        if (voucher == null) {
-          return new Response(HttpStatusCode.BAD_REQUEST, 'Voucher not exist.');
-        } else {
-          (findOrder.deliveryStatus = DeliveryStatusEnum.CHECKING),
-            (findOrder.address = address),
-            (findOrder.estimateDeliveryTime = orders[i].estimateDeliveryTime),
-            (findOrder.status = StatusEnum.ACTIVE),
-            (findOrder.totalBill = orders[i].totalBill),
-            (findOrder.transportFee = orders[i].transportFee),
-            (findOrder.totalPayment =
-              +orders[i].totalBill + +orders[i].transportFee),
-            (findOrder.payment = payment),
-            (findOrder.shoppingUnit = shoppingUnit),
-            (findOrder.voucher = voucher),
-            (findOrder.shop = shop),
-            (findOrder.customer = customer);
-
-          let orderProductArr: OrderProduct[] = [];
-          const orderProduct = orders[i].orderProducts;
-          //For loop ORDER PRODUCT
-          for (let j = 0; j < orderProduct.length; j++) {
-            let orderProductEntity = new OrderProduct();
-            const product = await productRepository.findOne({
-              where: {
-                id: orderProduct[j].productId,
-              },
-            });
-            if (product == null) {
-              return new Response(
-                HttpStatusCode.BAD_REQUEST,
-                'Product not exist.'
-              );
-            } else {
-              (orderProductEntity.additionalInfo =
-                orderProduct[j].additionalInfo),
-                (orderProductEntity.price = orderProduct[j].price),
-                (orderProductEntity.quantity = orderProduct[j].quantity),
-                (orderProductEntity.product = product),
-                (totalBill -= orderProduct[j].price * orderProduct[j].quantity);
-              orderProductArr.push(orderProductEntity);
-            }
-          }
-          if (totalBill != 0) {
-            return new Response(HttpStatusCode.BAD_REQUEST, 'Invalid invoice.');
-          }
-          findOrder.orderProducts = orderProductArr;
-          orderArr.push(findOrder);
+        console.log(voucher.length);
+        console.log(orders[i].voucherIds.length);
+        if (voucher.length !== orders[i].voucherIds.length) {
+          return new Response(HttpStatusCode.BAD_REQUEST, 'Invalid voucher.');
         }
       }
+      (findOrder.deliveryStatus = DeliveryStatusEnum.CHECKING),
+        (findOrder.address = address),
+        (findOrder.estimateDeliveryTime = orders[i].estimateDeliveryTime),
+        (findOrder.status = StatusEnum.ACTIVE),
+        (findOrder.totalBill = orders[i].totalBill),
+        (findOrder.transportFee = orders[i].transportFee),
+        (findOrder.totalPayment =
+          +orders[i].totalBill + +orders[i].transportFee),
+        (findOrder.payment = payment),
+        (findOrder.shoppingUnit = shoppingUnit),
+        (findOrder.shop = shop),
+        (findOrder.customer = customer);
+      findOrder.voucher = voucher;
+
+      let orderProductArr: OrderProduct[] = [];
+      const orderProduct = orders[i].orderProducts;
+      //For loop ORDER PRODUCT
+      for (let j = 0; j < orderProduct.length; j++) {
+        let orderProductEntity = new OrderProduct();
+        const product = await productRepository.findOne({
+          select: [
+            'id',
+            'name',
+            'detail',
+            'amount',
+            'quantity',
+            'sold',
+            'star',
+            'status',
+          ],
+          where: {
+            id: orderProduct[j].productId,
+          },
+        });
+        if (product == null) {
+          return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist.');
+        } else {
+          (orderProductEntity.additionalInfo = orderProduct[j].additionalInfo),
+            (orderProductEntity.price = orderProduct[j].price),
+            (orderProductEntity.quantity = orderProduct[j].quantity),
+            (orderProductEntity.product = product),
+            (totalBill -= orderProduct[j].price * orderProduct[j].quantity);
+          orderProductArr.push(orderProductEntity);
+        }
+      }
+      if (totalBill != 0) {
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Invalid invoice.');
+      }
+      findOrder.orderProducts = orderProductArr;
+      orderArr.push(findOrder);
     }
+
+    //save order
     const order: Order[] = await orderReposity.save(orderArr);
 
     return new Response(

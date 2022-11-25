@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
 import { Customer } from '../entities/customer';
 import { Shop } from '../entities/shop';
+import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
+import { instanceOfOrderRequest } from '../utils';
 import { ControllerService } from '../utils/decorators';
-import {
-  DeliveryStatusEnum,
-  HttpStatusCode,
-} from '../utils/shopp.enum';
+import { DeliveryStatusEnum, HttpStatusCode } from '../utils/shopp.enum';
 
 export default class OrderMiddleware {
   @ControllerService()
@@ -156,29 +155,50 @@ export default class OrderMiddleware {
         name: 'paymentId',
         type: String,
       },
+      {
+        name: 'orders',
+        type: Array,
+        validator(propertyName, value) {
+          if (!value.every(instanceOfOrderRequest)) {
+            return `${propertyName} must be valid order request`;
+          }
+          return null;
+        },
+      },
     ],
   })
   static async postNew(req: Request, res: Response) {
     const customer = res.locals.user.customer;
     if (customer == null) {
-      res
+      return res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'Can not find customer !' });
     }
     const data = req.body;
+    let orders: OrderRequest[] = [];
+    try {
+      //orders = JSON.parse(data.orders) as OrderRequest[];
+      orders = data.orders as OrderRequest[];
+    } catch (error) {
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Invalid order data !' });
+    }
 
     const result = await orderModel.postNew(
       data.address.toString(),
       data.paymentId,
-      data.orders,
+      orders,
       customer
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
-      res
+      return res
         .status(result.getCode())
         .send({ message: result.getMessage(), data: result.getData() });
     } else {
-      res.status(result.getCode()).send({ message: result.getMessage() });
+      return res
+        .status(result.getCode())
+        .send({ message: result.getMessage() });
     }
   }
 

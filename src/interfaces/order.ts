@@ -5,7 +5,7 @@ export interface OrderRequest {
   totalBill: number;
   transportFee: number;
   shoppingUnitId: number;
-  voucherId: string;
+  voucherIds: string[];
   shopId: string;
   orderProducts: OrderProductRequest[];
 }
