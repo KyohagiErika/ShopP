@@ -33,6 +33,7 @@ routes.post(
 routes.post(
   '/edit/:evaluationId([0-9]+)',
   [AuthMiddleware.checkJwt],
+  uploadMultipleImage('evaluationImages'),
   EvaluationMiddleware.editEvaluation
 );
 
