@@ -227,14 +227,17 @@ export default class orderModel {
 
       //check voucher
       let voucher: Voucher[] = [];
-      if (orders[i].voucherIds !== undefined && orders[i].voucherIds.length !== 0) {
+      if (
+        orders[i].voucherIds !== undefined &&
+        orders[i].voucherIds.length !== 0
+      ) {
         const now = new Date();
         voucher = await voucherReposity.find({
           where: {
             id: In(orders[i].voucherIds),
             //mfgDate: LessThan(now),
             //expDate: MoreThan(now),
-          }
+          },
         });
         console.log(voucher.length);
         console.log(orders[i].voucherIds.length);
