@@ -16,6 +16,8 @@ import order from './order';
 import payment from './payment';
 import shoppingUnit from './shoppingUnit';
 import orderProduct from './orderProduct';
+import message from './message';
+import chatRoom from './chatRoom';
 import swagger from './swagger';
 import UploadModel from '../models/upload';
 
@@ -102,6 +104,8 @@ routes.use('/order', order);
 routes.use('/payment', payment);
 routes.use('/shopping-unit', shoppingUnit);
 routes.use('/order-product', orderProduct);
+routes.use('/message', message);
+routes.use('/chat-room', chatRoom);
 
 /**
  * @swagger
