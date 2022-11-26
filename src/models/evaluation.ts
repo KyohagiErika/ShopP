@@ -80,17 +80,13 @@ export default class EvaluationModel {
       },
       where: {
         id: orderProductId,
+        orderNumber: {customer: { id: user.customer.id}}
       },
     });
     if (!orderProduct)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Order product not exist!'
-      );
-    if (orderProduct.orderNumber.customer.id != user.customer.id)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'This order product is not yours!'
       );
     if (orderProduct.evaluation)
       return new Response(
