@@ -8,16 +8,16 @@ import { Cart } from '../entities/cart';
 import { User } from '../entities/user';
 
 export default class CartModel {
-  static async showCart(id: number) {
+  static async showCart(user: User) {
     const cartRepository = ShopPDataSource.getRepository(Cart);
-
     const cart = await cartRepository.findOne({
       where: {
-        id,
-        customer: { user: { status: StatusEnum.ACTIVE } },
+        customer: { 
+          user: { status: StatusEnum.ACTIVE },
+          id: user.customer.id
+        },
       },
     });
-
     if (cart == null) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
@@ -27,11 +27,25 @@ export default class CartModel {
     return new Response(HttpStatusCode.OK, 'Show Cart successfully', cart);
   }
 
-  static async update(cartId: number, products: string) {
+  static async update(user: User, products: string) {
     const cartRepository = ShopPDataSource.getRepository(Cart);
+    const cart = await cartRepository.findOne({
+      where: {
+        customer: {
+          user: { status: StatusEnum.ACTIVE },
+          id: user.customer.id,
+        },
+      },
+    });
+    if (cart == null) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        `This Cart doesn't exist`
+      );
+    }
     const result = await cartRepository.update(
       {
-        id: cartId,
+        id: cart.id,
       },
       {
         products,

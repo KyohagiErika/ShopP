@@ -210,11 +210,6 @@ export default class EventModel {
       startingDate: event.startingDate,
       endingDate: event.endingDate,
       roleCreator: event.roleCreator,
-      createdBy: {
-        id: event.createdBy.id,
-        phone: event.createdBy.phone,
-        email: event.createdBy.email,
-      },
       additionalInfo: additionalInfo,
     });
   }
