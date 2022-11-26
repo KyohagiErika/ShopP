@@ -40,5 +40,5 @@ export class Evaluation {
     evaluationImage => evaluationImage.evaluation
   )
   @JoinColumn()
-  evaluationImage: EvaluationImage[]
+  evaluationImages: EvaluationImage[]
 }

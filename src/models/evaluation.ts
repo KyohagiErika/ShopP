@@ -21,7 +21,7 @@ export default class EvaluationModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist!');
     const evaluations = await evaluationRepository.find({
       relations: {
-        evaluationImage: true
+        evaluationImages: true,
       },
       where: {
         orderProduct: { product: { id: productId } },
@@ -42,6 +42,9 @@ export default class EvaluationModel {
   static async getEvaluationById(evaluationId: number) {
     const evaluationRepository = ShopPDataSource.getRepository(Evaluation);
     const evaluation = evaluationRepository.findOne({
+      relations: {
+        evaluationImages: true,
+      },
       where: {
         id: evaluationId,
       },
@@ -68,7 +71,8 @@ export default class EvaluationModel {
   ) {
     const evaluationRepository = ShopPDataSource.getRepository(Evaluation);
     const orderProductRepository = ShopPDataSource.getRepository(OrderProduct);
-    const evaluationImageRepository = ShopPDataSource.getRepository(EvaluationImage)
+    const evaluationImageRepository =
+      ShopPDataSource.getRepository(EvaluationImage);
     const orderProduct = await orderProductRepository.findOne({
       relations: {
         orderNumber: true,
@@ -93,19 +97,23 @@ export default class EvaluationModel {
         HttpStatusCode.BAD_REQUEST,
         'Evaluation is already existed on this order product!'
       );
-    
+
     const evaluation = await evaluationRepository.save({
       star,
       feedback,
       orderProduct,
     });
-    if(localFiles.length !=0) {
-      localFiles.forEach(localFile => {
-        evaluationImageRepository.save({
-          localFile,
-          evaluation,
-        })
-      })
+    let evaluationImages: EvaluationImage[] = [];
+    if (localFiles.length != 0) {
+      for (let i = 0; i < localFiles.length; i++) {
+        let evaluationImage: EvaluationImage =
+          await evaluationImageRepository.save({
+            localFile: localFiles[i],
+            evaluation,
+          });
+        evaluationImages.push(evaluationImage);
+      }
+      evaluation.evaluationImages = evaluationImages;
     }
     return new Response(
       HttpStatusCode.OK,
@@ -118,10 +126,13 @@ export default class EvaluationModel {
     evaluationId: number,
     feedback: string,
     star: number,
+    localFiles: LocalFile[],
     user: User
   ) {
     const evaluationRepository = ShopPDataSource.getRepository(Evaluation);
-    const evaluation = evaluationRepository.findOne({
+    const evaluationImageRepository =
+      ShopPDataSource.getRepository(EvaluationImage);
+    const evaluation = await evaluationRepository.findOne({
       where: {
         id: evaluationId,
         orderProduct: { orderNumber: { customer: { id: user.customer.id } } },
@@ -132,15 +143,19 @@ export default class EvaluationModel {
         HttpStatusCode.BAD_REQUEST,
         'Evaluation id not exist!'
       );
-    const result = await evaluationRepository.update(evaluationId, {
-      star,
-      feedback,
-    });
-    if (result.affected == 0)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Edit evaluation failed!'
-      );
+    evaluation.evaluationImages = [];
+    evaluation.star = star;
+    evaluation.feedback = feedback;
+    if (localFiles.length != 0) {
+      for (let i = 0; i < localFiles.length; i++) {
+        let evaluationImage: EvaluationImage =
+          await evaluationImageRepository.save({
+            localFile: localFiles[i],
+          });
+        evaluation.evaluationImages.push(evaluationImage);
+      }
+    }
+    const result = await evaluationRepository.save(evaluation);
     return new Response(
       HttpStatusCode.OK,
       'Edit evaluation successfully!',

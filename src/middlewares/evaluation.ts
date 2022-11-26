@@ -93,10 +93,15 @@ export default class EvaluationMiddleware {
     ],
   })
   static async editEvaluation(req: Request, res: Response) {
+    let evaluationImages: LocalFile[] = [];
+    if (req.files) {
+      evaluationImages = await UploadModel.uploadMultiple(req.files);
+    }
     const result = await EvaluationModel.editEvaluation(
       +req.params.evaluationId,
       req.body.feedback,
       req.body.star,
+      evaluationImages,
       res.locals.user
     );
     if (result.getCode() == HttpStatusCode.OK)
