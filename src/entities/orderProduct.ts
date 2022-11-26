@@ -1,3 +1,4 @@
+import { Evaluation } from './evaluation';
 import {
   Column,
   Entity,
@@ -27,4 +28,7 @@ export class OrderProduct {
 
   @ManyToOne(() => Product, product => product.id)
   product: Product;
+
+  @OneToOne(() => Evaluation, evaluation => evaluation.orderProduct)
+  evaluation: Evaluation;
 }

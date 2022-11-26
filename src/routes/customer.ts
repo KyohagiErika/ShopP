@@ -162,7 +162,7 @@ routes.post(
 routes.post(
   '/unfollow-shop/:shopId',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  CustomerMiddleware.unollowShop
+  CustomerMiddleware.unfollowShop
 );
 
 /**
