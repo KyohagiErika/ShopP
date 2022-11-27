@@ -1,14 +1,11 @@
-import { validate } from 'class-validator';
 import { Request, Response } from 'express';
 import { Customer } from '../entities/customer';
 import { Shop } from '../entities/shop';
+import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
+import { instanceOfOrderRequest } from '../utils';
 import { ControllerService } from '../utils/decorators';
-import {
-  DeliveryStatusEnum,
-  HttpStatusCode,
-  StatusEnum,
-} from '../utils/shopp.enum';
+import { DeliveryStatusEnum, HttpStatusCode } from '../utils/shopp.enum';
 
 export default class OrderMiddleware {
   @ControllerService()
@@ -20,6 +17,57 @@ export default class OrderMiddleware {
         .send({ message: 'Can not find customer !' });
     }
     const result = await orderModel.viewOrderForCustomer(customer);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
+  static async viewOrderDeliverForCus(req: Request, res: Response) {
+    const customer: Customer = res.locals.user.customer;
+    if (customer == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find customer !' });
+    }
+    const result = await orderModel.viewOrderDeliverForCus(customer);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
+  static async viewHistoryForCus(req: Request, res: Response) {
+    const customer: Customer = res.locals.user.customer;
+    if (customer == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find customer !' });
+    }
+    const result = await orderModel.viewHistoryForCus(customer);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
+  static async viewCancelOrderForCus(req: Request, res: Response) {
+    const customer: Customer = res.locals.user.customer;
+    if (customer == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find customer !' });
+    }
+    const result = await orderModel.viewCancelOrderForCus(customer);
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
     } else {
@@ -46,6 +94,57 @@ export default class OrderMiddleware {
     }
   }
 
+  static async viewConfirmOrderForShop(req: Request, res: Response) {
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
+    const result = await orderModel.viewConfirmOrderForShop(shop);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
+  static async viewOrderDeliverForShop(req: Request, res: Response) {
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
+    const result = await orderModel.viewOrderDeliverForShop(shop);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
+  static async viewHistoryForShop(req: Request, res: Response) {
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
+    const result = await orderModel.viewHistoryForShop(shop);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get order list failed !' });
+    }
+  }
+
   @ControllerService({
     body: [
       {
@@ -53,76 +152,53 @@ export default class OrderMiddleware {
         type: String,
       },
       {
-        name: 'estimateDeliveryTime',
-        type: String,
-      },
-      {
-        name: 'totalBill',
-        type: String,
-        validator: (propName: string, value: number) => {
-          if (value < 0 || value > 100000000) {
-            return `${propName} must be greater than 0 and less than 100000000`;
-          }
-          return null;
-        },
-      },
-      {
-        name: 'transportFee',
-        type: String,
-        validator: (propName: string, value: number) => {
-          if (value < 0 || value > 100000000) {
-            return `${propName} must be greater than 0 and less than 100000000`;
-          }
-          return null;
-        },
-      },
-      {
         name: 'paymentId',
         type: String,
       },
       {
-        name: 'shoppingUnitId',
-        type: String,
-      },
-      {
-        name: 'shopId',
-        type: String,
+        name: 'orders',
+        type: Array,
+        validator(propertyName, value) {
+          if (!value.every(instanceOfOrderRequest)) {
+            return `${propertyName} must be valid order request`;
+          }
+          return null;
+        },
       },
     ],
   })
   static async postNew(req: Request, res: Response) {
     const customer = res.locals.user.customer;
     if (customer == null) {
-      res
+      return res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'Can not find customer !' });
     }
     const data = req.body;
-    const totalBill = +req.body.totalBill;
-    const transportFee = +req.body.transportFee;
-    const totalPayment: number = totalBill + transportFee;
+    let orders: OrderRequest[] = [];
+    try {
+      //orders = JSON.parse(data.orders) as OrderRequest[];
+      orders = data.orders as OrderRequest[];
+    } catch (error) {
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Invalid order data !' });
+    }
 
     const result = await orderModel.postNew(
-      DeliveryStatusEnum.CHECKING,
       data.address.toString(),
-      data.estimateDeliveryTime,
-      totalBill,
-      transportFee,
-      totalPayment,
-      StatusEnum.ACTIVE,
       data.paymentId,
-      data.shoppingUnitId,
-      data.voucherId,
-      data.shopId,
-      customer,
-      data.orderProducts
+      orders,
+      customer
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
-      res
+      return res
         .status(result.getCode())
         .send({ message: result.getMessage(), data: result.getData() });
     } else {
-      res.status(result.getCode()).send({ message: result.getMessage() });
+      return res
+        .status(result.getCode())
+        .send({ message: result.getMessage() });
     }
   }
 

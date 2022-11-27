@@ -9,7 +9,6 @@ import {
   ManyToMany,
 } from 'typeorm';
 import { LocalFile } from './localFile';
-import { OrderProduct } from './orderProduct';
 import { Order } from './order';
 import { Product } from './product';
 import { Report } from './report';
@@ -73,7 +72,7 @@ export class Shop {
   @JoinColumn()
   user: User;
 
-  @OneToMany(() => Product, product => product.id)
+  @OneToMany(() => Product, product => product.shop)
   products: Product[];
 
   @Column()

@@ -5,7 +5,6 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-
 import { Product } from './product';
 
 @Entity()
@@ -25,7 +24,7 @@ export class PackagedProductSize {
   @Column()
   height: number;
 
-  @OneToOne(() => Product, product => product.id)
+  @OneToOne(() => Product, product => product.packagedProductSize)
   @JoinColumn()
   product: Product;
 }

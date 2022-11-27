@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Shop } from '../entities/shop';
 import PackagedProductSizeModel from '../models/packagedProductSize';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
@@ -39,6 +40,26 @@ export default class PackagedProductSizeMiddleware {
   @ControllerService({
     params: [
       {
+        name: 'id',
+        type: String,
+      },
+    ],
+  })
+  static async getOneByProductId(req: Request, res: Response) {
+    const id = req.params.id;
+    const result = await PackagedProductSizeModel.getOneByProductId(id);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get Product Information failed!' });
+    }
+  }
+
+  @ControllerService({
+    params: [
+      {
         name: 'productId',
         type: String,
       },
@@ -65,12 +86,19 @@ export default class PackagedProductSizeMiddleware {
   static async postNew(req: Request, res: Response) {
     const data = req.body;
     const productId = req.params.productId;
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
     const result = await PackagedProductSizeModel.postNew(
       productId,
       data.weight,
       data.height,
       data.width,
-      data.length
+      data.length,
+      shop.id
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
@@ -110,12 +138,19 @@ export default class PackagedProductSizeMiddleware {
   static async edit(req: Request, res: Response) {
     const data = req.body;
     const id = +req.params.id;
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
     const result = await PackagedProductSizeModel.edit(
       id,
       data.weight,
       data.height,
       data.width,
-      data.length
+      data.length,
+      shop.id
     );
     if (result.getCode() === HttpStatusCode.OK) {
       res
