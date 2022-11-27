@@ -7,16 +7,16 @@ import { RoleEnum } from '../utils/shopp.enum';
 const routes = Router();
 
 routes.get(
-  '/list-all',
+  '/list-all-in-process',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
-  ReportMiddleware.listAll
+  ReportMiddleware.listAllReportInProcess
 );
 
 routes.get(
-  '/get-report/:id([0-9]+)',
+  '/list-all-processed',
   AuthMiddleware.checkJwt,
   checkRole(RoleEnum.ADMIN),
-  ReportMiddleware.getOneById
+  ReportMiddleware.listAllReportProcessed
 );
 
 routes.get(

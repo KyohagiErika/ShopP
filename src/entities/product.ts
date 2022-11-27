@@ -10,7 +10,6 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-
 import { ProductEnum } from '../utils/shopp.enum';
 import { Category } from './category';
 import { OrderProduct } from './orderProduct';
@@ -118,7 +117,7 @@ export class Product {
   @Column({ nullable: true })
   deletedAt: Date;
 
-  @ManyToOne(() => Shop, shop => shop.id)
+  @ManyToOne(() => Shop, shop => shop.products)
   @JoinColumn()
   shop: Shop;
 
@@ -128,14 +127,13 @@ export class Product {
 
   @OneToMany(
     () => ProductAdditionalInfo,
-    productAdditionalInfo => productAdditionalInfo.id
+    productAdditionalInfo => productAdditionalInfo.product
   )
-  @JoinColumn()
   productAdditionalInfo: ProductAdditionalInfo[];
 
   @OneToOne(
     () => PackagedProductSize,
-    packagedProductSize => packagedProductSize.id
+    packagedProductSize => packagedProductSize.product
   )
   packagedProductSize: PackagedProductSize;
 
@@ -143,7 +141,7 @@ export class Product {
   @JoinColumn()
   productImage: ProductImage[];
 
-  @OneToMany(() => OrderProduct, orderProduct => orderProduct.id)
+  @OneToMany(() => OrderProduct, orderProduct => orderProduct.product)
   orderProduct: OrderProduct[];
 
   @ManyToMany(() => Event, event => event.products)

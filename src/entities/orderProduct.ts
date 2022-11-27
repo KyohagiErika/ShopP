@@ -20,13 +20,13 @@ export class OrderProduct {
   @Column()
   additionalInfo: string;
 
-  @ManyToOne(() => Order, orderNumber => orderNumber.id)
+  @ManyToOne(type => Order, orderNumber => orderNumber.orderProducts)
   orderNumber: Order;
 
   @Column()
   quantity: number;
 
-  @ManyToOne(() => Product, product => product.id)
+  @ManyToOne(() => Product, product => product.orderProduct)
   product: Product;
 
   @OneToOne(() => Evaluation, evaluation => evaluation.orderProduct)
