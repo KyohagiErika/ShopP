@@ -61,7 +61,7 @@ export default class EvaluationModel {
     );
   }
 
-  @ModelService()
+  // @ModelService()
   static async postNewEvaluation(
     orderProductId: string,
     feedback: string,
@@ -99,17 +99,16 @@ export default class EvaluationModel {
       feedback,
       orderProduct,
     });
-    let evaluationImages: EvaluationImage[] = [];
     if (localFiles.length != 0) {
+      // evaluation.evaluationImages = []
       for (let i = 0; i < localFiles.length; i++) {
-        let evaluationImage: EvaluationImage =
+        let evaluationImage =
           await evaluationImageRepository.save({
             localFile: localFiles[i],
             evaluation,
           });
-        evaluationImages.push(evaluationImage);
+        // evaluation.evaluationImages.push(evaluationImage);
       }
-      evaluation.evaluationImages = evaluationImages;
     }
     return new Response(
       HttpStatusCode.OK,

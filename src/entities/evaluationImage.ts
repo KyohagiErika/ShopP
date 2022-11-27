@@ -19,6 +19,6 @@ export class EvaluationImage {
   @JoinColumn()
   localFile: LocalFile;
 
-  @ManyToOne(() => Evaluation, evaluation => evaluation.evaluationImage)
+  @ManyToOne(() => Evaluation, evaluation => evaluation.evaluationImages)
   evaluation: Evaluation;
 }
