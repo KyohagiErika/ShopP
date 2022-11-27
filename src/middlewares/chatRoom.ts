@@ -7,28 +7,50 @@ export default class ChatRoomMiddleware {
   @ControllerService()
   static async getUserChatRoom(req: Request, res: Response) {
     const result = await ChatRoomModel.getUserChatRoom(res.locals.user);
-    if (result.getCode() == HttpStatusCode.OK)
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
       res
-        .status(HttpStatusCode.OK)
-        .send({ message: result.getMessage(), data: result.getData() });
-    else res.status(result.getCode()).send({ message: result.getMessage() });
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'No Chat Available!' });
+    }
   }
 
-  @ControllerService()
+  @ControllerService({
+    params: [
+      {
+        name: 'receiverId',
+        type: Number,
+      },
+    ],
+  })
   static async findChatRoom(req: Request, res: Response) {
-    const result = await ChatRoomModel.findChatRoom(
+    const result = await ChatRoomModel.findChatRoomOfUser(
       res.locals.user,
-      req.body.products
+      +req.params.receiverId
     );
-    res.status(result.getCode()).send({ message: result.getMessage() });
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'No Chat Room available!' });
+    }
   }
 
-  @ControllerService()
+  @ControllerService({
+    params: [
+      {
+        name: 'receiverId',
+        type: Number,
+      },
+    ],
+  })
   static async createChat(req: Request, res: Response) {
     const result = await ChatRoomModel.createChat(
       res.locals.user,
-      req.body.products
+      +req.body.receiverId
     );
-    res.status(result.getCode()).send({ message: result.getMessage() });
+    return res.status(result.getCode()).send({ message: result.getMessage() });
   }
 }

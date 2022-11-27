@@ -14,11 +14,23 @@ export default class MessageMiddleware {
     else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
-  @ControllerService()
+  @ControllerService({
+    body: [
+      {
+        name: 'chatRoomId',
+        type: Number,
+      },
+      {
+        name: 'text',
+        type: String,
+      }
+    ],
+})
   static async addMessage(req: Request, res: Response) {
     const result = await MessageModel.addMessage(
       res.locals.user,
-      req.body.products
+      req.body.chatRoomId,
+      req.body.text
     );
     res.status(result.getCode()).send({ message: result.getMessage() });
   }

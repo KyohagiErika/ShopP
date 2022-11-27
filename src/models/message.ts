@@ -1,55 +1,42 @@
 import Response from '../utils/response';
-import { StatusEnum, HttpStatusCode } from './../utils/shopp.enum';
+import { HttpStatusCode } from './../utils/shopp.enum';
 import { ShopPDataSource } from './../data';
-import { Cart } from '../entities/cart';
 import { User } from '../entities/user';
+import { Message } from '../entities/message';
+import ChatRoomModel from '../models/chatRoom';
 
+const messageRepository = ShopPDataSource.getRepository(Message);
 export default class MessageModel {
-  static async getMessages(user: User) {
-    const cartRepository = ShopPDataSource.getRepository(Cart);
-    const cart = await cartRepository.findOne({
-      where: {
-        customer: {
-          user: { status: StatusEnum.ACTIVE },
-          id: user.customer.id,
-        },
+  static async getMessages(chatRoomId: number) {
+    const messages = await messageRepository.find({
+      relations: {
+        sender: true,
+        chatRoom: true,
+      },
+      where: { chatRoom: { id: chatRoomId } },
+      order: {
+        createdAt: 'ASC',
       },
     });
-    if (cart == null) {
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        `This Cart doesn't exist`
-      );
-    }
-    return new Response(HttpStatusCode.OK, 'Show Cart successfully', cart);
+    return messages && messages.length > 0 ? messages : false;
   }
 
-  static async addMessage(user: User, products: string) {
-    const cartRepository = ShopPDataSource.getRepository(Cart);
-    const cart = await cartRepository.findOne({
-      where: {
-        customer: {
-          user: { status: StatusEnum.ACTIVE },
-          id: user.customer.id,
-        },
-      },
-    });
-    if (cart == null) {
+  static async addMessage(user: User, chatRoomId: number, text: string) {
+    const chatRoom = await ChatRoomModel.findChatRoomById(chatRoomId);
+    if (!chatRoom)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Chat Room not found!');
+
+    if (chatRoom.members.find(member => member.id === user.id) == undefined) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        `This Cart doesn't exist`
+        'You are not a member of this chat room!'
       );
     }
-    const result = await cartRepository.update(
-      {
-        id: cart.id,
-      },
-      {
-        products,
-      }
-    );
-    if (result.affected == 0)
-      return new Response(HttpStatusCode.BAD_REQUEST, `Update cart failed!!`);
-    return new Response(HttpStatusCode.OK, `Update cart successfully!!`);
+    const message = new Message();
+    message.chatRoom = chatRoom;
+    message.sender = user;
+    message.text = text;
+    await messageRepository.save(message);
+    return new Response(HttpStatusCode.OK, 'Message sent!');
   }
 }
