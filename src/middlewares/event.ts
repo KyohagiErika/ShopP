@@ -206,8 +206,8 @@ export default class EventMiddleware {
       },
       {
         name: 'productIdList',
-        type: String,
-        validator: (propName: string, value: string) => {
+        type: Array,
+        validator: (propName: string, value: string[]) => {
           if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
@@ -217,11 +217,13 @@ export default class EventMiddleware {
   static async joinEvent(req: Request, res: Response) {
     const eventId = +req.params.eventId;
     const discount = +req.body.discount;
-    const productIdList = req.body.productIdList.split(' ').join('').split(',');
+    const amount = +req.body.amount;
+    const productIdList = req.body.productIdList;
     const result = await EventModel.joinEvent(
       eventId,
       productIdList,
       discount,
+      amount,
       res.locals.user
     );
     res
@@ -242,8 +244,8 @@ export default class EventMiddleware {
       },
       {
         name: 'productIdList',
-        type: String,
-        validator: (propName: string, value: string) => {
+        type: Array,
+        validator: (propName: string, value: string[]) => {
           if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
@@ -253,11 +255,13 @@ export default class EventMiddleware {
   static async editProductDiscountFromEvent(req: Request, res: Response) {
     const eventId = +req.params.eventId;
     const discount = +req.body.discount;
-    const productIdList = req.body.productIdList.split(' ').join('').split(',');
+    const amount = +req.body.amount;
+    const productIdList = req.body.productIdList;
     const result = await EventModel.editProductDiscountFromEvent(
       eventId,
       productIdList,
       discount,
+      amount,
       res.locals.user
     );
     res
@@ -269,8 +273,8 @@ export default class EventMiddleware {
     body: [
       {
         name: 'productIdList',
-        type: String,
-        validator: (propName: string, value: string) => {
+        type: Array,
+        validator: (propName: string, value: string[]) => {
           if (value.length == 0) return `${propName} must be filled in`;
           return null;
         },
@@ -280,7 +284,11 @@ export default class EventMiddleware {
   static async deleteProductsOfEvent(req: Request, res: Response) {
     const eventId = +req.params.eventId;
     const productIdList = req.body.productIdList.split(' ').join('').split(',');
-    const result = await EventModel.deleteProductsOfEvent(eventId, productIdList, res.locals.user)
+    const result = await EventModel.deleteProductsOfEvent(
+      eventId,
+      productIdList,
+      res.locals.user
+    );
     res
       .status(result.getCode())
       .send({ message: result.getMessage(), data: result.getData() });
