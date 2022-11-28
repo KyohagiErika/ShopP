@@ -44,7 +44,7 @@ export default class ProductModel {
   }
 
   static async getOneById(id: string) {
-    const product = await productRepository.find({
+    const product = await productRepository.findOne({
       relations: {
         shop: {
           avatar: true,
