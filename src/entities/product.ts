@@ -105,12 +105,6 @@ export class Product {
   })
   status: ProductEnum;
 
-  @Column({
-    type: 'double',
-    default: 0,
-  })
-  discount: number;
-
   @Column()
   @CreateDateColumn()
   createdAt: Date;
