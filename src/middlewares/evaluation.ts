@@ -52,8 +52,8 @@ export default class EvaluationMiddleware {
     ],
   })
   static async postNewEvaluation(req: Request, res: Response) {
-    let evaluationImages: LocalFile[] = []
-    if(req.files) {
+    let evaluationImages: LocalFile[] = [];
+    if (req.files) {
       evaluationImages = await UploadModel.uploadMultiple(req.files);
     }
     const result = await EvaluationModel.postNewEvaluation(
@@ -117,5 +117,18 @@ export default class EvaluationMiddleware {
       res.locals.user
     );
     res.status(result.getCode()).send({ message: result.getMessage() });
+  }
+
+  @ControllerService()
+  static async alterLikesOfEvaluation(req: Request, res: Response) {
+    const result = await EvaluationModel.alterLikesOfEvaluation(
+      +req.params.evaluationId,
+      res.locals.user
+    );
+    if (result.getCode() == HttpStatusCode.OK)
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 }

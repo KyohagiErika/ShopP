@@ -4,10 +4,11 @@ import { OrderProduct } from './../entities/orderProduct';
 import { Product } from './../entities/product';
 import { ShopPDataSource } from './../data';
 import { Evaluation } from './../entities/evaluation';
-import { HttpStatusCode } from '../utils/shopp.enum';
+import { HttpStatusCode, RoleEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { User } from '../entities/user';
 import { ModelService } from '../utils/decorators';
+import { Customer } from '../entities/customer';
 export default class EvaluationModel {
   static async showAllEvaluationsOfProduct(productId: string) {
     const productRepository = ShopPDataSource.getRepository(Product);
@@ -61,7 +62,6 @@ export default class EvaluationModel {
     );
   }
 
-  // @ModelService()
   static async postNewEvaluation(
     orderProductId: string,
     feedback: string,
@@ -80,8 +80,8 @@ export default class EvaluationModel {
       },
       where: {
         id: orderProductId,
-        orderNumber: {customer: { id: user.customer.id}}
-      }
+        orderNumber: { customer: { id: user.customer.id } },
+      },
     });
     if (!orderProduct)
       return new Response(
@@ -102,11 +102,10 @@ export default class EvaluationModel {
     if (localFiles.length != 0) {
       // evaluation.evaluationImages = []
       for (let i = 0; i < localFiles.length; i++) {
-        let evaluationImage =
-          await evaluationImageRepository.save({
-            localFile: localFiles[i],
-            evaluation,
-          });
+        let evaluationImage = await evaluationImageRepository.save({
+          localFile: localFiles[i],
+          evaluation,
+        });
         // evaluation.evaluationImages.push(evaluationImage);
       }
     }
@@ -170,5 +169,43 @@ export default class EvaluationModel {
         'Evaluation id not exist!'
       );
     return new Response(HttpStatusCode.OK, 'Delete evaluation successfully!');
+  }
+
+  static async alterLikesOfEvaluation(evaluationId: number, user: User) {
+    const evaluationRepository = ShopPDataSource.getRepository(Evaluation);
+    if (user.role.role == RoleEnum.ADMIN)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Admin can not access!'
+      );
+    const evaluation = await evaluationRepository.findOne({
+      relations: {
+        likedPeople: true,
+      },
+      where: {
+        id: evaluationId,
+      },
+    });
+    if (!evaluation)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Evaluation not exist!');
+    const likedPeople: Customer[] = evaluation.likedPeople;
+    const lengthOfLikedPeopleBefore = likedPeople.length;
+    evaluation.likedPeople.filter(customer => {
+      return customer.id != user.customer.id;
+    });
+    if (evaluation.likedPeople.length != lengthOfLikedPeopleBefore) {
+      evaluation.likes--;
+      await evaluationRepository.save(evaluation);
+      return new Response(HttpStatusCode.OK, 'Reduce likes successfully!', {
+        likes: evaluation.likes,
+      });
+    } else {
+      evaluation.likedPeople.push(user.customer);
+      evaluation.likes++;
+      await evaluationRepository.save(evaluation);
+      return new Response(HttpStatusCode.OK, 'Increase likes successfully!', {
+        likes: evaluation.likes,
+      });
+    }
   }
 }

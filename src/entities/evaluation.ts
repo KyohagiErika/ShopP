@@ -1,3 +1,4 @@
+import { Customer } from './customer';
 import { EvaluationImage } from './evaluationImage';
 import { LocalFile } from './localFile';
 import { OrderProduct } from './orderProduct';
@@ -9,6 +10,8 @@ import {
   OneToOne,
   CreateDateColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity()
@@ -30,6 +33,10 @@ export class Evaluation {
   @Column()
   @CreateDateColumn()
   createdAt: Date;
+
+  @ManyToMany(() => Customer, customer => customer.likedEvaluations)
+  @JoinTable()
+  likedPeople: Customer[]
 
   @OneToOne(() => OrderProduct, orderProduct => orderProduct.evaluation)
   @JoinColumn()

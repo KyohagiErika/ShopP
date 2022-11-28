@@ -44,4 +44,11 @@ routes.post(
   EvaluationMiddleware.deleteEvaluation
 );
 
+// alter Likes number of evaluation
+routes.post(
+  '/alter-likes/:evaluationId([0-9]+)',
+  [AuthMiddleware.checkJwt],
+  EvaluationMiddleware.alterLikesOfEvaluation
+);
+
 export default routes;
