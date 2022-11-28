@@ -41,7 +41,7 @@ export default class EvaluationModel {
 
   static async getEvaluationById(evaluationId: number) {
     const evaluationRepository = ShopPDataSource.getRepository(Evaluation);
-    const evaluation = evaluationRepository.findOne({
+    const evaluation = await evaluationRepository.findOne({
       relations: {
         evaluationImages: true,
       },
@@ -81,7 +81,7 @@ export default class EvaluationModel {
       where: {
         id: orderProductId,
         orderNumber: {customer: { id: user.customer.id}}
-      },
+      }
     });
     if (!orderProduct)
       return new Response(
