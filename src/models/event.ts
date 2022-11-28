@@ -1,3 +1,4 @@
+import { EventProduct } from './../entities/eventProduct';
 import { productsInCart } from './../interfaces/cart';
 import { Product } from './../entities/product';
 import { Shop } from './../entities/shop';
@@ -308,6 +309,7 @@ export default class EventModel {
     eventId: number,
     productIdList: string[],
     discount: number,
+    amount: number,
     user: User
   ) {
     if (
@@ -321,13 +323,13 @@ export default class EventModel {
     }
     const eventRepository = ShopPDataSource.getRepository(Event);
     const productRepository = ShopPDataSource.getRepository(Product);
+    const eventProductRepository = ShopPDataSource.getRepository(EventProduct)
     let productListThatEligible: Product[] = [];
-    let productIdListThatNotExist: string[] = [];
-    let productIdListAlreadyExistInThisEvent: string[] = [];
-    let productIdListThatIsNotYours: string[] = [];
+    // let productIdListThatNotExist: string[] = [];
+    // let productIdListAlreadyExistInThisEvent: string[] = [];
+    // let productIdListThatIsNotYours: string[] = [];
     const event = await eventRepository.findOne({
       relations: {
-        products: true,
         createdBy: true
       },
       where: {
@@ -347,55 +349,51 @@ export default class EventModel {
     for (let i = 0; i < productIdList.length; i++) {
       const product = await productRepository.findOne({
         relations: {
-          events: true,
           shop: true,
+          eventProducts: true,
         },
         where: {
           id: productIdList[i],
-          // shop: { id: user.shop.id },
         },
       });
       if (!product) {
-        productIdListThatNotExist.push(productIdList[i]);
-        continue;
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products not exist'
+        );
       }
       if (product.shop.id != user.shop.id) {
-        productIdListThatIsNotYours.push(product.id);
-        continue;
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products are not yours'
+        );
       }
-      let eventIdListContainProduct: number[] = product.events.map(
-        eventItem => {
-          return eventItem.id;
+      const eventProduct = await eventProductRepository.findOne({
+        relations: {
+          product: true,
+          event: true
+        },
+        where: {
+          product: {id: product.id},
+          event: {id: eventId}
         }
-      );
-      if (eventIdListContainProduct.includes(event.id))
-        productIdListAlreadyExistInThisEvent.push(product.id);
+      })
+      if (eventProduct)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products that already exist in this event:'
+        );
       else {
-        product.discount = discount;
-        product.events.push(event);
         productListThatEligible.push(product);
       }
     }
-    if (productIdListThatNotExist.length != 0)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'The following products id you request that not exist:',
-        productIdListThatNotExist
-      );
-    if (productIdListThatIsNotYours.length != 0)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'The following products id you request that are not yours:',
-        productIdListThatIsNotYours
-      );
-    if (productIdListAlreadyExistInThisEvent.length != 0)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'The following products id you request that already exist in this event:',
-        productIdListAlreadyExistInThisEvent
-      );
     for (let i = 0; i < productListThatEligible.length; i++) {
-      await productRepository.save(productListThatEligible[i]);
+      await eventProductRepository.save({
+        discount,
+        amount,
+        event,
+        product: productListThatEligible[i],
+      });
     }
     return new Response(HttpStatusCode.OK, 'Register event successfully!');
   }
@@ -404,6 +402,7 @@ export default class EventModel {
     eventId: number,
     productIdList: string[],
     discount: number,
+    amount: number,
     user: User
   ) {
     if (
@@ -417,13 +416,11 @@ export default class EventModel {
     }
     const eventRepository = ShopPDataSource.getRepository(Event);
     const productRepository = ShopPDataSource.getRepository(Product);
+    const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
     let productListThatEligible: Product[] = [];
-    let productIdListThatNotExist: string[] = [];
-    let productIdListNotExistInThisEvent: string[] = [];
-    let productIdListThatIsNotYours: string[] = [];
     const event = await eventRepository.findOne({
       relations: {
-        products: true,
+        createdBy: true,
       },
       where: {
         id: eventId,
@@ -444,54 +441,51 @@ export default class EventModel {
     for (let i = 0; i < productIdList.length; i++) {
       const product = await productRepository.findOne({
         relations: {
-          events: true,
           shop: true,
+          eventProducts: true,
         },
         where: {
           id: productIdList[i],
-          // shop: { id: user.shop.id },
         },
       });
       if (!product) {
-        productIdListThatNotExist.push(productIdList[i]);
-        continue;
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products not exist'
+        );
       }
       if (product.shop.id != user.shop.id) {
-        productIdListThatIsNotYours.push(product.id);
-        continue;
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products are not yours'
+        );
       }
-      let eventIdListContainProduct: number[] = product.events.map(
-        eventItem => {
-          return eventItem.id;
-        }
-      );
-      if (!eventIdListContainProduct.includes(event.id))
-        productIdListNotExistInThisEvent.push(product.id);
+      const eventProduct = await eventProductRepository.findOne({
+        relations: {
+          product: true,
+          event: true,
+        },
+        where: {
+          product: { id: product.id },
+          event: { id: eventId },
+        },
+      });
+      if (!eventProduct)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products not exist in this event'
+        );
       else {
-        product.discount = discount;
         productListThatEligible.push(product);
       }
     }
-    if (productIdListThatNotExist.length != 0)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'The following products id you request that not exist:',
-        productIdListThatNotExist
-      );
-    if (productIdListThatIsNotYours.length != 0)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'The following products id you request that are not yours:',
-        productIdListThatIsNotYours
-      );
-    if (productIdListNotExistInThisEvent.length != 0)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'The following products id you request that not exist in this event:',
-        productIdListNotExistInThisEvent
-      );
     for (let i = 0; i < productListThatEligible.length; i++) {
-      await productRepository.save(productListThatEligible[i]);
+      await eventProductRepository.save({
+        discount,
+        amount,
+        event,
+        product: productListThatEligible[i],
+      });
     }
     return new Response(HttpStatusCode.OK, 'Edit successfully!');
   }
@@ -512,13 +506,11 @@ export default class EventModel {
     }
     const eventRepository = ShopPDataSource.getRepository(Event);
     const productRepository = ShopPDataSource.getRepository(Product);
-    let productListThatEligible: Product[] = [];
-    let productIdListThatNotExist: string[] = [];
-    let productIdListNotExistInThisEvent: string[] = [];
-    let productIdListThatIsNotYours: string[] = [];
+    const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
+    let eventProductListThatEligible: EventProduct[] = [];
     const event = await eventRepository.findOne({
       relations: {
-        products: true,
+        createdBy: true,
       },
       where: {
         id: eventId,
@@ -539,73 +531,62 @@ export default class EventModel {
     for (let i = 0; i < productIdList.length; i++) {
       const product = await productRepository.findOne({
         relations: {
-          events: true,
           shop: true,
+          eventProducts: true,
         },
         where: {
           id: productIdList[i],
-          // shop: { id: user.shop.id },
         },
       });
       if (!product) {
-        productIdListThatNotExist.push(productIdList[i]);
-        continue;
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products not exist'
+        );
       }
       if (product.shop.id != user.shop.id) {
-        productIdListThatIsNotYours.push(product.id);
-        continue;
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products are not yours'
+        );
       }
-      let eventIdListContainProduct: number[] = product.events.map(
-        eventItem => {
-          return eventItem.id;
-        }
-      );
-      if (!eventIdListContainProduct.includes(event.id))
-        productIdListNotExistInThisEvent.push(product.id);
+      const eventProduct = await eventProductRepository.findOne({
+        relations: {
+          product: true,
+          event: true,
+        },
+        where: {
+          product: { id: product.id },
+          event: { id: eventId },
+        },
+      });
+      if (!eventProduct)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products not exist in this event'
+        );
       else {
-        productListThatEligible.push(product);
+        eventProductListThatEligible.push(eventProduct);
       }
     }
-    if (productIdListThatNotExist.length != 0)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'The following products id you request that not exist:',
-        productIdListThatNotExist
-      );
-    if (productIdListThatIsNotYours.length != 0)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'The following products id you request that are not yours:',
-        productIdListThatIsNotYours
-      );
-    if (productIdListNotExistInThisEvent.length != 0)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'The following products id you request that not exist in this event:',
-        productIdListNotExistInThisEvent
-      );
-    for (let i = 0; i < productListThatEligible.length; i++) {
-      productListThatEligible[i].events = productListThatEligible[
-        i
-      ].events.filter(eventItem => {
-        return eventItem.id != eventId;
-      });
-      productListThatEligible[i].discount = 0;
-      await productRepository.save(productListThatEligible[i]);
+    for (let i = 0; i < eventProductListThatEligible.length; i++) {
+      await eventProductRepository.delete(eventProductListThatEligible[i].id);
     }
     return new Response(HttpStatusCode.OK, 'Delete successfully!');
   }
 
   static async showAllProductsOfEvent(eventId: number) {
     const eventRepository = ShopPDataSource.getRepository(Event);
+    const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
     const event = await eventRepository.findOne({
-      relations: {
-        products: true,
+      select: {
+        status: false
       },
       where: {
         id: eventId,
-      },
-    });
+        status: StatusEnum.ACTIVE
+      }
+    })
     if (!event)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
     if (
@@ -613,12 +594,17 @@ export default class EventModel {
       event.status == StatusEnum.LOCKED
     )
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
-    if (event.products.length == 0)
+    const eventProducts = await eventProductRepository.find({
+      where: {
+        event: {id: eventId},
+      },
+    });
+    if (eventProducts.length == 0)
       return new Response(HttpStatusCode.BAD_REQUEST, 'No products available!');
     return new Response(
       HttpStatusCode.OK,
       'Show products successfully!',
-      event.products
+      eventProducts
     );
   }
 

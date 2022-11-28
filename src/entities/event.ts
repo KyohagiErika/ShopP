@@ -1,3 +1,4 @@
+import { EventProduct } from './eventProduct';
 import { Product } from './product';
 import {
   Entity,
@@ -66,6 +67,9 @@ export class Event {
   )
   additionalInfo: EventAdditionalInfo[];
 
-  @ManyToMany(() => Product, product => product.events)
-  products: Product[];
+  // @ManyToMany(() => Product, product => product.events)
+  // products: Product[];
+
+  @OneToMany(() => EventProduct, eventProduct => eventProduct.event)
+  eventProducts: EventProduct[]
 }

@@ -18,6 +18,7 @@ import { ProductAdditionalInfo } from './productAdditionalInfo';
 import { ProductImage } from './productImage';
 import { Event } from './event';
 import { Shop } from './shop';
+import { EventProduct } from './eventProduct';
 
 /**
  * @swagger
@@ -144,7 +145,10 @@ export class Product {
   @OneToMany(() => OrderProduct, orderProduct => orderProduct.product)
   orderProduct: OrderProduct[];
 
-  @ManyToMany(() => Event, event => event.products)
-  @JoinTable()
-  events: Event[];
+  // @ManyToMany(() => Event, event => event.products)
+  // @JoinTable()
+  // events: Event[];
+
+  @OneToMany(() => EventProduct, eventProduct => eventProduct.product)
+  eventProducts: EventProduct[];
 }
