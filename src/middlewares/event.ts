@@ -226,9 +226,9 @@ export default class EventMiddleware {
       amount,
       res.locals.user
     );
-    res
-      .status(result.getCode())
-      .send({ message: result.getMessage(), data: result.getData() });
+    if (result.getCode() == HttpStatusCode.OK)
+      res.status(result.getCode()).send({ message: result.getMessage() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
   @ControllerService({
@@ -264,9 +264,9 @@ export default class EventMiddleware {
       amount,
       res.locals.user
     );
-    res
-      .status(result.getCode())
-      .send({ message: result.getMessage(), data: result.getData() });
+    if (result.getCode() == HttpStatusCode.OK)
+      res.status(result.getCode()).send({ message: result.getMessage() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
   @ControllerService({
@@ -289,9 +289,9 @@ export default class EventMiddleware {
       productIdList,
       res.locals.user
     );
-    res
-      .status(result.getCode())
-      .send({ message: result.getMessage(), data: result.getData() });
+    if (result.getCode() == HttpStatusCode.OK)
+      res.status(result.getCode()).send({ message: result.getMessage() });
+    else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
   @ControllerService()
