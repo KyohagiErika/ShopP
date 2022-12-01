@@ -1,11 +1,13 @@
 import { Router } from "express";
 import AuthMiddleware from "../middlewares/auth";
+import { checkRole } from "../middlewares/checkRole";
 import MessageMiddleware from "../middlewares/message";
+import { RoleEnum } from "../utils/shopp.enum";
 
 const routes = Router();
 
-routes.get('/:chatRoomId', AuthMiddleware.checkJwt, MessageMiddleware.getMessages);
+routes.get('/shop/:chatRoomId([0-9]+)', [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)], MessageMiddleware.getShopMessages);
 
-routes.post('/', AuthMiddleware.checkJwt, MessageMiddleware.addMessage);
+routes.get('/customer/:chatRoomId([0-9]+)', AuthMiddleware.checkJwt, MessageMiddleware.getCustomerMessages);
 
 export default routes;

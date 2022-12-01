@@ -1,5 +1,5 @@
 import Response from '../utils/response';
-import { HttpStatusCode } from './../utils/shopp.enum';
+import { HttpStatusCode, TypeTransferEnum } from './../utils/shopp.enum';
 import { ShopPDataSource } from './../data';
 import { User } from '../entities/user';
 import { Message } from '../entities/message';
@@ -10,7 +10,6 @@ export default class MessageModel {
   static async getMessages(chatRoomId: number) {
     const messages = await messageRepository.find({
       relations: {
-        sender: true,
         chatRoom: true,
       },
       where: { chatRoom: { id: chatRoomId } },
@@ -21,12 +20,13 @@ export default class MessageModel {
     return messages && messages.length > 0 ? messages : false;
   }
 
-  static async addMessage(user: User, chatRoomId: number, text: string) {
+  static async addMessage(user: User, roleSender: TypeTransferEnum, chatRoomId: number, text: string) {
     const chatRoom = await ChatRoomModel.findChatRoomById(chatRoomId);
     if (!chatRoom)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Chat Room not found!');
 
-    if (chatRoom.members.find(member => member.id === user.id) == undefined) {
+    if ((roleSender === TypeTransferEnum.CUSTOMER_TO_SHOP && chatRoom.customer.id !== user.customer.id) || 
+        (roleSender === TypeTransferEnum.SHOP_TO_CUSTOMER && chatRoom.shop.id !== user.shop.id)) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'You are not in this chat room!'
@@ -34,7 +34,7 @@ export default class MessageModel {
     }
     const message = new Message();
     message.chatRoom = chatRoom;
-    message.sender = user;
+    message.roleSender = roleSender;
     message.text = text;
     await messageRepository.save(message);
     return new Response(HttpStatusCode.OK, 'Message sent!');

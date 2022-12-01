@@ -12,7 +12,6 @@ import Response from '../utils/response';
 import CartModel from './cart';
 import { LocalFile } from '../entities/localFile';
 import { deleteFile } from '../utils';
-import { isNotEmpty } from 'class-validator/types/decorator/decorators';
 import UploadModel from './upload';
 import { ModelService } from '../utils/decorators';
 import { EntityManager } from 'typeorm';
@@ -328,5 +327,15 @@ export default class CustomerModel {
       'Show followed shops successfully!',
       customer.shopsFollowed
     );
+  }
+
+  static async getById(customerId: string) {
+    const customerRepository = ShopPDataSource.getRepository(Customer);
+    return await customerRepository.findOne({
+      where: {
+        id : customerId,
+        user: { status: StatusEnum.ACTIVE },
+      },
+    });
   }
 }

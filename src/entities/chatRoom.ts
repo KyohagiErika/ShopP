@@ -3,11 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  ManyToMany,
+  ManyToOne,
 } from 'typeorm';
 import { StatusEnum } from '../utils/shopp.enum';
+import { Customer } from './customer';
 import { Message } from './message';
-import { User } from './user';
+import { Shop } from './shop';
 
 @Entity()
 export class ChatRoom {
@@ -24,6 +25,9 @@ export class ChatRoom {
   @OneToMany(() => Message, messages => messages.chatRoom)
   messages: Message[];
 
-  @ManyToMany(() => User, members => members.chatRooms)
-  members: User[];
+  @ManyToOne(() => Shop, shop => shop.chatRooms)
+  shop: Shop;
+
+  @ManyToOne(() => Customer, customer => customer.chatRooms)
+  customer: Customer;
 }

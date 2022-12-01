@@ -6,8 +6,6 @@ import {
   CreateDateColumn,
   OneToMany,
   OneToOne,
-  ManyToMany,
-  JoinTable,
 } from 'typeorm';
 
 import bcrypt from 'bcryptjs';
@@ -16,7 +14,6 @@ import { Customer } from './customer';
 import { StatusEnum } from '../utils/shopp.enum';
 import { Shop } from './shop';
 import { Event } from './event';
-import { ChatRoom } from './chatRoom';
 
 /**
  * @swagger
@@ -68,7 +65,7 @@ export class User {
   @Column()
   phone: string;
 
-  @Column()
+  @Column({select: false})
   password: string;
 
   @Column({
@@ -78,11 +75,10 @@ export class User {
   })
   status: StatusEnum;
 
-  @Column()
-  @CreateDateColumn()
+  @CreateDateColumn({select: false})
   createdAt: Date;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   lockedAt: Date;
 
   @OneToOne(() => UserRole, userRole => userRole.user)
@@ -99,10 +95,6 @@ export class User {
 
   @OneToMany(() => Voucher, voucher => voucher.createdBy)
   voucher: Voucher[];
-
-  @ManyToMany(() => ChatRoom, chatRooms => chatRooms.members)
-  @JoinTable()
-  chatRooms: ChatRoom[];
 
   hashPassword() {
     this.password = bcrypt.hashSync(this.password, 8);

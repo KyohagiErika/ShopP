@@ -7,13 +7,14 @@ import {
   JoinColumn,
   OneToMany,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { LocalFile } from './localFile';
-import { OrderProduct } from './orderProduct';
 import { Order } from './order';
 import { Product } from './product';
 import { Report } from './report';
 import { User } from './user';
+import { ChatRoom } from './chatRoom';
 
 /**
  * @swagger
@@ -99,4 +100,8 @@ export class Shop {
 
   @ManyToMany(() => Customer, customer => customer.shopsFollowed)
   followers: Customer[];
+
+  @OneToMany(() => ChatRoom, chatRooms => chatRooms.shop)
+  @JoinTable()
+  chatRooms: ChatRoom[];
 }

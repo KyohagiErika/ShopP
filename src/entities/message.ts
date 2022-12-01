@@ -5,8 +5,8 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
+import { TypeTransferEnum } from '../utils/shopp.enum';
 import { ChatRoom } from './chatRoom';
-import { User } from './user';
 
 @Entity()
 export class Message {
@@ -19,8 +19,12 @@ export class Message {
   @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
 
-  @ManyToOne(() => User)
-  sender: User;
+  @Column({
+    type: 'enum',
+    enum: TypeTransferEnum,
+    default: TypeTransferEnum.CUSTOMER_TO_SHOP,
+  })
+  roleSender: TypeTransferEnum;
 
   @ManyToOne(() => ChatRoom, chatRoom => chatRoom.messages)
   chatRoom: ChatRoom;

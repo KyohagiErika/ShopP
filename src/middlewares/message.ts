@@ -1,37 +1,36 @@
 import { Request, Response } from 'express';
 import MessageModel from '../models/message';
 import { ControllerService } from '../utils/decorators';
-import { HttpStatusCode } from '../utils/shopp.enum';
+import { HttpStatusCode, TypeTransferEnum } from '../utils/shopp.enum';
 
 export default class MessageMiddleware {
   @ControllerService()
-  static async getMessages(req: Request, res: Response) {
-    const result = await MessageModel.getMessages(res.locals.user);
-    if (result.getCode() == HttpStatusCode.OK)
+  static async getShopMessages(req: Request, res: Response) {
+    //check valid chatRoom of shop
+
+
+    const result = await MessageModel.getMessages(+req.params.chatRoomId);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
       res
-        .status(HttpStatusCode.OK)
-        .send({ message: result.getMessage(), data: result.getData() });
-    else res.status(result.getCode()).send({ message: result.getMessage() });
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'No Message Available!' });
+    }
   }
 
-  @ControllerService({
-    body: [
-      {
-        name: 'chatRoomId',
-        type: Number,
-      },
-      {
-        name: 'text',
-        type: String,
-      }
-    ],
-})
-  static async addMessage(req: Request, res: Response) {
-    const result = await MessageModel.addMessage(
-      res.locals.user,
-      req.body.chatRoomId,
-      req.body.text
-    );
-    res.status(result.getCode()).send({ message: result.getMessage() });
+  @ControllerService()
+  static async getCustomerMessages(req: Request, res: Response) {
+    //check valid chatRoom of customer
+
+
+    const result = await MessageModel.getMessages(+req.params.chatRoomId);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'No Message Available!' });
+    }
   }
 }
