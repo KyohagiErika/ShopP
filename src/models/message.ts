@@ -29,7 +29,7 @@ export default class MessageModel {
     if (chatRoom.members.find(member => member.id === user.id) == undefined) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        'You are not a member of this chat room!'
+        'You are not in this chat room!'
       );
     }
     const message = new Message();
