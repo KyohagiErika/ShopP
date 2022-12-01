@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Order } from './order';
 import { Product } from './product';
 
@@ -19,12 +13,12 @@ export class OrderProduct {
   @Column()
   additionalInfo: string;
 
-  @ManyToOne(() => Order, orderNumber => orderNumber.id)
+  @ManyToOne(type => Order, orderNumber => orderNumber.orderProducts)
   orderNumber: Order;
 
   @Column()
   quantity: number;
 
-  @ManyToOne(() => Product, product => product.id)
+  @ManyToOne(() => Product, product => product.orderProduct)
   product: Product;
 }

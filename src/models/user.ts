@@ -3,7 +3,6 @@ import { User } from '../entities/user';
 import { UserRole } from '../entities/userRole';
 import { StatusEnum, RoleEnum, HttpStatusCode } from '../utils/shopp.enum';
 import Response from '../utils/response';
-import { In, LessThan } from 'typeorm';
 
 const userRepository = ShopPDataSource.getRepository(User);
 const userRoleRepository = ShopPDataSource.getRepository(UserRole);
