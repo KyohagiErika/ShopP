@@ -7,8 +7,8 @@ import { Evaluation } from './../entities/evaluation';
 import { HttpStatusCode, RoleEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { User } from '../entities/user';
-import { ModelService } from '../utils/decorators';
 import { Customer } from '../entities/customer';
+
 export default class EvaluationModel {
   static async showAllEvaluationsOfProduct(productId: string) {
     const productRepository = ShopPDataSource.getRepository(Product);

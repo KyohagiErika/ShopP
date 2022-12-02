@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import EvaluationModel from '../models/evaluation';
 import { LocalFile } from '../entities/localFile';
 import UploadModel from '../models/upload';
+
 export default class EvaluationMiddleware {
   @ControllerService()
   static async showAllEvaluationsOfProduct(req: Request, res: Response) {
@@ -53,7 +54,7 @@ export default class EvaluationMiddleware {
   })
   static async postNewEvaluation(req: Request, res: Response) {
     let evaluationImages: LocalFile[] = [];
-    if (req.files) {
+    if (req.files != undefined) {
       evaluationImages = await UploadModel.uploadMultiple(req.files);
     }
     const result = await EvaluationModel.postNewEvaluation(
@@ -111,6 +112,7 @@ export default class EvaluationMiddleware {
     else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
+  @ControllerService()
   static async deleteEvaluation(req: Request, res: Response) {
     const result = await EvaluationModel.deleteEvaluation(
       +req.params.evaluationId,
