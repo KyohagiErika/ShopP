@@ -1,6 +1,5 @@
 import { Customer } from './customer';
 import { EvaluationImage } from './evaluationImage';
-import { LocalFile } from './localFile';
 import { OrderProduct } from './orderProduct';
 import {
   Entity,
@@ -29,8 +28,7 @@ export class Evaluation {
     default: 0,
   })
   likes: number;
-
-  @Column()
+  
   @CreateDateColumn()
   createdAt: Date;
 

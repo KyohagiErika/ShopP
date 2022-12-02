@@ -8,8 +8,6 @@ import {
 import { Evaluation } from './evaluation';
 import { LocalFile } from './localFile';
 
-import { Product } from './product';
-
 @Entity()
 export class EvaluationImage {
   @PrimaryGeneratedColumn()
