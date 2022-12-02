@@ -27,7 +27,7 @@ export default class ShopModel {
   }
 
   static async getOneById(id: string) {
-    const shop = await shopRepository.find({
+    const shop = await shopRepository.findOne({
       relations: {
         avatar: true,
       },

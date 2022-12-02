@@ -24,7 +24,7 @@ export default class ProductAdditionInfoModel {
   }
 
   static async getOneById(id: number) {
-    const productAdditionalInfo = await productAdditionInfoRepository.find({
+    const productAdditionalInfo = await productAdditionInfoRepository.findOne({
       select: {
         key: true,
         value: true,
@@ -37,7 +37,7 @@ export default class ProductAdditionInfoModel {
   }
 
   static async getOneByProductId(productId: string) {
-    const productAdditionalInfo = await productAdditionInfoRepository.find({
+    const productAdditionalInfo = await productAdditionInfoRepository.findOne({
       select: {
         key: true,
         value: true,
