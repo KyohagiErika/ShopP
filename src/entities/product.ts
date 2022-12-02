@@ -7,6 +7,8 @@ import {
   JoinColumn,
   OneToMany,
   OneToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { ProductEnum } from '../utils/shopp.enum';
 import { Category } from './category';
@@ -14,7 +16,9 @@ import { OrderProduct } from './orderProduct';
 import { PackagedProductSize } from './packagedProductSize';
 import { ProductAdditionalInfo } from './productAdditionalInfo';
 import { ProductImage } from './productImage';
+import { Event } from './event';
 import { Shop } from './shop';
+import { EventProduct } from './eventProduct';
 
 /**
  * @swagger
@@ -134,4 +138,11 @@ export class Product {
 
   @OneToMany(() => OrderProduct, orderProduct => orderProduct.product)
   orderProduct: OrderProduct[];
+
+  // @ManyToMany(() => Event, event => event.products)
+  // @JoinTable()
+  // events: Event[];
+
+  @OneToMany(() => EventProduct, eventProduct => eventProduct.product)
+  eventProducts: EventProduct[];
 }
