@@ -368,6 +368,7 @@ export default class EventModel {
           'Some products are not yours'
         );
       }
+      
       const eventProduct = await eventProductRepository.findOne({
         relations: {
           product: true,
@@ -384,9 +385,13 @@ export default class EventModel {
           HttpStatusCode.BAD_REQUEST,
           'Some products that already exist in this event:'
         );
-      else {
-        productListThatEligible.push(product);
-      }
+      if (product.quantity < amount) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products do not have enough quantity'
+        );
+      } 
+      productListThatEligible.push(product);
     }
     for (let i = 0; i < productListThatEligible.length; i++) {
       await eventProductRepository.save({
