@@ -17,7 +17,12 @@ export default class MessageModel {
     return messages && messages.length > 0 ? messages : false;
   }
 
-  static async addMessage(user: User, roleSender: TypeTransferEnum, chatRoomId: number, text: string) {
+  static async addMessage(
+    user: User,
+    roleSender: TypeTransferEnum,
+    chatRoomId: number,
+    text: string
+  ) {
     const chatRoom = await ChatRoomModel.findChatRoomById(chatRoomId, user);
     if (!chatRoom)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Chat Room not found!');

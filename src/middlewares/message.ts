@@ -8,7 +8,6 @@ export default class MessageMiddleware {
   static async getShopMessages(req: Request, res: Response) {
     //check valid chatRoom of shop
 
-
     const result = await MessageModel.getMessages(+req.params.chatRoomId);
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
@@ -22,7 +21,6 @@ export default class MessageMiddleware {
   @ControllerService()
   static async getCustomerMessages(req: Request, res: Response) {
     //check valid chatRoom of customer
-
 
     const result = await MessageModel.getMessages(+req.params.chatRoomId);
     if (result) {

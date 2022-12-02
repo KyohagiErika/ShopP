@@ -333,7 +333,7 @@ export default class CustomerModel {
     const customerRepository = ShopPDataSource.getRepository(Customer);
     return await customerRepository.findOne({
       where: {
-        id : customerId,
+        id: customerId,
         user: { status: StatusEnum.ACTIVE },
       },
     });

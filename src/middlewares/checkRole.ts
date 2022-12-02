@@ -7,7 +7,7 @@ export const checkRole = (role: RoleEnum) => {
     //Get the user ID from previous midleware
     const user: User = res.locals.user;
     //Check if authorized user roles includes the role
-    if(role === RoleEnum.CUSTOMER && user.customer !== null) next();
+    if (role === RoleEnum.CUSTOMER && user.customer !== null) next();
     else if (user.role.role >= role) next();
     else
       res

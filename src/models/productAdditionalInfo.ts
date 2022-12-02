@@ -101,10 +101,11 @@ export default class ProductAdditionInfoModel {
     if (productAdditionalInfo == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exit !');
     } else {
-      const productAdditionalInfoEdit = await productAdditionInfoRepository.update(
-        { id: id },
-        { key: key, value: value }
-      );
+      const productAdditionalInfoEdit =
+        await productAdditionInfoRepository.update(
+          { id: id },
+          { key: key, value: value }
+        );
       if (productAdditionalInfoEdit.affected == 1) {
         return new Response(
           HttpStatusCode.OK,

@@ -118,10 +118,11 @@ export default class PackagedProductSizeModel {
     if (packagedProductSize == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exit !');
     } else {
-      const packagedProductSizeEdit = await packagedProductSizeRepository.update(
-        { id: id },
-        { weight: weight, length: length, width: width, height: height }
-      );
+      const packagedProductSizeEdit =
+        await packagedProductSizeRepository.update(
+          { id: id },
+          { weight: weight, length: length, width: width, height: height }
+        );
       if (packagedProductSizeEdit.affected == 1) {
         return new Response(
           HttpStatusCode.OK,

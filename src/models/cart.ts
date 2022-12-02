@@ -12,9 +12,9 @@ export default class CartModel {
     const cartRepository = ShopPDataSource.getRepository(Cart);
     const cart = await cartRepository.findOne({
       where: {
-        customer: { 
+        customer: {
           user: { status: StatusEnum.ACTIVE },
-          id: user.customer.id
+          id: user.customer.id,
         },
       },
     });

@@ -132,18 +132,24 @@ export default class ChatRoomMiddleware {
   @ControllerService()
   static async deleteChatRoom(req: Request, res: Response) {
     const user: User = res.locals.user;
-    const existedChatRoom = await ChatRoomModel.findChatRoomById(+req.params.chatRoomId, user);
+    const existedChatRoom = await ChatRoomModel.findChatRoomById(
+      +req.params.chatRoomId,
+      user
+    );
 
     if (!existedChatRoom) {
       res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'No Chat Room available!' });
     }
-    const result = await ChatRoomModel.deleteChatRoomById(+req.params.chatRoomId);
-    if(result.affected !== undefined && result.affected > 0)
-    res.status(HttpStatusCode.OK).send({ message: 'Delete Success!' });
-    else res
-    .status(HttpStatusCode.UNKNOWN_ERROR)
-    .send({ message: 'Cannot delete Chat Room!' });
+    const result = await ChatRoomModel.deleteChatRoomById(
+      +req.params.chatRoomId
+    );
+    if (result.affected !== undefined && result.affected > 0)
+      res.status(HttpStatusCode.OK).send({ message: 'Delete Success!' });
+    else
+      res
+        .status(HttpStatusCode.UNKNOWN_ERROR)
+        .send({ message: 'Cannot delete Chat Room!' });
   }
 }
