@@ -1,7 +1,5 @@
 import { EventProduct } from './../entities/eventProduct';
-import { productsInCart } from './../interfaces/cart';
 import { Product } from './../entities/product';
-import { Shop } from './../entities/shop';
 import { User } from './../entities/user';
 import { LocalFile } from './../entities/localFile';
 import { EventAdditionalInfo } from './../entities/eventAdditionalInfo';
@@ -10,7 +8,7 @@ import { Event } from './../entities/event';
 import { ShopPDataSource } from './../data';
 import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
-import { ArrayContainedBy, ArrayContains, IsNull, Like, Not } from 'typeorm';
+import { Like } from 'typeorm';
 
 export default class EventModel {
   static async listAdminEvents() {
@@ -323,14 +321,14 @@ export default class EventModel {
     }
     const eventRepository = ShopPDataSource.getRepository(Event);
     const productRepository = ShopPDataSource.getRepository(Product);
-    const eventProductRepository = ShopPDataSource.getRepository(EventProduct)
+    const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
     let productListThatEligible: Product[] = [];
     // let productIdListThatNotExist: string[] = [];
     // let productIdListAlreadyExistInThisEvent: string[] = [];
     // let productIdListThatIsNotYours: string[] = [];
     const event = await eventRepository.findOne({
       relations: {
-        createdBy: true
+        createdBy: true,
       },
       where: {
         id: eventId,
@@ -344,8 +342,11 @@ export default class EventModel {
       event.status == StatusEnum.LOCKED
     )
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
-    if(event.roleCreator == RoleEnum.SHOP && event.createdBy.id != user.id)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized access to this event!');
+    if (event.roleCreator == RoleEnum.SHOP && event.createdBy.id != user.id)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized access to this event!'
+      );
     for (let i = 0; i < productIdList.length; i++) {
       const product = await productRepository.findOne({
         relations: {
@@ -371,26 +372,26 @@ export default class EventModel {
       const eventProduct = await eventProductRepository.findOne({
         relations: {
           product: true,
-          event: true
+          event: true,
         },
         where: {
           status: StatusEnum.ACTIVE,
-          product: {id: product.id},
-          event: {id: eventId}
-        }
-      })
+          product: { id: product.id },
+          event: { id: eventId },
+        },
+      });
       if (eventProduct)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
           'Some products that already exist in this event:'
         );
-        if (product.quantity < amount) {
-          return new Response(
-            HttpStatusCode.BAD_REQUEST,
-            'Some products do not have enough quantity'
-          );
-        } 
-        productListThatEligible.push(product);
+      if (product.quantity < amount) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products do not have enough quantity'
+        );
+      }
+      productListThatEligible.push(product);
     }
     for (let i = 0; i < productListThatEligible.length; i++) {
       await eventProductRepository.save({
@@ -579,7 +580,7 @@ export default class EventModel {
     }
     for (let i = 0; i < eventProductListThatEligible.length; i++) {
       await eventProductRepository.update(eventProductListThatEligible[i].id, {
-        status: StatusEnum.INACTIVE
+        status: StatusEnum.INACTIVE,
       });
     }
     return new Response(HttpStatusCode.OK, 'Delete successfully!');
@@ -590,13 +591,13 @@ export default class EventModel {
     const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
     const event = await eventRepository.findOne({
       select: {
-        status: false
+        status: false,
       },
       where: {
         id: eventId,
-        status: StatusEnum.ACTIVE
-      }
-    })
+        status: StatusEnum.ACTIVE,
+      },
+    });
     if (!event)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
     if (
@@ -606,7 +607,7 @@ export default class EventModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
     const eventProducts = await eventProductRepository.find({
       where: {
-        event: {id: eventId},
+        event: { id: eventId },
       },
     });
     if (eventProducts.length == 0)
