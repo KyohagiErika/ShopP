@@ -1,5 +1,4 @@
 import { EventProduct } from './eventProduct';
-import { Product } from './product';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -9,8 +8,6 @@ import {
   OneToOne,
   ManyToOne,
   OneToMany,
-  ManyToMany,
-  JoinTable,
 } from 'typeorm';
 
 import { User } from './user';
@@ -71,5 +68,5 @@ export class Event {
   // products: Product[];
 
   @OneToMany(() => EventProduct, eventProduct => eventProduct.event)
-  eventProducts: EventProduct[]
+  eventProducts: EventProduct[];
 }
