@@ -5,10 +5,9 @@ import { Shop } from './../entities/shop';
 import { User } from './../entities/user';
 import { LocalFile } from './../entities/localFile';
 import { EventAdditionalInfo } from './../entities/eventAdditionalInfo';
-import { HttpStatusCode, RoleEnum } from './../utils/shopp.enum';
+import { HttpStatusCode, RoleEnum, StatusEnum } from './../utils/shopp.enum';
 import { Event } from './../entities/event';
 import { ShopPDataSource } from './../data';
-import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { ArrayContainedBy, ArrayContains, IsNull, Like, Not } from 'typeorm';
 
@@ -379,6 +378,7 @@ export default class EventModel {
           event: true
         },
         where: {
+          status: StatusEnum.ACTIVE,
           product: {id: product.id},
           event: {id: eventId}
         }
@@ -386,7 +386,7 @@ export default class EventModel {
       if (eventProduct)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
-          'Some products that already exist in this event:'
+          'Some products that already exist in this event'
         );
       else {
         productListThatEligible.push(product);
@@ -397,6 +397,7 @@ export default class EventModel {
         discount,
         amount,
         event,
+        status: StatusEnum.ACTIVE,
         product: productListThatEligible[i],
       });
     }
@@ -471,6 +472,7 @@ export default class EventModel {
           event: true,
         },
         where: {
+          status: StatusEnum.ACTIVE,
           product: { id: product.id },
           event: { id: eventId },
         },
@@ -561,6 +563,7 @@ export default class EventModel {
           event: true,
         },
         where: {
+          status: StatusEnum.ACTIVE,
           product: { id: product.id },
           event: { id: eventId },
         },
@@ -575,7 +578,9 @@ export default class EventModel {
       }
     }
     for (let i = 0; i < eventProductListThatEligible.length; i++) {
-      await eventProductRepository.delete(eventProductListThatEligible[i].id);
+      await eventProductRepository.update(eventProductListThatEligible[i].id,{
+        status: StatusEnum.INACTIVE
+      });
     }
     return new Response(HttpStatusCode.OK, 'Delete successfully!');
   }
