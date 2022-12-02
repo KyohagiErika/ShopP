@@ -65,7 +65,7 @@ export class User {
   @Column()
   phone: string;
 
-  @Column({select: false})
+  @Column()
   password: string;
 
   @Column({
@@ -75,10 +75,10 @@ export class User {
   })
   status: StatusEnum;
 
-  @CreateDateColumn({select: false})
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ nullable: true, select: false })
+  @Column({ nullable: true })
   lockedAt: Date;
 
   @OneToOne(() => UserRole, userRole => userRole.user)

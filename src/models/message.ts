@@ -9,9 +9,6 @@ const messageRepository = ShopPDataSource.getRepository(Message);
 export default class MessageModel {
   static async getMessages(chatRoomId: number) {
     const messages = await messageRepository.find({
-      relations: {
-        chatRoom: true,
-      },
       where: { chatRoom: { id: chatRoomId } },
       order: {
         createdAt: 'ASC',
@@ -21,22 +18,15 @@ export default class MessageModel {
   }
 
   static async addMessage(user: User, roleSender: TypeTransferEnum, chatRoomId: number, text: string) {
-    const chatRoom = await ChatRoomModel.findChatRoomById(chatRoomId);
+    const chatRoom = await ChatRoomModel.findChatRoomById(chatRoomId, user);
     if (!chatRoom)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Chat Room not found!');
 
-    if ((roleSender === TypeTransferEnum.CUSTOMER_TO_SHOP && chatRoom.customer.id !== user.customer.id) || 
-        (roleSender === TypeTransferEnum.SHOP_TO_CUSTOMER && chatRoom.shop.id !== user.shop.id)) {
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'You are not in this chat room!'
-      );
-    }
     const message = new Message();
     message.chatRoom = chatRoom;
     message.roleSender = roleSender;
     message.text = text;
     await messageRepository.save(message);
-    return new Response(HttpStatusCode.OK, 'Message sent!');
+    return new Response(HttpStatusCode.OK, 'Created Message!');
   }
 }

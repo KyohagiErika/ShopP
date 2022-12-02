@@ -14,7 +14,7 @@ routes.get(
 
 routes.get(
   '/customer',
-  AuthMiddleware.checkJwt,
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   ChatRoomMiddleware.getCustomerChatRoom
 );
 
@@ -26,20 +26,26 @@ routes.get(
 
 routes.get(
   '/customer/find/:shopId',
-  AuthMiddleware.checkJwt,
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   ChatRoomMiddleware.findCustomerChatRoom
 );
 
 routes.post(
-  '/:customerId',
+  '/shop/:customerId',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   ChatRoomMiddleware.createShopChat
 );
 
 routes.post(
-  '/:shopId',
-  AuthMiddleware.checkJwt,
+  '/customer/:shopId',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   ChatRoomMiddleware.createCustomerChat
+);
+
+routes.get(
+  '/delete/:chatRoomId([0-9]+)',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  ChatRoomMiddleware.deleteChatRoom
 );
 
 export default routes;

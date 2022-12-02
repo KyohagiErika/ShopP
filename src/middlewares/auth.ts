@@ -81,7 +81,6 @@ class AuthMiddleware {
       flag
     );
     if (result.getCode() === HttpStatusCode.OK) {
-      //Send the jwt in the response
       res
         .status(result.getCode())
         .send({ message: result.getMessage(), token: result.getData() });

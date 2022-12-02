@@ -74,7 +74,7 @@ export default class ChatRoomMiddleware {
   @ControllerService()
   static async createShopChat(req: Request, res: Response) {
     const user: User = res.locals.user;
-    if (user.shop.id === req.params.customerId)
+    if (user.customer !== null && user.customer.id === req.params.customerId)
       return res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'Cannot create chat with yourself!' });
@@ -103,7 +103,7 @@ export default class ChatRoomMiddleware {
   @ControllerService()
   static async createCustomerChat(req: Request, res: Response) {
     const user: User = res.locals.user;
-    if (user.customer.id === req.params.shopId)
+    if (user.shop !== null && user.shop.id === req.params.shopId)
       return res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'Cannot create chat with yourself!' });
@@ -127,5 +127,23 @@ export default class ChatRoomMiddleware {
     return res
       .status(result.getCode())
       .send({ message: result.getMessage(), data: result.getData() });
+  }
+
+  @ControllerService()
+  static async deleteChatRoom(req: Request, res: Response) {
+    const user: User = res.locals.user;
+    const existedChatRoom = await ChatRoomModel.findChatRoomById(+req.params.chatRoomId, user);
+
+    if (!existedChatRoom) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'No Chat Room available!' });
+    }
+    const result = await ChatRoomModel.deleteChatRoomById(+req.params.chatRoomId);
+    if(result.affected !== undefined && result.affected > 0)
+    res.status(HttpStatusCode.OK).send({ message: 'Delete Success!' });
+    else res
+    .status(HttpStatusCode.UNKNOWN_ERROR)
+    .send({ message: 'Cannot delete Chat Room!' });
   }
 }

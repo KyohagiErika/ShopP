@@ -13,7 +13,6 @@ export default class ChatRoomModel {
   static async getShopChatRoom(user: User) {
     const chatRooms = await chatRoomRepository.find({
       relations: {
-        shop: true,
         customer: true,
       },
       where: { status: StatusEnum.ACTIVE, shop: { id: user.shop.id } },
@@ -25,7 +24,6 @@ export default class ChatRoomModel {
     const chatRooms = await chatRoomRepository.find({
       relations: {
         shop: true,
-        customer: true,
       },
       where: { status: StatusEnum.ACTIVE, customer: { id: user.customer.id } },
     });
@@ -48,12 +46,14 @@ export default class ChatRoomModel {
     chatRoom.shop = shop;
     chatRoom.customer = customer;
     const chatRoomEntity = await chatRoomRepository.save(chatRoom);
-    return new Response(HttpStatusCode.OK, `Create Chat Room successfully!`, {
-      id: chatRoomEntity.id,
-    });
+    return new Response(
+      HttpStatusCode.OK,
+      `Create Chat Room successfully!`,
+      chatRoomEntity
+    );
   }
 
-  static async findChatRoomById(id: number) {
+  static async findChatRoomById(id: number, user: User) {
     const chatRoom = await chatRoomRepository.findOne({
       relations: {
         shop: true,
@@ -61,6 +61,21 @@ export default class ChatRoomModel {
       },
       where: { id: id, status: StatusEnum.ACTIVE },
     });
-    return chatRoom ? chatRoom : false;
+    if (chatRoom != null) {
+      // Check if user is in this chat room
+      if (
+        user.customer == null ||
+        (user.customer != null && chatRoom.customer.id !== user.customer.id) ||
+        user.shop == null ||
+        (user.shop != null && chatRoom.shop.id !== user.shop.id)
+      )
+        return false;
+      else return chatRoom;
+    }
+    return false;
+  }
+
+  static async deleteChatRoomById(id: number) {
+    return await chatRoomRepository.update(id, { status: StatusEnum.INACTIVE });
   }
 }

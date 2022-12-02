@@ -5,9 +5,11 @@ import jwt from 'jsonwebtoken';
 import { User } from './entities/user';
 import UserModel from './models/user';
 import ChatRoomModel from './models/chatRoom';
-import { HttpStatusCode } from './utils/shopp.enum';
+import { HttpStatusCode, TypeTransferEnum } from './utils/shopp.enum';
 import { Message } from './entities/message';
 import { ShopPDataSource } from './data';
+
+const messageRepository = ShopPDataSource.getRepository(Message);
 
 const io = new Server(server, {
   cors: {
@@ -26,31 +28,28 @@ io.use(async (socket, next) => {
     if (user === false) {
       return next(new Error('Not authorized'));
     } else {
-      console.log('user', user);
+      console.log('User: ', user);
       // save the user data into socket object, to be used further
       socket.data.user = user;
       next();
     }
   } catch (e) {
     // if token is invalid, close connection
-    console.log('error', e);
+    console.log('Error: ', e);
     return next(new Error('Not authorized'));
   }
 });
 
 io.on('connection', socket => {
+  const user: User = socket.data.user;
+  //join user to own room
+  socket.join(socket.data.user.id.toString());
   console.log('a user connected');
 
   socket.on('join', async roomName => {
     //check valid chatRoom of user
-    const chatRoom = await ChatRoomModel.findChatRoomById(roomName);
-    if (!chatRoom) socket.emit('join-failed', 'Chat room not found!');
-    else if (
-      chatRoom.members.find(member => member.id === socket.data.user.id) ==
-      undefined
-    ) {
-      socket.emit('join-failed', 'You are not in this chat room!');
-    }
+    const chatRoom = await ChatRoomModel.findChatRoomById(roomName, user);
+    if (!chatRoom) socket.emit('join-failed', 'Chat Room not found!');
 
     // join chat room
     console.log('User:' + socket.data.user.id + ' join room: ' + roomName);
@@ -61,31 +60,27 @@ io.on('connection', socket => {
     console.log('user disconnected');
   });
 
-  // socket.on('my message', msg => {
-  //   console.log('message: ' + msg);
-  //   io.emit('my broadcast', `server: ${msg}`);
-  // });
-
-  socket.on('message', async ({ text, roomName }, callback) => {
+  socket.on('message', async ({ text, roomName, roleSender }, callback) => {
+    if (
+      !(
+        text instanceof String &&
+        roomName instanceof Number &&
+        (roleSender === TypeTransferEnum.CUSTOMER_TO_SHOP ||
+          roleSender === TypeTransferEnum.SHOP_TO_CUSTOMER)
+      )
+    )
+      socket.emit('send-failed', 'Invalid message!');
     //check valid chatRoom of user
-    const chatRoom = await ChatRoomModel.findChatRoomById(roomName);
-    if (!chatRoom) socket.emit('send-failed', 'Chat room not found!');
-    else if (
-      chatRoom.members.find(member => member.id === socket.data.user.id) ==
-      undefined
-    ) {
-      socket.emit('send-failed', 'You are not in this chat room!');
-    }
+    const chatRoom = await ChatRoomModel.findChatRoomById(roomName, user);
+    if (!chatRoom) socket.emit('send-failed', 'Chat Room not found!');
 
     console.log('message: ' + text + ' in ' + roomName);
     // generate data to send to receivers
     const message = new Message();
     message.chatRoom = roomName;
-    message.sender = socket.data.user;
+    message.roleSender = roleSender;
     message.text = text;
-    const outgoingMessage = await ShopPDataSource.getRepository(Message).save(
-      message
-    );
+    const outgoingMessage = await messageRepository.save(message);
 
     // send socket to all in room except sender
     socket.to(roomName).emit('message', outgoingMessage);
