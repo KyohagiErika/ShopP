@@ -589,9 +589,6 @@ export default class EventModel {
     const eventRepository = ShopPDataSource.getRepository(Event);
     const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
     const event = await eventRepository.findOne({
-      select: {
-        status: false
-      },
       where: {
         id: eventId,
         status: StatusEnum.ACTIVE
@@ -606,7 +603,10 @@ export default class EventModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
     const eventProducts = await eventProductRepository.find({
       select: {
-        status: false,
+        id: true,
+        discount: true,
+        amount: true,
+        sold: true,
       },
       where: {
         status: StatusEnum.ACTIVE,
