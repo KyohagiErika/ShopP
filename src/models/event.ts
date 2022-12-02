@@ -374,6 +374,7 @@ export default class EventModel {
           event: true
         },
         where: {
+          status: StatusEnum.ACTIVE,
           product: {id: product.id},
           event: {id: eventId}
         }
@@ -392,6 +393,7 @@ export default class EventModel {
         discount,
         amount,
         event,
+        status: StatusEnum.ACTIVE,
         product: productListThatEligible[i],
       });
     }
@@ -466,6 +468,7 @@ export default class EventModel {
           event: true,
         },
         where: {
+          status: StatusEnum.ACTIVE,
           product: { id: product.id },
           event: { id: eventId },
         },
@@ -556,6 +559,7 @@ export default class EventModel {
           event: true,
         },
         where: {
+          status: StatusEnum.ACTIVE,
           product: { id: product.id },
           event: { id: eventId },
         },
@@ -570,7 +574,9 @@ export default class EventModel {
       }
     }
     for (let i = 0; i < eventProductListThatEligible.length; i++) {
-      await eventProductRepository.delete(eventProductListThatEligible[i].id);
+      await eventProductRepository.update(eventProductListThatEligible[i].id, {
+        status: StatusEnum.INACTIVE
+      });
     }
     return new Response(HttpStatusCode.OK, 'Delete successfully!');
   }
@@ -595,7 +601,11 @@ export default class EventModel {
     )
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
     const eventProducts = await eventProductRepository.find({
+      select: {
+        status: false,
+      },
       where: {
+        status: StatusEnum.ACTIVE,
         event: {id: eventId},
       },
     });
