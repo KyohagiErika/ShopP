@@ -36,7 +36,7 @@ export class Evaluation {
 
   @ManyToMany(() => Customer, customer => customer.likedEvaluations)
   @JoinTable()
-  likedPeople: Customer[]
+  likedPeople: Customer[];
 
   @OneToOne(() => OrderProduct, orderProduct => orderProduct.evaluation)
   @JoinColumn()
@@ -47,5 +47,5 @@ export class Evaluation {
     evaluationImage => evaluationImage.evaluation
   )
   @JoinColumn()
-  evaluationImages: EvaluationImage[]
+  evaluationImages: EvaluationImage[];
 }

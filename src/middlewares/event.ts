@@ -283,7 +283,7 @@ export default class EventMiddleware {
   })
   static async deleteProductsOfEvent(req: Request, res: Response) {
     const eventId = +req.params.eventId;
-    const productIdList = req.body.productIdList
+    const productIdList = req.body.productIdList;
     const result = await EventModel.deleteProductsOfEvent(
       eventId,
       productIdList,

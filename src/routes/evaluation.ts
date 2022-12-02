@@ -20,7 +20,6 @@ routes.get(
   EvaluationMiddleware.getEvaluationById
 );
 
-
 // post new evaluation
 routes.post(
   '/new/:orderProductId',
