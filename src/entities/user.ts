@@ -6,6 +6,8 @@ import {
   CreateDateColumn,
   OneToMany,
   OneToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 import bcrypt from 'bcryptjs';

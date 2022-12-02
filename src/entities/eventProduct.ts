@@ -1,5 +1,11 @@
 import { Event } from './event';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Product } from './product';
 import { StatusEnum } from '../utils/shopp.enum';
 
@@ -18,7 +24,7 @@ export class EventProduct {
   amount: number;
 
   @Column({
-    default: 0
+    default: 0,
   })
   sold: number;
 
