@@ -14,49 +14,28 @@ const shopReposity = ShopPDataSource.getRepository(Shop);
 const customerReposity = ShopPDataSource.getRepository(Customer);
 
 export default class ReportModel {
-  static async listAll() {
+  static async listAllReportInProcess() {
     const report = await reportReposity.find({
       relations: {
         shop: true,
         customer: true,
       },
-      select: {
-        id: true,
-        shop: {
-          name: true,
-        },
-        customer: {
-          name: true,
-        },
-        type: true,
-        reason: true,
-        description: true,
-        status: true,
+      where: {
+        status: StatusReportEnum.PROCESSING,
       },
     });
     return report && report.length > 0 ? report : false;
   }
 
-  static async getOneById(id: number) {
+  static async listAllReportProcessed() {
     const report = await reportReposity.find({
       relations: {
         shop: true,
         customer: true,
       },
-      select: {
-        shop: {
-          name: true,
-        },
-        customer: {
-          name: true,
-        },
-        type: true,
-        reason: true,
-        description: true,
-        status: true,
-      },
+
       where: {
-        id: id,
+        status: StatusReportEnum.PROCESSED,
       },
     });
     return report ? report : false;
@@ -64,11 +43,11 @@ export default class ReportModel {
 
   static async viewReport(id: number) {
     const report = await reportReposity.find({
-      select: {
-        reason: true,
-        description: true,
-        status: true,
+      relations: {
+        shop: true,
+        customer: true,
       },
+
       where: {
         id: id,
       },
@@ -123,13 +102,7 @@ export default class ReportModel {
       return new Response(
         HttpStatusCode.CREATED,
         'Create new report successfully !',
-        {
-          shop: shop.name,
-          customer: customer.name,
-          reason: newReport.reason,
-          description: newReport.description,
-          status: newReport.status,
-        }
+        newReport
       );
     }
   }
@@ -178,13 +151,7 @@ export default class ReportModel {
       return new Response(
         HttpStatusCode.CREATED,
         'Create new report successfully !',
-        {
-          shop: shop.name,
-          customer: customer.name,
-          reason: newReport.reason,
-          description: newReport.description,
-          status: newReport.status,
-        }
+        newReport
       );
     }
   }

@@ -9,7 +9,6 @@ import {
   RoleEnum,
 } from '../utils/shopp.enum';
 import Response from '../utils/response';
-import CartModel from './cart';
 import { LocalFile } from '../entities/localFile';
 import { deleteFile } from '../utils';
 import UploadModel from './upload';

@@ -13,6 +13,6 @@ export class ProductAdditionalInfo {
   @Column()
   value: string;
 
-  @ManyToOne(() => Product, product => product.id)
+  @ManyToOne(() => Product, product => product.productAdditionalInfo)
   product: Product;
 }

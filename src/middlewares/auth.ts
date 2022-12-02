@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { ControllerService } from '../utils/decorators';
-import { HttpStatusCode, OtpEnum, StatusEnum } from '../utils/shopp.enum';
+import { HttpStatusCode, OtpEnum } from '../utils/shopp.enum';
 import AuthModel from '../models/auth';
 import config from '../utils/shopp.config';
 import resetPasswordTemplate from '../utils/templates/resetPasswordTemplate';

@@ -1,8 +1,5 @@
-import { productsInCart } from './../interfaces/cart';
-import { Product } from './../entities/product';
 import Response from '../utils/response';
 import { StatusEnum, HttpStatusCode } from './../utils/shopp.enum';
-import { Customer } from './../entities/customer';
 import { ShopPDataSource } from './../data';
 import { Cart } from '../entities/cart';
 import { User } from '../entities/user';

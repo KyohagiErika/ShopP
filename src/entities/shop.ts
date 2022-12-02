@@ -74,7 +74,7 @@ export class Shop {
   @JoinColumn()
   user: User;
 
-  @OneToMany(() => Product, product => product.id)
+  @OneToMany(() => Product, product => product.shop)
   products: Product[];
 
   @Column()

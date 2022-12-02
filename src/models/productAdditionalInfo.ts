@@ -3,25 +3,19 @@ import { Product } from '../entities/product';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { ProductAdditionalInfo } from '../entities/productAdditionalInfo';
+import { Shop } from '../entities/shop';
 
 const productAdditionInfoRepository = ShopPDataSource.getRepository(
   ProductAdditionalInfo
 );
+const productRepository = ShopPDataSource.getRepository(Product);
 
 export default class ProductAdditionInfoModel {
   static async listAll() {
     const productAdditionalInfo = await productAdditionInfoRepository.find({
-      relations: {
-        product: true,
-      },
       select: {
         key: true,
         value: true,
-        product: {
-          name: true,
-          detail: true,
-          amount: true,
-        },
       },
     });
     return productAdditionalInfo && productAdditionalInfo.length > 0
@@ -31,17 +25,9 @@ export default class ProductAdditionInfoModel {
 
   static async getOneById(id: number) {
     const productAdditionalInfo = await productAdditionInfoRepository.find({
-      relations: {
-        product: true,
-      },
       select: {
         key: true,
         value: true,
-        product: {
-          name: true,
-          detail: true,
-          amount: true,
-        },
       },
       where: {
         id: id,
@@ -50,8 +36,35 @@ export default class ProductAdditionInfoModel {
     return productAdditionalInfo ? productAdditionalInfo : false;
   }
 
-  static async postNew(productId: string, key: string, value: string) {
-    const productRepository = ShopPDataSource.getRepository(Product);
+  static async getOneByProductId(productId: string) {
+    const productAdditionalInfo = await productAdditionInfoRepository.find({
+      select: {
+        key: true,
+        value: true,
+      },
+      where: {
+        product: { id: productId },
+      },
+    });
+    return productAdditionalInfo ? productAdditionalInfo : false;
+  }
+
+  static async postNew(
+    productId: string,
+    key: string,
+    value: string,
+    shopId: string
+  ) {
+    const findAdditionalInfo = await productAdditionInfoRepository.findOne({
+      where: {
+        key: key,
+        product: { id: productId },
+      },
+    });
+    if (findAdditionalInfo) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'key already exist !');
+    }
+
     const product = await productRepository.findOne({
       select: {
         id: true,
@@ -68,9 +81,22 @@ export default class ProductAdditionInfoModel {
         },
       ],
     });
+
     if (product == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist.');
     } else {
+      const findShop = await productRepository.findOne({
+        where: {
+          shop: { id: shopId },
+          id: productId,
+        },
+      });
+      if (!findShop) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Product not exist in shop.'
+        );
+      }
       let productAdditionalInfo = new ProductAdditionalInfo();
       productAdditionalInfo.product = product;
       productAdditionalInfo.key = key;
@@ -80,12 +106,12 @@ export default class ProductAdditionInfoModel {
       return new Response(
         HttpStatusCode.CREATED,
         'Add product information successfully!',
-        productAdditionalInfo
+        { key: key, value: value }
       );
     }
   }
 
-  static async edit(id: number, key: string, value: string) {
+  static async edit(id: number, key: string, value: string, shopId: string) {
     const productAdditionalInfo = await productAdditionInfoRepository.findOne({
       where: [
         {
@@ -101,6 +127,21 @@ export default class ProductAdditionInfoModel {
     if (productAdditionalInfo == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exit !');
     } else {
+      const findShop = await productRepository.findOne({
+        relations: {
+          productAdditionalInfo: true,
+        },
+        where: {
+          shop: { id: shopId },
+          productAdditionalInfo: { id: id },
+        },
+      });
+      if (!findShop) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Product not exist in shop.'
+        );
+      }
       const productAdditionalInfoEdit =
         await productAdditionInfoRepository.update(
           { id: id },
