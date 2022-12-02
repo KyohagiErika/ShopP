@@ -37,14 +37,14 @@ routes.post(
 );
 
 // deleteEvaluation
-routes.post(
+routes.get(
   '/delete/:evaluationId([0-9]+)',
   [AuthMiddleware.checkJwt],
   EvaluationMiddleware.deleteEvaluation
 );
 
 // alter Likes number of evaluation
-routes.post(
+routes.get(
   '/alter-likes/:evaluationId([0-9]+)',
   [AuthMiddleware.checkJwt],
   EvaluationMiddleware.alterLikesOfEvaluation
