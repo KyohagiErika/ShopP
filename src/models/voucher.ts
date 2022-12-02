@@ -353,7 +353,7 @@ export default class VoucherModel {
     return this.templateShowCustomerVouchers(
       user,
       RoleEnum.ADMIN,
-      
+
       'Show Freeship vouchers successfully!!',
       VoucherTypeEnum.FREESHIP
     );

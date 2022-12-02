@@ -26,6 +26,7 @@ export enum GenderEnum {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
 }
+
 export enum OtpEnum {
   FORGET = 'FORGET',
   VERIFICATION = 'VERIFICATION',
@@ -54,11 +55,11 @@ export enum StatusReportEnum {
 }
 
 export enum DeliveryStatusEnum {
-  CHECKING = 'CHECKING',
-  CONFIRMED = 'CONFIRMED',
-  PACKAGING = 'PACKAGING',
-  DELIVERING = 'DELIVERING',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED',
-  RETURNED = 'RETURNED',
+  CHECKING = '0',
+  CONFIRMED = '1',
+  PACKAGING = '2',
+  DELIVERING = '3',
+  DELIVERED = '4',
+  CANCELLED = '5',
+  RETURNED = '6',
 }

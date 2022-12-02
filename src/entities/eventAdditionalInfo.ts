@@ -1,15 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  JoinColumn,
-  CreateDateColumn,
-  OneToOne,
-  OneToMany,
-  ManyToOne,
-} from 'typeorm';
-
-import { GenderEnum, StatusEnum } from '../utils/shopp.enum';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Event } from './event';
 
 @Entity()
