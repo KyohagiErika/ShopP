@@ -374,6 +374,7 @@ export default class EventModel {
           event: true
         },
         where: {
+          status: StatusEnum.ACTIVE,
           product: {id: product.id},
           event: {id: eventId}
         }
@@ -383,15 +384,20 @@ export default class EventModel {
           HttpStatusCode.BAD_REQUEST,
           'Some products that already exist in this event:'
         );
-      else {
+        if (product.quantity < amount) {
+          return new Response(
+            HttpStatusCode.BAD_REQUEST,
+            'Some products do not have enough quantity'
+          );
+        } 
         productListThatEligible.push(product);
-      }
     }
     for (let i = 0; i < productListThatEligible.length; i++) {
       await eventProductRepository.save({
         discount,
         amount,
         event,
+        status: StatusEnum.ACTIVE,
         product: productListThatEligible[i],
       });
     }
@@ -466,6 +472,7 @@ export default class EventModel {
           event: true,
         },
         where: {
+          status: StatusEnum.ACTIVE,
           product: { id: product.id },
           event: { id: eventId },
         },
@@ -556,6 +563,7 @@ export default class EventModel {
           event: true,
         },
         where: {
+          status: StatusEnum.ACTIVE,
           product: { id: product.id },
           event: { id: eventId },
         },
@@ -570,7 +578,9 @@ export default class EventModel {
       }
     }
     for (let i = 0; i < eventProductListThatEligible.length; i++) {
-      await eventProductRepository.delete(eventProductListThatEligible[i].id);
+      await eventProductRepository.update(eventProductListThatEligible[i].id, {
+        status: StatusEnum.INACTIVE
+      });
     }
     return new Response(HttpStatusCode.OK, 'Delete successfully!');
   }
