@@ -398,7 +398,6 @@ export default class EventModel {
         amount,
         event,
         status: StatusEnum.ACTIVE,
-        status: StatusEnum.ACTIVE,
         product: productListThatEligible[i],
       });
     }
