@@ -368,6 +368,11 @@ export default class EventModel {
           'Some products are not yours'
         );
       }
+      if(product.quantity < amount)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products do not have enough quantity'
+        );
       const eventProduct = await eventProductRepository.findOne({
         relations: {
           product: true,
