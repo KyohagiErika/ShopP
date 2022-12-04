@@ -30,10 +30,13 @@ services:
       - mysql
     networks:
       - shopp
+    volumes:
+      - file-data:/app/public/uploads
     restart: always
 
 volumes:
   mysql-data:
+  file-data:
 
 networks:
   shopp:
