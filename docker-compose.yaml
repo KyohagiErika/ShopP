@@ -11,6 +11,8 @@ services:
       - 3307:3307
     networks:
       - shopp
+    volumes:
+      - mysql/data:/var/lib/mysql
     restart: always
 
   be:
