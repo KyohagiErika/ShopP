@@ -17,6 +17,7 @@ import payment from './payment';
 import shoppingUnit from './shoppingUnit';
 import orderProduct from './orderProduct';
 import enumeration from './enum';
+import evaluation from './evaluation';
 import swagger from './swagger';
 import UploadModel from '../models/upload';
 
@@ -104,6 +105,7 @@ routes.use('/payment', payment);
 routes.use('/shopping-unit', shoppingUnit);
 routes.use('/order-product', orderProduct);
 routes.use('/enum', enumeration);
+routes.use('/evaluation', evaluation);
 
 /**
  * @swagger

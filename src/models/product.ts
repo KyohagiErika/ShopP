@@ -262,7 +262,7 @@ export default class ProductModel {
         productImages.push(productImage);
       });
 
-      transactionalEntityManager
+      await transactionalEntityManager
         .getRepository(ProductImage)
         .save(productImages);
       return new Response(
