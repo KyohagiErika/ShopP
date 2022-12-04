@@ -4,6 +4,8 @@ import { Request, Response } from 'express';
 import EvaluationModel from '../models/evaluation';
 import { LocalFile } from '../entities/localFile';
 import UploadModel from '../models/upload';
+import { EntityManager } from 'typeorm';
+import { ShopPDataSource } from '../data';
 
 export default class EvaluationMiddleware {
   @ControllerService()
@@ -56,19 +58,24 @@ export default class EvaluationMiddleware {
     let evaluationImages: LocalFile[] = [];
     if (req.files != undefined) {
       evaluationImages = await UploadModel.uploadMultiple(req.files);
-    }
-    const result = await EvaluationModel.postNewEvaluation(
-      req.params.orderProductId,
-      req.body.feedback,
-      req.body.star,
-      evaluationImages,
-      res.locals.user
-    );
-    if (result.getCode() == HttpStatusCode.OK)
+
+      const result = await EvaluationModel.postNewEvaluation(
+        new EntityManager(ShopPDataSource),
+        req.params.orderProductId,
+        req.body.feedback,
+        req.body.star,
+        evaluationImages,
+        res.locals.user
+      );
+      if (result.getCode() == HttpStatusCode.OK)
+        res
+          .status(result.getCode())
+          .send({ message: result.getMessage(), data: result.getData() });
+      else res.status(result.getCode()).send({ message: result.getMessage() });
+    } else
       res
-        .status(result.getCode())
-        .send({ message: result.getMessage(), data: result.getData() });
-    else res.status(result.getCode()).send({ message: result.getMessage() });
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ error: 'Please upload evaluation images' });
   }
 
   @ControllerService({
@@ -97,19 +104,22 @@ export default class EvaluationMiddleware {
     let evaluationImages: LocalFile[] = [];
     if (req.files) {
       evaluationImages = await UploadModel.uploadMultiple(req.files);
-    }
-    const result = await EvaluationModel.editEvaluation(
-      +req.params.evaluationId,
-      req.body.feedback,
-      req.body.star,
-      evaluationImages,
-      res.locals.user
-    );
-    if (result.getCode() == HttpStatusCode.OK)
+      const result = await EvaluationModel.editEvaluation(
+        +req.params.evaluationId,
+        req.body.feedback,
+        req.body.star,
+        evaluationImages,
+        res.locals.user
+      );
+      if (result.getCode() == HttpStatusCode.OK)
+        res
+          .status(result.getCode())
+          .send({ message: result.getMessage(), data: result.getData() });
+      else res.status(result.getCode()).send({ message: result.getMessage() });
+    } else
       res
-        .status(result.getCode())
-        .send({ message: result.getMessage(), data: result.getData() });
-    else res.status(result.getCode()).send({ message: result.getMessage() });
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ error: 'Please upload evaluation images' });
   }
 
   @ControllerService()
