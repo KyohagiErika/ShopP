@@ -3,10 +3,9 @@ import { Product } from './../entities/product';
 import { User } from './../entities/user';
 import { LocalFile } from './../entities/localFile';
 import { EventAdditionalInfo } from './../entities/eventAdditionalInfo';
-import { HttpStatusCode, RoleEnum } from './../utils/shopp.enum';
+import { HttpStatusCode, RoleEnum, StatusEnum } from './../utils/shopp.enum';
 import { Event } from './../entities/event';
 import { ShopPDataSource } from './../data';
-import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Like } from 'typeorm';
 
@@ -369,6 +368,7 @@ export default class EventModel {
           'Some products are not yours'
         );
       }
+
       const eventProduct = await eventProductRepository.findOne({
         relations: {
           product: true,
@@ -383,7 +383,7 @@ export default class EventModel {
       if (eventProduct)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
-          'Some products that already exist in this event:'
+          'Some products that already exist in this event'
         );
       if (product.quantity < amount) {
         return new Response(
@@ -590,9 +590,6 @@ export default class EventModel {
     const eventRepository = ShopPDataSource.getRepository(Event);
     const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
     const event = await eventRepository.findOne({
-      select: {
-        status: false,
-      },
       where: {
         id: eventId,
         status: StatusEnum.ACTIVE,
@@ -606,7 +603,14 @@ export default class EventModel {
     )
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
     const eventProducts = await eventProductRepository.find({
+      select: {
+        id: true,
+        discount: true,
+        amount: true,
+        sold: true,
+      },
       where: {
+        status: StatusEnum.ACTIVE,
         event: { id: eventId },
       },
     });

@@ -221,7 +221,7 @@ export default class CustomerMiddleware {
   }
 
   @ControllerService()
-  static async unollowShop(req: Request, res: Response) {
+  static async unfollowShop(req: Request, res: Response) {
     const result = await CustomerModel.unfollowShop(
       res.locals.user,
       req.params.shopId

@@ -34,7 +34,7 @@ routes.post(
 );
 
 // delete an event
-routes.post(
+routes.get(
   '/delete/:id([0-9]+)',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   EventMiddleware.deleteEvent
