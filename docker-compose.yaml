@@ -23,7 +23,7 @@ services:
     command:
       - sh
       - -c
-      - 'npm run init-database && npm start'
+      - 'npm run generate:migration && npm run run-migration && npm start'
     ports:
       - 3001:3001
     depends_on:
