@@ -27,7 +27,7 @@ export default class ShopModel {
   }
 
   static async getOneById(id: string) {
-    const shop = await shopRepository.find({
+    const shop = await shopRepository.findOne({
       relations: {
         avatar: true,
       },
@@ -73,13 +73,13 @@ export default class ShopModel {
       shop.placeOfReceipt = placeOfReceipt;
       shop.user = user;
 
-      await shopRepository.save(shop);
+      const shopEntity = await shopRepository.save(shop);
       await userRoleRepository.update({ id: user.id }, { role: RoleEnum.SHOP });
 
       return new Response(
         HttpStatusCode.CREATED,
         'Create new shop successfully!',
-        shop
+        shopEntity
       );
     }
   }

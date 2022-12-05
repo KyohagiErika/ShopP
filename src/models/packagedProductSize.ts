@@ -6,23 +6,16 @@ import { PackagedProductSize } from '../entities/packagedProductSize';
 
 const packagedProductSizeRepository =
   ShopPDataSource.getRepository(PackagedProductSize);
+const productRepository = ShopPDataSource.getRepository(Product);
 
 export default class PackagedProductSizeModel {
   static async listAll() {
     const packagedProductSize = await packagedProductSizeRepository.find({
-      relations: {
-        product: true,
-      },
       select: {
         weight: true,
         length: true,
         width: true,
         height: true,
-        product: {
-          name: true,
-          detail: true,
-          amount: true,
-        },
       },
     });
     return packagedProductSize && packagedProductSize.length > 0
@@ -31,23 +24,30 @@ export default class PackagedProductSizeModel {
   }
 
   static async getOneById(id: number) {
-    const packagedProductSize = await packagedProductSizeRepository.find({
-      relations: {
-        product: true,
-      },
+    const packagedProductSize = await packagedProductSizeRepository.findOne({
       select: {
         weight: true,
         length: true,
         width: true,
         height: true,
-        product: {
-          name: true,
-          detail: true,
-          amount: true,
-        },
       },
       where: {
         id: id,
+      },
+    });
+    return packagedProductSize ? packagedProductSize : false;
+  }
+
+  static async getOneByProductId(id: string) {
+    const packagedProductSize = await packagedProductSizeRepository.findOne({
+      select: {
+        weight: true,
+        length: true,
+        width: true,
+        height: true,
+      },
+      where: {
+        product: { id: id },
       },
     });
     return packagedProductSize ? packagedProductSize : false;
@@ -58,7 +58,8 @@ export default class PackagedProductSizeModel {
     weight: number,
     length: number,
     width: number,
-    height: number
+    height: number,
+    shopId: string
   ) {
     const productRepository = ShopPDataSource.getRepository(Product);
     const product = await productRepository.findOne({
@@ -80,19 +81,42 @@ export default class PackagedProductSizeModel {
     if (product == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist.');
     } else {
-      let packagedProductSize = new PackagedProductSize();
-      packagedProductSize.product = product;
-      packagedProductSize.weight = weight;
-      packagedProductSize.length = length;
-      packagedProductSize.width = width;
-      packagedProductSize.height = height;
-      await packagedProductSizeRepository.save(packagedProductSize);
-
-      return new Response(
-        HttpStatusCode.CREATED,
-        'Add packaged size successfully!',
-        packagedProductSize
-      );
+      const findShop = await productRepository.findOne({
+        where: {
+          shop: { id: shopId },
+          id: productId,
+        },
+      });
+      if (!findShop) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Product not exist in shop.'
+        );
+      }
+      const findPackaged = await packagedProductSizeRepository.findOne({
+        where: {
+          product: { id: product.id },
+        },
+      });
+      if (findPackaged) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Product already have package size!'
+        );
+      } else {
+        let packagedProductSize = new PackagedProductSize();
+        packagedProductSize.product = product;
+        packagedProductSize.weight = weight;
+        packagedProductSize.length = length;
+        packagedProductSize.width = width;
+        packagedProductSize.height = height;
+        await packagedProductSizeRepository.save(packagedProductSize);
+        return new Response(
+          HttpStatusCode.CREATED,
+          'Add packaged size successfully!',
+          { weight: weight, length: length, width: width, height: height }
+        );
+      }
     }
   }
 
@@ -101,7 +125,8 @@ export default class PackagedProductSizeModel {
     weight: number,
     length: number,
     width: number,
-    height: number
+    height: number,
+    shopId: string
   ) {
     const packagedProductSize = await packagedProductSizeRepository.findOne({
       where: [
@@ -118,10 +143,26 @@ export default class PackagedProductSizeModel {
     if (packagedProductSize == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exit !');
     } else {
-      const packagedProductSizeEdit = await packagedProductSizeRepository.update(
-        { id: id },
-        { weight: weight, length: length, width: width, height: height }
-      );
+      const findShop = await productRepository.findOne({
+        relations: {
+          productAdditionalInfo: true,
+        },
+        where: {
+          shop: { id: shopId },
+          packagedProductSize: { id: id },
+        },
+      });
+      if (!findShop) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Product not exist in shop.'
+        );
+      }
+      const packagedProductSizeEdit =
+        await packagedProductSizeRepository.update(
+          { id: id },
+          { weight: weight, length: length, width: width, height: height }
+        );
       if (packagedProductSizeEdit.affected == 1) {
         return new Response(
           HttpStatusCode.OK,

@@ -1,12 +1,14 @@
+import { EventProduct } from './../entities/eventProduct';
+import { Product } from './../entities/product';
 import { User } from './../entities/user';
 import { LocalFile } from './../entities/localFile';
 import { EventAdditionalInfo } from './../entities/eventAdditionalInfo';
-import { HttpStatusCode, RoleEnum } from './../utils/shopp.enum';
+import { HttpStatusCode, RoleEnum, StatusEnum } from './../utils/shopp.enum';
 import { Event } from './../entities/event';
 import { ShopPDataSource } from './../data';
-import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Like } from 'typeorm';
+import { deleteFile } from '../utils';
 
 export default class EventModel {
   static async listAdminEvents() {
@@ -144,10 +146,10 @@ export default class EventModel {
     user: User,
     name: string,
     content: string,
-    bannerId: number,
+    banner: LocalFile,
     startingDate: Date,
     endingDate: Date,
-    additionalInfo: object
+    additionalInfo: object,
   ) {
     if (user.role.role == RoleEnum.CUSTOMER)
       return new Response(
@@ -155,52 +157,27 @@ export default class EventModel {
         'Unauthorized role. Only shop or admin!'
       );
     const eventRepository = ShopPDataSource.getRepository(Event);
-    const localFileRepository = ShopPDataSource.getRepository(LocalFile);
     const additionalInfoRepository =
       ShopPDataSource.getRepository(EventAdditionalInfo);
-    let banner = null;
-    if (
-      bannerId != null &&
-      bannerId != undefined &&
-      bannerId.toString().length != 0
-    ) {
-      banner = await localFileRepository.findOne({
-        where: {
-          id: bannerId,
-        },
-      });
-      if (banner == null)
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
-    }
 
-    let event: Event;
-    if (banner != null) {
-      event = await eventRepository.save({
-        name,
-        content,
-        banner,
-        startingDate,
-        endingDate,
-        roleCreator: user.role.role,
-        createdBy: user,
-      });
-    } else {
-      event = await eventRepository.save({
-        name,
-        content,
-        startingDate,
-        endingDate,
-        roleCreator: user.role.role,
-        createdBy: user,
-      });
-    }
+    let event = new Event();
+    event.name = name;
+    event.content = content;
+    event.banner = banner;
+    event.startingDate = startingDate;
+    event.endingDate = endingDate;
+    event.createdBy = user;
+    event.roleCreator = user.role.role;
+
+    const eventEntity =  await eventRepository.save(event);
+
     let arrayKeys = Object.keys(additionalInfo);
     let arrayValues = Object.values(additionalInfo);
     for (let i = 0; i < arrayKeys.length; i++) {
       const eventAdditionalInfo = await additionalInfoRepository.save({
         key: arrayKeys[i],
         value: arrayValues[i],
-        event,
+        eventEntity,
       });
     }
     return new Response(HttpStatusCode.CREATED, 'Create event successfully!', {
@@ -210,11 +187,6 @@ export default class EventModel {
       startingDate: event.startingDate,
       endingDate: event.endingDate,
       roleCreator: event.roleCreator,
-      createdBy: {
-        id: event.createdBy.id,
-        phone: event.createdBy.phone,
-        email: event.createdBy.email,
-      },
       additionalInfo: additionalInfo,
     });
   }
@@ -224,7 +196,7 @@ export default class EventModel {
     id: number,
     name: string,
     content: string,
-    bannerId: number,
+    file: Express.Multer.File,
     startingDate: Date,
     endingDate: Date,
     additionalInfo: object
@@ -240,6 +212,7 @@ export default class EventModel {
       ShopPDataSource.getRepository(EventAdditionalInfo);
     const event = await eventRepository.findOne({
       relations: {
+        banner: true,
         additionalInfo: true,
         createdBy: true,
       },
@@ -252,20 +225,7 @@ export default class EventModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
     if (event.createdBy.id != user.id)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized user!');
-    let banner = null;
-    if (
-      bannerId != null &&
-      bannerId != undefined &&
-      bannerId.toString().length != 0
-    ) {
-      banner = await localFileRepository.findOne({
-        where: {
-          id: bannerId,
-        },
-      });
-      if (banner == null)
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
-    }
+
     await additionalInfoRepository.delete({
       event: { id },
     });
@@ -278,32 +238,352 @@ export default class EventModel {
         event,
       });
     }
-    let result;
-    if (banner == null) {
-      result = await eventRepository.update(
+    let result = await eventRepository.update(
         { id },
         {
-          name,
-          content,
-          startingDate,
-          endingDate,
+          name: name,
+          content: content,
+          startingDate: startingDate,
+          endingDate: endingDate,
         }
       );
-    } else {
-      result = await eventRepository.update(
-        { id },
+
+      const localFileEdit = await localFileRepository.update(
         {
-          name,
-          content,
-          banner,
-          startingDate,
-          endingDate,
+          id: event.banner.id,
+        },
+        {
+          filename: file.filename,
+          mimetype: file.mimetype,
+          path: file.path,
         }
       );
-    }
-    if (result.affected != 0)
+      deleteFile(event.banner.path);
+
+    if (result.affected != 0 && localFileEdit.affected == 1)
       return new Response(HttpStatusCode.OK, 'Edit Event successfully!');
     return new Response(HttpStatusCode.BAD_REQUEST, 'Edit Event failed!');
+  }
+
+  static async joinEvent(
+    eventId: number,
+    productIdList: string[],
+    discount: number,
+    amount: number,
+    user: User
+  ) {
+    if (
+      user.role.role == RoleEnum.ADMIN ||
+      user.role.role == RoleEnum.CUSTOMER
+    ) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only shop can access!'
+      );
+    }
+    const eventRepository = ShopPDataSource.getRepository(Event);
+    const productRepository = ShopPDataSource.getRepository(Product);
+    const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
+    let productListThatEligible: Product[] = [];
+    // let productIdListThatNotExist: string[] = [];
+    // let productIdListAlreadyExistInThisEvent: string[] = [];
+    // let productIdListThatIsNotYours: string[] = [];
+    const event = await eventRepository.findOne({
+      relations: {
+        createdBy: true,
+      },
+      where: {
+        id: eventId,
+      },
+    });
+    if (!event) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
+    }
+    if (
+      event.status == StatusEnum.INACTIVE ||
+      event.status == StatusEnum.LOCKED
+    )
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    if (event.roleCreator == RoleEnum.SHOP && event.createdBy.id != user.id)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized access to this event!'
+      );
+    for (let i = 0; i < productIdList.length; i++) {
+      const product = await productRepository.findOne({
+        relations: {
+          shop: true,
+          eventProducts: true,
+        },
+        where: {
+          id: productIdList[i],
+        },
+      });
+      if (!product) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products not exist'
+        );
+      }
+      if (product.shop.id != user.shop.id) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products are not yours'
+        );
+      }
+
+      const eventProduct = await eventProductRepository.findOne({
+        relations: {
+          product: true,
+          event: true,
+        },
+        where: {
+          status: StatusEnum.ACTIVE,
+          product: { id: product.id },
+          event: { id: eventId },
+        },
+      });
+      if (eventProduct)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products that already exist in this event'
+        );
+      if (product.quantity < amount) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products do not have enough quantity'
+        );
+      }
+      productListThatEligible.push(product);
+    }
+    for (let i = 0; i < productListThatEligible.length; i++) {
+      await eventProductRepository.save({
+        discount,
+        amount,
+        event,
+        status: StatusEnum.ACTIVE,
+        product: productListThatEligible[i],
+      });
+    }
+    return new Response(HttpStatusCode.OK, 'Register event successfully!');
+  }
+
+  static async editProductDiscountFromEvent(
+    eventId: number,
+    productIdList: string[],
+    discount: number,
+    amount: number,
+    user: User
+  ) {
+    if (
+      user.role.role == RoleEnum.ADMIN ||
+      user.role.role == RoleEnum.CUSTOMER
+    ) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only shop can access!'
+      );
+    }
+    const eventRepository = ShopPDataSource.getRepository(Event);
+    const productRepository = ShopPDataSource.getRepository(Product);
+    const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
+    let productListThatEligible: Product[] = [];
+    const event = await eventRepository.findOne({
+      relations: {
+        createdBy: true,
+      },
+      where: {
+        id: eventId,
+      },
+    });
+    if (!event)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
+    if (
+      event.status == StatusEnum.INACTIVE ||
+      event.status == StatusEnum.LOCKED
+    )
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    if (event.roleCreator == RoleEnum.SHOP && event.createdBy.id != user.id)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized access to this event!'
+      );
+    for (let i = 0; i < productIdList.length; i++) {
+      const product = await productRepository.findOne({
+        relations: {
+          shop: true,
+          eventProducts: true,
+        },
+        where: {
+          id: productIdList[i],
+        },
+      });
+      if (!product) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products not exist'
+        );
+      }
+      if (product.shop.id != user.shop.id) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products are not yours'
+        );
+      }
+      const eventProduct = await eventProductRepository.findOne({
+        relations: {
+          product: true,
+          event: true,
+        },
+        where: {
+          status: StatusEnum.ACTIVE,
+          product: { id: product.id },
+          event: { id: eventId },
+        },
+      });
+      if (!eventProduct)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products not exist in this event'
+        );
+      else {
+        productListThatEligible.push(product);
+      }
+    }
+    for (let i = 0; i < productListThatEligible.length; i++) {
+      await eventProductRepository.save({
+        discount,
+        amount,
+        event,
+        product: productListThatEligible[i],
+      });
+    }
+    return new Response(HttpStatusCode.OK, 'Edit successfully!');
+  }
+
+  static async deleteProductsOfEvent(
+    eventId: number,
+    productIdList: string[],
+    user: User
+  ) {
+    if (
+      user.role.role == RoleEnum.ADMIN ||
+      user.role.role == RoleEnum.CUSTOMER
+    ) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized role. Only shop can access!'
+      );
+    }
+    const eventRepository = ShopPDataSource.getRepository(Event);
+    const productRepository = ShopPDataSource.getRepository(Product);
+    const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
+    let eventProductListThatEligible: EventProduct[] = [];
+    const event = await eventRepository.findOne({
+      relations: {
+        createdBy: true,
+      },
+      where: {
+        id: eventId,
+      },
+    });
+    if (!event)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
+    if (
+      event.status == StatusEnum.INACTIVE ||
+      event.status == StatusEnum.LOCKED
+    )
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    if (event.roleCreator == RoleEnum.SHOP && event.createdBy.id != user.id)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Unauthorized access to this event!'
+      );
+    for (let i = 0; i < productIdList.length; i++) {
+      const product = await productRepository.findOne({
+        relations: {
+          shop: true,
+          eventProducts: true,
+        },
+        where: {
+          id: productIdList[i],
+        },
+      });
+      if (!product) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products not exist'
+        );
+      }
+      if (product.shop.id != user.shop.id) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products are not yours'
+        );
+      }
+      const eventProduct = await eventProductRepository.findOne({
+        relations: {
+          product: true,
+          event: true,
+        },
+        where: {
+          status: StatusEnum.ACTIVE,
+          product: { id: product.id },
+          event: { id: eventId },
+        },
+      });
+      if (!eventProduct)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Some products not exist in this event'
+        );
+      else {
+        eventProductListThatEligible.push(eventProduct);
+      }
+    }
+    for (let i = 0; i < eventProductListThatEligible.length; i++) {
+      await eventProductRepository.update(eventProductListThatEligible[i].id, {
+        status: StatusEnum.INACTIVE,
+      });
+    }
+    return new Response(HttpStatusCode.OK, 'Delete successfully!');
+  }
+
+  static async showAllProductsOfEvent(eventId: number) {
+    const eventRepository = ShopPDataSource.getRepository(Event);
+    const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
+    const event = await eventRepository.findOne({
+      where: {
+        id: eventId,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    if (!event)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
+    if (
+      event.status == StatusEnum.INACTIVE ||
+      event.status == StatusEnum.LOCKED
+    )
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    const eventProducts = await eventProductRepository.find({
+      select: {
+        id: true,
+        discount: true,
+        amount: true,
+        sold: true,
+      },
+      where: {
+        status: StatusEnum.ACTIVE,
+        event: { id: eventId },
+      },
+    });
+    if (eventProducts.length == 0)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'No products available!');
+    return new Response(
+      HttpStatusCode.OK,
+      'Show products successfully!',
+      eventProducts
+    );
   }
 
   static async deleteEvent(id: number, user: User) {

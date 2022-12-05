@@ -3,6 +3,7 @@ import EventMiddleware from '../middlewares/event';
 import AuthMiddleware from '../middlewares/auth';
 import { checkRole } from '../middlewares/checkRole';
 import { RoleEnum } from '../utils/shopp.enum';
+import { uploadImage } from '../middlewares/fileProvider';
 const routes = Router();
 
 // list events created by admin
@@ -23,6 +24,7 @@ routes.get(
 routes.post(
   '/new',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  uploadImage('banner'),
   EventMiddleware.newEvent
 );
 
@@ -30,11 +32,12 @@ routes.post(
 routes.post(
   '/:id([0-9]+)',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  uploadImage('banner'),
   EventMiddleware.editEvent
 );
 
 // delete an event
-routes.post(
+routes.get(
   '/delete/:id([0-9]+)',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   EventMiddleware.deleteEvent
@@ -45,6 +48,34 @@ routes.get(
   '/:id([0-9]+)',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   EventMiddleware.findEventById
+);
+
+// join event
+routes.post(
+  '/join-event/:eventId([0-9]+)',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  EventMiddleware.joinEvent
+);
+
+// edit products discount of event
+routes.post(
+  '/edit-products-discount/:eventId([0-9]+)',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  EventMiddleware.editProductDiscountFromEvent
+);
+
+// delete products of event
+routes.post(
+  '/delete-products/:eventId([0-9]+)',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  EventMiddleware.deleteProductsOfEvent
+);
+
+// show products of event
+routes.get(
+  '/show-products/:eventId([0-9]+)',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  EventMiddleware.showAllProductsOfEvent
 );
 
 export default routes;

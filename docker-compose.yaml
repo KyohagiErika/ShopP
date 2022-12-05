@@ -11,6 +11,8 @@ services:
       - 3307:3307
     networks:
       - shopp
+    volumes:
+      - mysql-data:/var/lib/mysql
     restart: always
 
   be:
@@ -21,14 +23,20 @@ services:
     command:
       - sh
       - -c
-      - 'npm run init-database && npm start'
+      - 'npm run generate-migration && npm run run-migration && npm start'
     ports:
       - 3001:3001
     depends_on:
       - mysql
     networks:
       - shopp
+    volumes:
+      - file-data:/app/public/uploads
     restart: always
+
+volumes:
+  mysql-data:
+  file-data:
 
 networks:
   shopp:

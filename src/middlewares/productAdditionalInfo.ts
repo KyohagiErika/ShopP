@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Shop } from '../entities/shop';
 import ProductAdditionInfoModel from '../models/productAdditionalInfo';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode } from '../utils/shopp.enum';
@@ -39,6 +40,26 @@ export default class ProductAddInfoMiddleware {
   @ControllerService({
     params: [
       {
+        name: 'id',
+        type: String,
+      },
+    ],
+  })
+  static async getOneByProductId(req: Request, res: Response) {
+    const id = req.params.id;
+    const result = await ProductAdditionInfoModel.getOneByProductId(id);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get Product Information failed!' });
+    }
+  }
+
+  @ControllerService({
+    params: [
+      {
         name: 'productId',
         type: String,
       },
@@ -57,10 +78,17 @@ export default class ProductAddInfoMiddleware {
   static async postNew(req: Request, res: Response) {
     const data = req.body;
     const productId = req.params.productId;
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
     const result = await ProductAdditionInfoModel.postNew(
       productId,
       data.key,
-      data.value
+      data.value,
+      shop.id
     );
     if (result.getCode() === HttpStatusCode.CREATED) {
       res
@@ -92,10 +120,17 @@ export default class ProductAddInfoMiddleware {
   static async edit(req: Request, res: Response) {
     const data = req.body;
     const id = +req.params.id;
+    const shop: Shop = res.locals.user.shop;
+    if (shop == null) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Can not find shop !' });
+    }
     const result = await ProductAdditionInfoModel.edit(
       id,
       data.key,
-      data.value
+      data.value,
+      shop.id
     );
     if (result.getCode() === HttpStatusCode.OK) {
       res

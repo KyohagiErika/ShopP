@@ -1,9 +1,5 @@
-import {
-  Column,
-  Entity,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { EvaluationImage } from './evaluationImage';
 import { Event } from './event';
 import { ProductImage } from './productImage';
 
@@ -55,4 +51,7 @@ export class LocalFile {
 
   @OneToOne(() => ProductImage, productImage => productImage.id)
   productImage: ProductImage;
+
+  @OneToOne(() => EvaluationImage, evaluationImage => evaluationImage.localFile)
+  evaluationImage: EvaluationImage;
 }
