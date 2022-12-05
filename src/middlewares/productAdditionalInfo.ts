@@ -57,6 +57,22 @@ export default class ProductAddInfoMiddleware {
     }
   }
 
+  /**
+* @swagger
+* components:
+*  schemas:
+*   ProductInfoRequest:
+*    type: object
+*    properties:
+*     key:
+*      type: string
+*      description: name of product information
+*      example: 'color'
+*     value:
+*      type: string
+*      description: name of product information
+*      example: 'red, blue'
+*/
   @ControllerService({
     params: [
       {
