@@ -57,32 +57,31 @@ export default class PackagedProductSizeMiddleware {
     }
   }
 
-  @ControllerService({
-    params: [
-      {
-        name: 'productId',
-        type: String,
-      },
-    ],
-    body: [
-      {
-        name: 'weight',
-        type: String,
-      },
-      {
-        name: 'height',
-        type: String,
-      },
-      {
-        name: 'width',
-        type: String,
-      },
-      {
-        name: 'length',
-        type: String,
-      },
-    ],
-  })
+  /**
+* @swagger
+* components:
+*  schemas:
+*   PackagedRequest:
+*    type: object
+*    properties:
+*     weight:
+*      type: double
+*      description: weight of product packaged
+*      example: '25'
+*     height:
+*      type: double
+*      description: height of product packaged
+*      example: '34'
+*     width:
+*      type: double
+*      description: width of product packaged
+*      example: '60'
+*     length:
+*      type: double
+*      description: length of product packaged
+*      example: '60'
+*/
+  @ControllerService()
   static async postNew(req: Request, res: Response) {
     const data = req.body;
     const productId = req.params.productId;
@@ -109,32 +108,7 @@ export default class PackagedProductSizeMiddleware {
     }
   }
 
-  @ControllerService({
-    params: [
-      {
-        name: 'id',
-        type: String,
-      },
-    ],
-    body: [
-      {
-        name: 'weight',
-        type: String,
-      },
-      {
-        name: 'height',
-        type: String,
-      },
-      {
-        name: 'width',
-        type: String,
-      },
-      {
-        name: 'length',
-        type: String,
-      },
-    ],
-  })
+  @ControllerService()
   static async edit(req: Request, res: Response) {
     const data = req.body;
     const id = +req.params.id;
