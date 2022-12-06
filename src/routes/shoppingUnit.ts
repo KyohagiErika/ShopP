@@ -8,13 +8,11 @@ const routes = Router();
 
 routes.get(
   '/list-all',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   ShoppingUnitMiddleware.listAll
 );
 
 routes.get(
   '/:id([0-9]+)',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   ShoppingUnitMiddleware.getOneById
 );
 
