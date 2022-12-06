@@ -21,7 +21,7 @@ export default class CategoryModel {
   }
 
   static async getOneById(id: number) {
-    const category = await categoryRepository.find({
+    const category = await categoryRepository.findOne({
       relations: {
         image: true,
       },

@@ -44,7 +44,7 @@ export default class ProductModel {
   }
 
   static async getOneById(id: string) {
-    const product = await productRepository.find({
+    const product = await productRepository.findOne({
       relations: {
         shop: {
           avatar: true,
@@ -262,7 +262,7 @@ export default class ProductModel {
         productImages.push(productImage);
       });
 
-      transactionalEntityManager
+      await transactionalEntityManager
         .getRepository(ProductImage)
         .save(productImages);
       return new Response(

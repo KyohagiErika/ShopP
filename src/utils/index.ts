@@ -46,4 +46,11 @@ const instanceOfOrderProductRequest = (data: OrderProductRequest) => {
   );
 };
 
-export { generateOtp, deleteFile, instanceOfOrderRequest };
+const enumToArray = (enumType: any) => {
+  return Object.keys(enumType).map(key => ({
+    name: key,
+    description: enumType[key],
+  }));
+};
+
+export { generateOtp, deleteFile, instanceOfOrderRequest, enumToArray };

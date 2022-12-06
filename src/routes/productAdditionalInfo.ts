@@ -8,19 +8,16 @@ const routes = Router();
 
 routes.get(
   '/list-all',
-  [AuthMiddleware.checkJwt],
   ProductAdditionalInfo.listAll
 );
 
 routes.get(
   '/get-product-information/:id',
-  AuthMiddleware.checkJwt,
   ProductAdditionalInfo.getOneById
 );
 
 routes.get(
   '/get-product-information-of-product/:id',
-  AuthMiddleware.checkJwt,
   ProductAdditionalInfo.getOneByProductId
 );
 

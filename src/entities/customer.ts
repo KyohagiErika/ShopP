@@ -1,3 +1,4 @@
+import { Evaluation } from './evaluation';
 import { Shop } from './shop';
 import { Voucher } from './voucher';
 import {
@@ -131,4 +132,7 @@ export class Customer {
   @OneToMany(() => ChatRoom, chatRooms => chatRooms.customer)
   @JoinTable()
   chatRooms: ChatRoom[];
+  
+  @ManyToMany(() => Evaluation, evaluation => evaluation.likedPeople)
+  likedEvaluations: Evaluation[];
 }

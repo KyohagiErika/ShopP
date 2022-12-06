@@ -3,12 +3,12 @@ import { Product } from './../entities/product';
 import { User } from './../entities/user';
 import { LocalFile } from './../entities/localFile';
 import { EventAdditionalInfo } from './../entities/eventAdditionalInfo';
-import { HttpStatusCode, RoleEnum } from './../utils/shopp.enum';
+import { HttpStatusCode, RoleEnum, StatusEnum } from './../utils/shopp.enum';
 import { Event } from './../entities/event';
 import { ShopPDataSource } from './../data';
-import { StatusEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Like } from 'typeorm';
+import { deleteFile } from '../utils';
 
 export default class EventModel {
   static async listAdminEvents() {
@@ -146,10 +146,10 @@ export default class EventModel {
     user: User,
     name: string,
     content: string,
-    bannerId: number,
+    banner: LocalFile,
     startingDate: Date,
     endingDate: Date,
-    additionalInfo: object
+    additionalInfo: object,
   ) {
     if (user.role.role == RoleEnum.CUSTOMER)
       return new Response(
@@ -157,52 +157,27 @@ export default class EventModel {
         'Unauthorized role. Only shop or admin!'
       );
     const eventRepository = ShopPDataSource.getRepository(Event);
-    const localFileRepository = ShopPDataSource.getRepository(LocalFile);
     const additionalInfoRepository =
       ShopPDataSource.getRepository(EventAdditionalInfo);
-    let banner = null;
-    if (
-      bannerId != null &&
-      bannerId != undefined &&
-      bannerId.toString().length != 0
-    ) {
-      banner = await localFileRepository.findOne({
-        where: {
-          id: bannerId,
-        },
-      });
-      if (banner == null)
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
-    }
 
-    let event: Event;
-    if (banner != null) {
-      event = await eventRepository.save({
-        name,
-        content,
-        banner,
-        startingDate,
-        endingDate,
-        roleCreator: user.role.role,
-        createdBy: user,
-      });
-    } else {
-      event = await eventRepository.save({
-        name,
-        content,
-        startingDate,
-        endingDate,
-        roleCreator: user.role.role,
-        createdBy: user,
-      });
-    }
+    let event = new Event();
+    event.name = name;
+    event.content = content;
+    event.banner = banner;
+    event.startingDate = startingDate;
+    event.endingDate = endingDate;
+    event.createdBy = user;
+    event.roleCreator = user.role.role;
+
+    const eventEntity =  await eventRepository.save(event);
+
     let arrayKeys = Object.keys(additionalInfo);
     let arrayValues = Object.values(additionalInfo);
     for (let i = 0; i < arrayKeys.length; i++) {
       const eventAdditionalInfo = await additionalInfoRepository.save({
         key: arrayKeys[i],
         value: arrayValues[i],
-        event,
+        eventEntity,
       });
     }
     return new Response(HttpStatusCode.CREATED, 'Create event successfully!', {
@@ -221,7 +196,7 @@ export default class EventModel {
     id: number,
     name: string,
     content: string,
-    bannerId: number,
+    file: Express.Multer.File,
     startingDate: Date,
     endingDate: Date,
     additionalInfo: object
@@ -237,6 +212,7 @@ export default class EventModel {
       ShopPDataSource.getRepository(EventAdditionalInfo);
     const event = await eventRepository.findOne({
       relations: {
+        banner: true,
         additionalInfo: true,
         createdBy: true,
       },
@@ -249,20 +225,7 @@ export default class EventModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
     if (event.createdBy.id != user.id)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized user!');
-    let banner = null;
-    if (
-      bannerId != null &&
-      bannerId != undefined &&
-      bannerId.toString().length != 0
-    ) {
-      banner = await localFileRepository.findOne({
-        where: {
-          id: bannerId,
-        },
-      });
-      if (banner == null)
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable banner!');
-    }
+
     await additionalInfoRepository.delete({
       event: { id },
     });
@@ -275,30 +238,29 @@ export default class EventModel {
         event,
       });
     }
-    let result;
-    if (banner == null) {
-      result = await eventRepository.update(
+    let result = await eventRepository.update(
         { id },
         {
-          name,
-          content,
-          startingDate,
-          endingDate,
+          name: name,
+          content: content,
+          startingDate: startingDate,
+          endingDate: endingDate,
         }
       );
-    } else {
-      result = await eventRepository.update(
-        { id },
+
+      const localFileEdit = await localFileRepository.update(
         {
-          name,
-          content,
-          banner,
-          startingDate,
-          endingDate,
+          id: event.banner.id,
+        },
+        {
+          filename: file.filename,
+          mimetype: file.mimetype,
+          path: file.path,
         }
       );
-    }
-    if (result.affected != 0)
+      deleteFile(event.banner.path);
+
+    if (result.affected != 0 && localFileEdit.affected == 1)
       return new Response(HttpStatusCode.OK, 'Edit Event successfully!');
     return new Response(HttpStatusCode.BAD_REQUEST, 'Edit Event failed!');
   }
@@ -369,6 +331,7 @@ export default class EventModel {
           'Some products are not yours'
         );
       }
+
       const eventProduct = await eventProductRepository.findOne({
         relations: {
           product: true,
@@ -383,7 +346,7 @@ export default class EventModel {
       if (eventProduct)
         return new Response(
           HttpStatusCode.BAD_REQUEST,
-          'Some products that already exist in this event:'
+          'Some products that already exist in this event'
         );
       if (product.quantity < amount) {
         return new Response(
@@ -590,9 +553,6 @@ export default class EventModel {
     const eventRepository = ShopPDataSource.getRepository(Event);
     const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
     const event = await eventRepository.findOne({
-      select: {
-        status: false,
-      },
       where: {
         id: eventId,
         status: StatusEnum.ACTIVE,
@@ -606,7 +566,14 @@ export default class EventModel {
     )
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
     const eventProducts = await eventProductRepository.find({
+      select: {
+        id: true,
+        discount: true,
+        amount: true,
+        sold: true,
+      },
       where: {
+        status: StatusEnum.ACTIVE,
         event: { id: eventId },
       },
     });

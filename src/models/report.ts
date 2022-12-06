@@ -42,7 +42,7 @@ export default class ReportModel {
   }
 
   static async viewReport(id: number) {
-    const report = await reportReposity.find({
+    const report = await reportReposity.findOne({
       relations: {
         shop: true,
         customer: true,

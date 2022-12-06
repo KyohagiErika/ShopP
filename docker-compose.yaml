@@ -11,7 +11,10 @@ services:
       - 3307:3307
     networks:
       - shopp
+    volumes:
+      - mysql-data:/var/lib/mysql
     restart: always
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --init-connect='SET NAMES UTF8;' --innodb-flush-log-at-trx-commit=0
 
   be:
     container_name: shopp_be
@@ -21,14 +24,20 @@ services:
     command:
       - sh
       - -c
-      - 'npm run init-database && npm start'
+      - 'npm run generate-migration && npm run run-migration && npm start'
     ports:
       - 3001:3001
     depends_on:
       - mysql
     networks:
       - shopp
+    volumes:
+      - file-data:/app/public/uploads
     restart: always
+
+volumes:
+  mysql-data:
+  file-data:
 
 networks:
   shopp:

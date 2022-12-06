@@ -18,6 +18,8 @@ import shoppingUnit from './shoppingUnit';
 import orderProduct from './orderProduct';
 import message from './message';
 import chatRoom from './chatRoom';
+import enumeration from './enum';
+import evaluation from './evaluation';
 import swagger from './swagger';
 import UploadModel from '../models/upload';
 
@@ -106,6 +108,8 @@ routes.use('/shopping-unit', shoppingUnit);
 routes.use('/order-product', orderProduct);
 routes.use('/message', message);
 routes.use('/chat-room', chatRoom);
+routes.use('/enum', enumeration);
+routes.use('/evaluation', evaluation);
 
 /**
  * @swagger

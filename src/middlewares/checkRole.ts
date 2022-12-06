@@ -7,8 +7,13 @@ export const checkRole = (role: RoleEnum) => {
     //Get the user ID from previous midleware
     const user: User = res.locals.user;
     //Check if authorized user roles includes the role
-    if (role === RoleEnum.CUSTOMER && user.customer !== null) next();
-    else if (user.role.role >= role) next();
+    if(role == RoleEnum.CUSTOMER) {
+      if (user.customer != null) return next();
+      else return res
+      .status(HttpStatusCode.UNAUTHORIZATION)
+      .send({ message: 'Unauthorized: Access is denied!' });
+    } 
+    if (user.role.role >= role) next();
     else
       res
         .status(HttpStatusCode.UNAUTHORIZATION)

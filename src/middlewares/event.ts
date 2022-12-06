@@ -3,6 +3,8 @@ import { Request, Response } from 'express';
 import EventModel from '../models/event';
 import { ControllerService } from '../utils/decorators';
 import ConvertDate from '../utils/convertDate';
+import { LocalFile } from '../entities/localFile';
+import UploadModel from '../models/upload';
 
 export default class EventMiddleware {
   @ControllerService()
@@ -88,29 +90,36 @@ export default class EventMiddleware {
     ],
   })
   static async newEvent(req: Request, res: Response) {
-    const data = req.body;
-    const startingDate = new Date(ConvertDate(data.startingDate));
-    const endingDate = new Date(ConvertDate(data.endingDate));
-    if (startingDate > endingDate) {
+    if (req.file != undefined) {
+      const file = req.file;
+      const localFile: LocalFile = await UploadModel.upload(file);
+      const data = req.body;
+      const startingDate = new Date(ConvertDate(data.startingDate));
+      const endingDate = new Date(ConvertDate(data.endingDate));
+      if (startingDate > endingDate) {
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'startingDate must be smaller than endingDate!' });
+        return;
+      }
+      const result = await EventModel.newEvent(
+        res.locals.user,
+        data.name,
+        data.content,
+        localFile,
+        startingDate,
+        endingDate,
+        JSON.parse(data.additionalInfo)
+      );
+      if (result.getCode() == HttpStatusCode.CREATED)
+        res
+          .status(result.getCode())
+          .send({ message: result.getMessage(), data: result.getData() });
+      else res.status(result.getCode()).send({ message: result.getMessage() });
+    } else
       res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'startingDate must be smaller than endingDate!' });
-      return;
-    }
-    const result = await EventModel.newEvent(
-      res.locals.user,
-      data.name,
-      data.content,
-      data.bannerId,
-      startingDate,
-      endingDate,
-      JSON.parse(data.additionalInfo)
-    );
-    if (result.getCode() == HttpStatusCode.CREATED)
-      res
-        .status(result.getCode())
-        .send({ message: result.getMessage(), data: result.getData() });
-    else res.status(result.getCode()).send({ message: result.getMessage() });
+        .send({ error: 'Please upload event banner' });
   }
 
   @ControllerService({
@@ -156,30 +165,36 @@ export default class EventMiddleware {
     ],
   })
   static async editEvent(req: Request, res: Response) {
-    const id = +req.params.id;
-    const data = req.body;
-    const startingDate = new Date(ConvertDate(data.startingDate));
-    const endingDate = new Date(ConvertDate(data.endingDate));
-    // handle starting date and ending date
-    if (startingDate > endingDate) {
+    if (req.file != undefined) {
+      const file = req.file;
+      const id = +req.params.id;
+      const data = req.body;
+      const startingDate = new Date(ConvertDate(data.startingDate));
+      const endingDate = new Date(ConvertDate(data.endingDate));
+      // handle starting date and ending date
+      if (startingDate > endingDate) {
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'startingDate must be smaller than endingDate!' });
+        return;
+      }
+      const result = await EventModel.editEvent(
+        res.locals.user,
+        id,
+        data.name,
+        data.content,
+        file,
+        startingDate,
+        endingDate,
+        JSON.parse(data.additionalInfo)
+      );
+      if (result.getCode() == HttpStatusCode.OK)
+        res.status(result.getCode()).send({ message: result.getMessage() });
+      else res.status(result.getCode()).send({ message: result.getMessage() });
+    } else
       res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'startingDate must be smaller than endingDate!' });
-      return;
-    }
-    const result = await EventModel.editEvent(
-      res.locals.user,
-      id,
-      data.name,
-      data.content,
-      data.bannerId,
-      startingDate,
-      endingDate,
-      JSON.parse(data.additionalInfo)
-    );
-    if (result.getCode() == HttpStatusCode.OK)
-      res.status(result.getCode()).send({ message: result.getMessage() });
-    else res.status(result.getCode()).send({ message: result.getMessage() });
+        .send({ error: 'Please upload event banner' });
   }
 
   @ControllerService()
@@ -283,7 +298,7 @@ export default class EventMiddleware {
   })
   static async deleteProductsOfEvent(req: Request, res: Response) {
     const eventId = +req.params.eventId;
-    const productIdList = req.body.productIdList.split(' ').join('').split(',');
+    const productIdList = req.body.productIdList;
     const result = await EventModel.deleteProductsOfEvent(
       eventId,
       productIdList,

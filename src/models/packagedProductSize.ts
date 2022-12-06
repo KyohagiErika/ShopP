@@ -24,7 +24,7 @@ export default class PackagedProductSizeModel {
   }
 
   static async getOneById(id: number) {
-    const packagedProductSize = await packagedProductSizeRepository.find({
+    const packagedProductSize = await packagedProductSizeRepository.findOne({
       select: {
         weight: true,
         length: true,
@@ -39,7 +39,7 @@ export default class PackagedProductSizeModel {
   }
 
   static async getOneByProductId(id: string) {
-    const packagedProductSize = await packagedProductSizeRepository.find({
+    const packagedProductSize = await packagedProductSizeRepository.findOne({
       select: {
         weight: true,
         length: true,

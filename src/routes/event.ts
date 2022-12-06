@@ -3,19 +3,20 @@ import EventMiddleware from '../middlewares/event';
 import AuthMiddleware from '../middlewares/auth';
 import { checkRole } from '../middlewares/checkRole';
 import { RoleEnum } from '../utils/shopp.enum';
+import { uploadImage } from '../middlewares/fileProvider';
 const routes = Router();
 
 // list events created by admin
 routes.get(
   '/list-admin-events',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   EventMiddleware.listAll
 );
 
 // list events created by shop
 routes.get(
   '/list-shop-events',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   EventMiddleware.listShopEvents
 );
 
@@ -23,6 +24,7 @@ routes.get(
 routes.post(
   '/new',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  uploadImage('banner'),
   EventMiddleware.newEvent
 );
 
@@ -30,11 +32,12 @@ routes.post(
 routes.post(
   '/:id([0-9]+)',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  uploadImage('banner'),
   EventMiddleware.editEvent
 );
 
 // delete an event
-routes.post(
+routes.get(
   '/delete/:id([0-9]+)',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   EventMiddleware.deleteEvent
