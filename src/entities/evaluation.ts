@@ -42,7 +42,7 @@ import {
  *      format: date-time
  *      example: 2022-10-29
  *     evaluationImages:
- *      $ref: '#/components/schemas/LocalFileResponse'
+ *      $ref: '#/components/schemas/LocalFileListResponse'
  *   EvaluationListResponse:
  *    type: array
  *    items:

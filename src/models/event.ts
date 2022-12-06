@@ -7,16 +7,18 @@ import { HttpStatusCode, RoleEnum, StatusEnum } from './../utils/shopp.enum';
 import { Event } from './../entities/event';
 import { ShopPDataSource } from './../data';
 import Response from '../utils/response';
-import { Like } from 'typeorm';
+import { Like, MoreThan } from 'typeorm';
 import { deleteFile } from '../utils';
 
 export default class EventModel {
   static async listAdminEvents() {
     const eventRepository = ShopPDataSource.getRepository(Event);
+    let now = new Date();
     const adminEventList = await eventRepository.find({
       relations: {
         additionalInfo: true,
-        createdBy: true,
+        // createdBy: true,
+        banner: true,
       },
       select: {
         id: true,
@@ -24,17 +26,18 @@ export default class EventModel {
         content: true,
         startingDate: true,
         endingDate: true,
-        roleCreator: true,
-        createdBy: { id: true, email: true, phone: true },
         additionalInfo: { key: true, value: true },
+        // roleCreator: true,
+        // createdBy: { id: true, email: true, phone: true },
       },
       where: {
         status: StatusEnum.ACTIVE,
         roleCreator: Like(RoleEnum.ADMIN),
+        endingDate: MoreThan(now),
       },
     });
     if (adminEventList.length == 0) {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'No events available');
     }
     return new Response(
       HttpStatusCode.OK,
@@ -46,16 +49,19 @@ export default class EventModel {
   static async listShopEvents(user: User) {
     const eventRepository = ShopPDataSource.getRepository(Event);
     let eventList;
+    let now = new Date();
     if (user.role.role == RoleEnum.SHOP) {
       eventList = await eventRepository.find({
         where: {
           status: StatusEnum.ACTIVE,
           createdBy: { id: user.id },
           roleCreator: Like(RoleEnum.SHOP),
+          endingDate: MoreThan(now),
         },
         relations: {
           additionalInfo: true,
-          createdBy: true,
+          banner: true,
+          // createdBy: true,
         },
         select: {
           id: true,
@@ -63,9 +69,9 @@ export default class EventModel {
           content: true,
           startingDate: true,
           endingDate: true,
-          roleCreator: true,
-          createdBy: { id: true, email: true, phone: true },
-          additionalInfo: { key: true, value: true },
+          // additionalInfo: { key: true, value: true },
+          // roleCreator: true,
+          // createdBy: { id: true, email: true, phone: true },
         },
       });
     } else if (user.role.role == RoleEnum.ADMIN) {
@@ -76,7 +82,8 @@ export default class EventModel {
         },
         relations: {
           additionalInfo: true,
-          createdBy: true,
+          banner: true,
+          // createdBy: true,
         },
         select: {
           id: true,
@@ -84,9 +91,9 @@ export default class EventModel {
           content: true,
           startingDate: true,
           endingDate: true,
-          roleCreator: true,
-          createdBy: { id: true, email: true, phone: true },
           additionalInfo: { key: true, value: true },
+          // roleCreator: true,
+          // createdBy: { id: true, email: true, phone: true },
         },
       });
     } else {
@@ -96,7 +103,7 @@ export default class EventModel {
       );
     }
     if (eventList.length == 0)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'No events existed');
+      return new Response(HttpStatusCode.BAD_REQUEST, 'No events available');
     return new Response(
       HttpStatusCode.OK,
       'Show Events successfully',
@@ -118,7 +125,8 @@ export default class EventModel {
       },
       relations: {
         additionalInfo: true,
-        createdBy: true,
+        banner: true,
+        // createdBy: true,
       },
       select: {
         id: true,
@@ -126,13 +134,16 @@ export default class EventModel {
         content: true,
         startingDate: true,
         endingDate: true,
-        roleCreator: true,
-        createdBy: { id: true, email: true, phone: true },
         additionalInfo: { key: true, value: true },
+        // roleCreator: true,
+        // createdBy: { id: true, email: true, phone: true },
       },
     });
-    if (event == null)
+    let now = new Date();
+    if (!event)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
+    if (event.endingDate < now)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Event is expired!');
     if (user.role.role == RoleEnum.SHOP) {
       if (event.roleCreator == RoleEnum.SHOP) {
         if (event.createdBy.id != user.id)
@@ -149,7 +160,7 @@ export default class EventModel {
     banner: LocalFile,
     startingDate: Date,
     endingDate: Date,
-    additionalInfo: object,
+    additionalInfo: EventAdditionalInfo[]
   ) {
     if (user.role.role == RoleEnum.CUSTOMER)
       return new Response(
@@ -169,25 +180,29 @@ export default class EventModel {
     event.createdBy = user;
     event.roleCreator = user.role.role;
 
-    const eventEntity =  await eventRepository.save(event);
+    const eventEntity = await eventRepository.save(event);
+    console.log(additionalInfo);
+    console.log(additionalInfo.length);
 
-    let arrayKeys = Object.keys(additionalInfo);
-    let arrayValues = Object.values(additionalInfo);
-    for (let i = 0; i < arrayKeys.length; i++) {
+    // let arrayKeys = Object.keys(additionalInfo);
+    // let arrayValues = Object.values(additionalInfo);
+    for (let i = 0; i < additionalInfo.length; i++) {
       const eventAdditionalInfo = await additionalInfoRepository.save({
-        key: arrayKeys[i],
-        value: arrayValues[i],
-        eventEntity,
+        key: additionalInfo[i].key,
+        value: additionalInfo[i].value,
+        event: eventEntity,
       });
     }
+    event.additionalInfo = additionalInfo;
+
     return new Response(HttpStatusCode.CREATED, 'Create event successfully!', {
       id: event.id,
       name: event.name,
       content: event.content,
       startingDate: event.startingDate,
       endingDate: event.endingDate,
-      roleCreator: event.roleCreator,
-      additionalInfo: additionalInfo,
+      additionalInfo: event.additionalInfo,
+      banner: event.banner,
     });
   }
 
@@ -199,7 +214,7 @@ export default class EventModel {
     file: Express.Multer.File,
     startingDate: Date,
     endingDate: Date,
-    additionalInfo: object
+    additionalInfo: EventAdditionalInfo[]
   ) {
     if (user.role.role == RoleEnum.CUSTOMER)
       return new Response(
@@ -221,7 +236,7 @@ export default class EventModel {
         status: StatusEnum.ACTIVE,
       },
     });
-    if (event == null)
+    if (!event)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable event!');
     if (event.createdBy.id != user.id)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unauthorized user!');
@@ -229,36 +244,34 @@ export default class EventModel {
     await additionalInfoRepository.delete({
       event: { id },
     });
-    let arrayKeys = Object.keys(additionalInfo);
-    let arrayValues = Object.values(additionalInfo);
-    for (let i = 0; i < arrayKeys.length; i++) {
+    for (let i = 0; i < additionalInfo.length; i++) {
       const eventAdditionalInfo = await additionalInfoRepository.save({
-        key: arrayKeys[i],
-        value: arrayValues[i],
-        event,
+        key: additionalInfo[i].key,
+        value: additionalInfo[i].value,
+        event: event,
       });
     }
     let result = await eventRepository.update(
-        { id },
-        {
-          name: name,
-          content: content,
-          startingDate: startingDate,
-          endingDate: endingDate,
-        }
-      );
+      { id },
+      {
+        name: name,
+        content: content,
+        startingDate: startingDate,
+        endingDate: endingDate,
+      }
+    );
 
-      const localFileEdit = await localFileRepository.update(
-        {
-          id: event.banner.id,
-        },
-        {
-          filename: file.filename,
-          mimetype: file.mimetype,
-          path: file.path,
-        }
-      );
-      deleteFile(event.banner.path);
+    const localFileEdit = await localFileRepository.update(
+      {
+        id: event.banner.id,
+      },
+      {
+        filename: file.filename,
+        mimetype: file.mimetype,
+        path: file.path,
+      }
+    );
+    deleteFile(event.banner.path);
 
     if (result.affected != 0 && localFileEdit.affected == 1)
       return new Response(HttpStatusCode.OK, 'Edit Event successfully!');
@@ -285,6 +298,7 @@ export default class EventModel {
     const productRepository = ShopPDataSource.getRepository(Product);
     const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
     let productListThatEligible: Product[] = [];
+    let now = new Date();
     // let productIdListThatNotExist: string[] = [];
     // let productIdListAlreadyExistInThisEvent: string[] = [];
     // let productIdListThatIsNotYours: string[] = [];
@@ -299,6 +313,16 @@ export default class EventModel {
     if (!event) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
     }
+    if (event.startingDate <= now)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Event is happening, can not join anymore!'
+      );
+    if (event.endingDate < now)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Event has been already ended!'
+      );
     if (
       event.status == StatusEnum.INACTIVE ||
       event.status == StatusEnum.LOCKED
@@ -388,6 +412,7 @@ export default class EventModel {
     const productRepository = ShopPDataSource.getRepository(Product);
     const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
     let productListThatEligible: Product[] = [];
+    let now = new Date();
     const event = await eventRepository.findOne({
       relations: {
         createdBy: true,
@@ -398,6 +423,16 @@ export default class EventModel {
     });
     if (!event)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
+    if (event.startingDate <= now)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Event is happening, can not join anymore!'
+      );
+    if (event.endingDate < now)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Event has been already ended!'
+      );
     if (
       event.status == StatusEnum.INACTIVE ||
       event.status == StatusEnum.LOCKED
@@ -479,6 +514,7 @@ export default class EventModel {
     const productRepository = ShopPDataSource.getRepository(Product);
     const eventProductRepository = ShopPDataSource.getRepository(EventProduct);
     let eventProductListThatEligible: EventProduct[] = [];
+    let now = new Date();
     const event = await eventRepository.findOne({
       relations: {
         createdBy: true,
@@ -489,6 +525,16 @@ export default class EventModel {
     });
     if (!event)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
+    if (event.startingDate <= now)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Event is happening, can not join anymore!'
+      );
+    if (event.endingDate < now)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Event has been already ended!'
+      );
     if (
       event.status == StatusEnum.INACTIVE ||
       event.status == StatusEnum.LOCKED

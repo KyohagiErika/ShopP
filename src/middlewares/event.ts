@@ -47,7 +47,7 @@ export default class EventMiddleware {
         .send({ message: result.getMessage(), data: result.getData() });
     else res.status(result.getCode()).send({ message: result.getMessage() });
   }
-  
+
   /**
    * @swagger
    * components:
@@ -58,28 +58,36 @@ export default class EventMiddleware {
    *     name:
    *      type: string
    *      description: name of event
-   *      example: Tom
+   *      example: flashSales
+   *     content:
+   *      type: string
+   *      description: content of event
+   *      example: discount everything
+   *     banner:
+   *      type: string
+   *      format: binary
+   *      description: banner of evaluation
    *     startingDate:
    *      type: string
-   *      description: starting date of event
-   *      example: 20/8/2020
+   *      description: starting day of event
+   *      example: 29-10-2023
    *     endingDate:
    *      type: string
-   *      description: ending date of event
-   *      example: 23/10/2020
+   *      description: ending day of event
+   *      example: 29-11-2023
    *     additionalInfo:
-   *      type: object
-   *      description: additional info of event
-   *      properties:
-   *       name:
-   *        type: string
-   *        example: Jon Doe
-   *       email:
-   *        type: string
-   *        example: jon@doe.com
-   *       address:
-   *        type: string
-   *        example: 123 Doe Street
+   *      type: array
+   *      items:
+   *       type: object
+   *       properties:
+   *        key:
+   *         type: string
+   *         description: key of event additional info
+   *         example: describe
+   *        value:
+   *         type: string
+   *         description: value of event additional info
+   *         example: tặng mẹ yêu siêu deal triệu quà
    */
 
   @ControllerService({
@@ -96,7 +104,10 @@ export default class EventMiddleware {
         name: 'startingDate',
         type: String,
         validator: (propName: string, value: string) => {
+          let startingDate = new Date(ConvertDate(value));
           if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
+          let now = new Date();
+          if (startingDate < now) return `${propName} must be after today`;
           return null;
         },
       },
@@ -112,12 +123,9 @@ export default class EventMiddleware {
         name: 'additionalInfo',
         type: String,
         validator: (propName: string, value: string) => {
-          if (value.length != 0) {
-            try {
-              JSON.parse(value);
-            } catch (e) {
-              return `${propName} must be an Object`;
-            }
+          if(value) {
+            if(!JSON.parse('[' + value + ']'))
+              return `${propName} is invalid`;
           }
           return null;
         },
@@ -137,6 +145,8 @@ export default class EventMiddleware {
           .send({ message: 'startingDate must be smaller than endingDate!' });
         return;
       }
+      const additionalInfo = JSON.parse('[' + data.additionalInfo + ']');
+      
       const result = await EventModel.newEvent(
         res.locals.user,
         data.name,
@@ -144,7 +154,7 @@ export default class EventMiddleware {
         localFile,
         startingDate,
         endingDate,
-        JSON.parse(data.additionalInfo)
+        additionalInfo
       );
       if (result.getCode() == HttpStatusCode.CREATED)
         res
@@ -171,7 +181,10 @@ export default class EventMiddleware {
         name: 'startingDate',
         type: String,
         validator: (propName: string, value: string) => {
+          let startingDate = new Date(ConvertDate(value));
           if (!Date.parse(ConvertDate(value))) return `${propName} is invalid`;
+          let now = new Date();
+          if (startingDate < now) return `${propName} must be after today`;
           return null;
         },
       },
@@ -187,12 +200,8 @@ export default class EventMiddleware {
         name: 'additionalInfo',
         type: String,
         validator: (propName: string, value: string) => {
-          if (value.length != 0) {
-            try {
-              JSON.parse(value);
-            } catch (e) {
-              return `${propName} must be an Object`;
-            }
+          if (value) {
+            if (!JSON.parse('[' + value + ']')) return `${propName} is invalid`;
           }
           return null;
         },
@@ -213,6 +222,7 @@ export default class EventMiddleware {
           .send({ message: 'startingDate must be smaller than endingDate!' });
         return;
       }
+      const additionalInfo = JSON.parse('[' + data.additionalInfo + ']');
       const result = await EventModel.editEvent(
         res.locals.user,
         id,
@@ -221,7 +231,7 @@ export default class EventMiddleware {
         file,
         startingDate,
         endingDate,
-        JSON.parse(data.additionalInfo)
+        additionalInfo
       );
       if (result.getCode() == HttpStatusCode.OK)
         res.status(result.getCode()).send({ message: result.getMessage() });
@@ -243,6 +253,28 @@ export default class EventMiddleware {
     else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   EventProductRequest:
+   *    type: object
+   *    properties:
+   *     productIdList:
+   *      type: array
+   *      description: product Id list
+   *      example: ["32689821-ec65-4439-a6d3-3ff49859faab", "b0aed358-220f-49a4-a555-7a976bfe879f"]
+   *     discount:
+   *      type: number
+   *      format: double
+   *      description: discount of event product
+   *      example: 0.3
+   *     amount:
+   *      type: integer
+   *      format: int32
+   *      description: amount of event product
+   *      example: 100
+   */
   @ControllerService({
     body: [
       {
