@@ -9,7 +9,7 @@ export const ShopPDataSource = new DataSource({
   username: ShopPConfig.DATABASE_USERNAME,
   password: ShopPConfig.DATABASE_PASSWORD,
   database: ShopPConfig.DATABASE_NAME,
-  charset: 'utf8mb4_unicode_ci',
+  charset: 'utf8_general_ci',
   entities: [path.resolve(__dirname + '/entities/{*.js,*.ts}')],
   migrations: [path.resolve(__dirname + '/migrations/{*.js,*.ts}')],
   logger: new AdvancedConsoleLogger('all'),
