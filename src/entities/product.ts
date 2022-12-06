@@ -28,7 +28,7 @@ import { EventProduct } from './eventProduct';
  *    type: object
  *    properties:
  *     id:
- *      type: integer
+ *      type: string
  *      format: uuid
  *      description: id of product
  *      example: '7039afb2-b5c4-4fe3-a48e-dcdcb7fc5ed5'

@@ -4,7 +4,7 @@ import { Shop } from '../entities/shop';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
-import { EntityManager, Like } from 'typeorm';
+import { Between, Double, EntityManager, Like } from 'typeorm';
 import { LocalFile } from '../entities/localFile';
 import { ProductImage } from '../entities/productImage';
 import { ModelService } from '../utils/decorators';
@@ -79,6 +79,7 @@ export default class ProductModel {
   }
 
   static async searchByName(name: string) {
+
     const product = await productRepository.find({
       relations: {
         shop: {
@@ -211,6 +212,76 @@ export default class ProductModel {
         },
         {
           shop: { id: shopId },
+          status: ProductEnum.OUT_OF_ORDER,
+        },
+      ],
+    });
+    return product ? product : false;
+  }
+
+  static async filterByPrice(max: number, min: number) {
+    const product = await productRepository.find({
+      relations: {
+        shop: {
+          avatar: true,
+        },
+        category: true,
+        productImage: {
+          localFile: true,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        detail: true,
+        amount: true,
+        quantity: true,
+        sold: true,
+        star: true,
+        status: true,
+      },
+      where: [
+        {
+          amount: Between(min, max),
+          status: ProductEnum.AVAILABLE,
+        },
+        {
+          amount: Between(min, max),
+          status: ProductEnum.OUT_OF_ORDER,
+        },
+      ],
+    });
+    return product ? product : false;
+  }
+
+  static async filterByStar(max: number, min: number) {
+    const product = await productRepository.find({
+      relations: {
+        shop: {
+          avatar: true,
+        },
+        category: true,
+        productImage: {
+          localFile: true,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        detail: true,
+        amount: true,
+        quantity: true,
+        sold: true,
+        star: true,
+        status: true,
+      },
+      where: [
+        {
+          star: Between(min, max),
+          status: ProductEnum.AVAILABLE,
+        },
+        {
+          star: Between(min, max),
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],

@@ -52,9 +52,16 @@ export default class ProductMiddleware {
   })
   static async searchByName(req: Request, res: Response) {
     const name = req.params.name;
-    const result = await ProductModel.searchByName(name);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
+    const nameArr = name.split(" ");
+    let resultArr = []
+    for (let i = 0; i < nameArr.length; i++) {
+      const result = await ProductModel.searchByName(nameArr[i]);
+      resultArr.push(result)
+    }
+
+    if (resultArr) {
+      res.status(HttpStatusCode.OK).send({ data: resultArr });
+
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -106,6 +113,86 @@ export default class ProductMiddleware {
   static async searchByShop(req: Request, res: Response) {
     const shopId = req.params.shopId;
     const result = await ProductModel.searchByShop(shopId);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get Product failed!' });
+    }
+  }
+
+  @ControllerService({
+    params: [
+      {
+        name: 'min',
+        type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value > 100000000) {
+            return `${propName} must be greater than 0 and less than 100000000`;
+          }
+          return null;
+        },
+      },
+      {
+        name: 'max',
+        type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value > 100000000) {
+            return `${propName} must be greater than 0 and less than 100000000`;
+          }
+          return null;
+        },
+      },
+    ],
+  })
+  static async filterByPrice(req: Request, res: Response) {
+    const max = +req.params.max;
+    const min = +req.params.min;
+    if (max < min) {
+      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'min must be less than max' })
+    }
+    const result = await ProductModel.filterByPrice(max, min);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
+    } else {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'Get Product failed!' });
+    }
+  }
+
+  @ControllerService({
+    params: [
+      {
+        name: 'min',
+        type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value >= 5) {
+            return `${propName} must be from 0 to 5`;
+          }
+          return null;
+        },
+      },
+      {
+        name: 'max',
+        type: String,
+        validator: (propName: string, value: number) => {
+          if (value < 0 || value >= 5) {
+            return `${propName} must be from 0 to 5`;
+          }
+          return null;
+        },
+      },
+    ],
+  })
+  static async filterByStar(req: Request, res: Response) {
+    const max = +req.params.max;
+    const min = +req.params.min;
+    if (max < min) {
+      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'min must be less than max' })
+    }
+    const result = await ProductModel.filterByStar(max, min);
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
     } else {
