@@ -12,8 +12,6 @@ const routes = Router();
  *  get:
  *   tags:
  *    - Product Additional Info
- *   security:
- *    - bearerAuth: []
  *   summary: List all Product Additional Info
  *   description: List all Product Additional Info
  *   responses:
@@ -22,17 +20,11 @@ const routes = Router();
  *     content:
  *      application/json:
  *       schema:
- *        $ref: '#/components/schemas/ProductInfoListResponse'
+ *        $ref: '#/components/schemas/ProductAdditionalInfoListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
- *    401:
- *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/list-all',
-  [AuthMiddleware.checkJwt],
-  ProductAdditionalInfo.listAll
-);
+routes.get('/list-all', ProductAdditionalInfo.listAll);
 
 /**
  * @swagger
@@ -40,9 +32,7 @@ routes.get(
  *  get:
  *   tags:
  *    - Product Additional Info
- *   security:
- *    - bearerAuth: []
- *   summary: Get one product information 
+ *   summary: Get one product information
  *   description: Get one product information
  *   parameters:
  *    - in: path
@@ -59,17 +49,11 @@ routes.get(
  *     content:
  *      application/json:
  *       schema:
- *        $ref: '#/components/schemas/ProductInfoResponse'
+ *        $ref: '#/components/schemas/ProductAdditionalInfoResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
- *    401:
- *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/:id([0-9]+)',
-  AuthMiddleware.checkJwt,
-  ProductAdditionalInfo.getOneById
-);
+routes.get('/:id([0-9]+)', ProductAdditionalInfo.getOneById);
 
 /**
  * @swagger
@@ -77,9 +61,7 @@ routes.get(
  *  get:
  *   tags:
  *    - Product Additional Info
- *   security:
- *    - bearerAuth: []
- *   summary: Get one product information 
+ *   summary: Get one product information
  *   description: Get one product information
  *   parameters:
  *    - in: path
@@ -95,17 +77,11 @@ routes.get(
  *     content:
  *      application/json:
  *       schema:
- *        $ref: '#/components/schemas/ProductInfoListResponse'
+ *        $ref: '#/components/schemas/ProductAdditionalInfoListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
- *    401:
- *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/product-information/:id',
-  AuthMiddleware.checkJwt,
-  ProductAdditionalInfo.getOneByProductId
-);
+routes.get('/product-information/:id', ProductAdditionalInfo.getOneByProductId);
 
 /**
  * @swagger
@@ -129,12 +105,14 @@ routes.get(
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/components/schemas/ProductInfoRequest'
+ *       $ref: '#/components/schemas/ProductAdditionalInfoRequest'
  *   responses:
  *    200:
  *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/new/:productId',
@@ -165,15 +143,17 @@ routes.post(
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/components/schemas/ProductInfoRequest'
+ *       $ref: '#/components/schemas/ProductAdditionalInfoRequest'
  *   responses:
  *    200:
  *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
-  '/edit/:id',
+  '/edit/:id([0-9]+)',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   ProductAdditionalInfo.edit
 );

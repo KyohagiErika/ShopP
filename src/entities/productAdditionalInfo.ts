@@ -1,9 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 import { Product } from './product';
 
@@ -11,7 +6,7 @@ import { Product } from './product';
  * @swagger
  * components:
  *  schemas:
- *   ProductInfoResponse:
+ *   ProductAdditionalInfoResponse:
  *    type: object
  *    properties:
  *     id:
@@ -27,10 +22,10 @@ import { Product } from './product';
  *      type: string
  *      description: name of the product information
  *      example: 'S, M, L'
- *   ProductInfoListResponse:
+ *   ProductAdditionalInfoListResponse:
  *    type: array
  *    items:
- *     $ref: '#/components/schemas/ProductInfoResponse'
+ *     $ref: '#/components/schemas/ProductAdditionalInfoResponse'
  */
 @Entity()
 export class ProductAdditionalInfo {

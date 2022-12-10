@@ -12,8 +12,6 @@ const routes = Router();
  *  get:
  *   tags:
  *    - Payment
- *   security:
- *    - bearerAuth: []
  *   summary: List all payments (Customer)
  *   description: List all payments (Customer)
  *   responses:
@@ -28,11 +26,7 @@ const routes = Router();
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/list-all',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  PaymentMiddleware.listAll
-);
+routes.get('/list-all', PaymentMiddleware.listAll);
 
 /**
  * @swagger
@@ -40,8 +34,6 @@ routes.get(
  *  get:
  *   tags:
  *    - Payment
- *   security:
- *    - bearerAuth: []
  *   summary: Get one payment (Customer)
  *   description: Get one payment (Customer)
  *   parameters:
@@ -65,11 +57,7 @@ routes.get(
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/:id([0-9]+)',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  PaymentMiddleware.getOneById
-);
+routes.get('/:id([0-9]+)', PaymentMiddleware.getOneById);
 
 /**
  * @swagger
