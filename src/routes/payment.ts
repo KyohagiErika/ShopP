@@ -28,10 +28,7 @@ const routes = Router();
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/list-all',
-  PaymentMiddleware.listAll
-);
+routes.get('/list-all', PaymentMiddleware.listAll);
 
 /**
  * @swagger
@@ -64,10 +61,7 @@ routes.get(
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/:id([0-9]+)',
-  PaymentMiddleware.getOneById
-);
+routes.get('/:id([0-9]+)', PaymentMiddleware.getOneById);
 
 /**
  * @swagger

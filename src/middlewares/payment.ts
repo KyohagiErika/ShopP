@@ -30,17 +30,17 @@ export default class PaymentMiddleware {
   }
 
   /**
- * @swagger
- * components:
- *  schemas:
- *   PaymentRequest:
- *    type: object
- *    properties:
- *     name:
- *      type: string
- *      description: name of payment
- *      example: 'momo'
- */
+   * @swagger
+   * components:
+   *  schemas:
+   *   PaymentRequest:
+   *    type: object
+   *    properties:
+   *     name:
+   *      type: string
+   *      description: name of payment
+   *      example: 'momo'
+   */
 
   @ControllerService({
     body: [
