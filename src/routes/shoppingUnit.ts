@@ -6,15 +6,9 @@ import { RoleEnum } from '../utils/shopp.enum';
 
 const routes = Router();
 
-routes.get(
-  '/list-all',
-  ShoppingUnitMiddleware.listAll
-);
+routes.get('/list-all', ShoppingUnitMiddleware.listAll);
 
-routes.get(
-  '/:id([0-9]+)',
-  ShoppingUnitMiddleware.getOneById
-);
+routes.get('/:id([0-9]+)', ShoppingUnitMiddleware.getOneById);
 
 routes.post(
   '/new',
