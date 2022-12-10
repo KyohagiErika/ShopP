@@ -12,8 +12,6 @@ const routes = Router();
  *  get:
  *   tags:
  *    - Shopping Unit
- *   security:
- *    - bearerAuth: []
  *   summary: List all shopping unit (Customer)
  *   description: List all shopping unit (Customer)
  *   responses:
@@ -36,8 +34,6 @@ routes.get('/list-all', ShoppingUnitMiddleware.listAll);
  *  get:
  *   tags:
  *    - Shopping Unit
- *   security:
- *    - bearerAuth: []
  *   summary: Get one shopping unit (Customer)
  *   description: Get one shopping unit (Customer)
  *   parameters:

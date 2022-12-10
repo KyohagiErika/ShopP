@@ -12,8 +12,6 @@ const routes = Router();
  *  get:
  *   tags:
  *    - Payment
- *   security:
- *    - bearerAuth: []
  *   summary: List all payments (Customer)
  *   description: List all payments (Customer)
  *   responses:
@@ -36,8 +34,6 @@ routes.get('/list-all', PaymentMiddleware.listAll);
  *  get:
  *   tags:
  *    - Payment
- *   security:
- *    - bearerAuth: []
  *   summary: Get one payment (Customer)
  *   description: Get one payment (Customer)
  *   parameters:
