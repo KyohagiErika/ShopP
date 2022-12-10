@@ -6,15 +6,9 @@ import { RoleEnum } from '../utils/shopp.enum';
 
 const routes = Router();
 
-routes.get(
-  '/list-all',
-  ProductAdditionalInfo.listAll
-);
+routes.get('/list-all', ProductAdditionalInfo.listAll);
 
-routes.get(
-  '/get-product-information/:id',
-  ProductAdditionalInfo.getOneById
-);
+routes.get('/get-product-information/:id', ProductAdditionalInfo.getOneById);
 
 routes.get(
   '/get-product-information-of-product/:id',
