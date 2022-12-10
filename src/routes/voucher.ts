@@ -24,6 +24,8 @@ const routes = Router();
  *        $ref: '#/components/schemas/VoucherListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/list-all',
@@ -50,6 +52,8 @@ routes.get(
  *        $ref: '#/components/schemas/VoucherListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/list-shopP',
@@ -76,6 +80,8 @@ routes.get(
  *        $ref: '#/components/schemas/VoucherListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/list-shop',
@@ -107,6 +113,8 @@ routes.get(
  *        $ref: '#/components/schemas/VoucherListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/new',
@@ -144,9 +152,11 @@ routes.post(
  *     content:
  *      application/json:
  *       schema:
- *        $ref: '#/components/schemas/VoucherListResponse'
+ *        $ref: '#/components/schemas/VoucherResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/:id',
@@ -178,6 +188,8 @@ routes.post(
  *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/delete/:id',
@@ -209,6 +221,8 @@ routes.get(
  *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/save-voucher/:id',
@@ -240,6 +254,8 @@ routes.post(
  *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/delete-customer-voucher/:id',
@@ -266,6 +282,8 @@ routes.post(
  *        $ref: '#/components/schemas/VoucherListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/customer-ShopP',
@@ -292,6 +310,8 @@ routes.get(
  *        $ref: '#/components/schemas/VoucherListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/customer-Shop',
@@ -318,6 +338,8 @@ routes.get(
  *        $ref: '#/components/schemas/VoucherListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/customer-freeship',
@@ -344,6 +366,8 @@ routes.get(
  *        $ref: '#/components/schemas/VoucherListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/customer-discount',
@@ -379,6 +403,8 @@ routes.get(
  *        $ref: '#/components/schemas/VoucherResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/:id',
