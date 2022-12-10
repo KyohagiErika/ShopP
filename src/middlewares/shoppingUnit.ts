@@ -30,17 +30,17 @@ export default class ShoppingUnitMiddleware {
   }
 
   /**
-* @swagger
-* components:
-*  schemas:
-*   ShoppingUnitRequest:
-*    type: object
-*    properties:
-*     name:
-*      type: string
-*      description: name of shopping unit
-*      example: 'GHTK'
-*/
+   * @swagger
+   * components:
+   *  schemas:
+   *   ShoppingUnitRequest:
+   *    type: object
+   *    properties:
+   *     name:
+   *      type: string
+   *      description: name of shopping unit
+   *      example: 'GHTK'
+   */
 
   @ControllerService({
     body: [

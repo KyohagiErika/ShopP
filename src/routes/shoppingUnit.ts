@@ -12,8 +12,6 @@ const routes = Router();
  *  get:
  *   tags:
  *    - Shopping Unit
- *   security:
- *    - bearerAuth: []
  *   summary: List all shopping unit (Customer)
  *   description: List all shopping unit (Customer)
  *   responses:
@@ -28,11 +26,7 @@ const routes = Router();
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/list-all',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  ShoppingUnitMiddleware.listAll
-);
+routes.get('/list-all', ShoppingUnitMiddleware.listAll);
 
 /**
  * @swagger
@@ -40,8 +34,6 @@ routes.get(
  *  get:
  *   tags:
  *    - Shopping Unit
- *   security:
- *    - bearerAuth: []
  *   summary: Get one shopping unit (Customer)
  *   description: Get one shopping unit (Customer)
  *   parameters:
@@ -65,11 +57,7 @@ routes.get(
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/:id([0-9]+)',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  ShoppingUnitMiddleware.getOneById
-);
+routes.get('/:id([0-9]+)', ShoppingUnitMiddleware.getOneById);
 
 /**
  * @swagger
