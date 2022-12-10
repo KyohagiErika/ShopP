@@ -52,16 +52,15 @@ export default class ProductMiddleware {
   })
   static async searchByName(req: Request, res: Response) {
     const name = req.params.name;
-    const nameArr = name.split(" ");
-    let resultArr = []
+    const nameArr = name.split(' ');
+    let resultArr = [];
     for (let i = 0; i < nameArr.length; i++) {
       const result = await ProductModel.searchByName(nameArr[i]);
-      resultArr.push(result)
+      resultArr.push(result);
     }
 
     if (resultArr) {
       res.status(HttpStatusCode.OK).send({ data: resultArr });
-
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -150,7 +149,9 @@ export default class ProductMiddleware {
     const max = +req.params.max;
     const min = +req.params.min;
     if (max < min) {
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'min must be less than max' })
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'min must be less than max' });
     }
     const result = await ProductModel.filterByPrice(max, min);
     if (result) {
@@ -190,7 +191,9 @@ export default class ProductMiddleware {
     const max = +req.params.max;
     const min = +req.params.min;
     if (max < min) {
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'min must be less than max' })
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'min must be less than max' });
     }
     const result = await ProductModel.filterByStar(max, min);
     if (result) {

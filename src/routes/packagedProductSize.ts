@@ -12,8 +12,6 @@ const routes = Router();
  *  get:
  *   tags:
  *    - Packaged product size
- *   security:
- *    - bearerAuth: []
  *   summary: List all Packaged product size
  *   description: List all Packaged product size
  *   responses:
@@ -25,10 +23,8 @@ const routes = Router();
  *        $ref: '#/components/schemas/PackagedListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
- *    401:
- *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get('/list-all', [AuthMiddleware.checkJwt], PackagedProductSize.listAll);
+routes.get('/list-all', PackagedProductSize.listAll);
 
 /**
  * @swagger
@@ -36,8 +32,6 @@ routes.get('/list-all', [AuthMiddleware.checkJwt], PackagedProductSize.listAll);
  *  get:
  *   tags:
  *    - Packaged product size
- *   security:
- *    - bearerAuth: []
  *   summary: Get one Packaged product size
  *   description: Get one Packaged product size
  *   parameters:
@@ -58,14 +52,8 @@ routes.get('/list-all', [AuthMiddleware.checkJwt], PackagedProductSize.listAll);
  *        $ref: '#/components/schemas/PackagedResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
- *    401:
- *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/:id',
-  AuthMiddleware.checkJwt,
-  PackagedProductSize.getOneById
-);
+routes.get('/:id', PackagedProductSize.getOneById);
 
 /**
  * @swagger
@@ -73,9 +61,7 @@ routes.get(
  *  get:
  *   tags:
  *    - Packaged product size
- *   security:
- *    - bearerAuth: []
- *   summary: Get one product packaged 
+ *   summary: Get one product packaged
  *   description: Get one product packaged
  *   parameters:
  *    - in: path
@@ -94,14 +80,8 @@ routes.get(
  *        $ref: '#/components/schemas/PackagedListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
- *    401:
- *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/packaged-product/:id',
-  AuthMiddleware.checkJwt,
-  PackagedProductSize.getOneByProductId
-);
+routes.get('/packaged-product/:id', PackagedProductSize.getOneByProductId);
 
 /**
  * @swagger
