@@ -173,10 +173,7 @@ export default class EvaluationModel {
       orderProduct: { orderNumber: { customer: { id: user.customer.id } } },
     });
     if (result.affected == 0)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Evaluation not exist!'
-      );
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Evaluation not exist!');
     return new Response(HttpStatusCode.OK, 'Delete evaluation successfully!');
   }
 
