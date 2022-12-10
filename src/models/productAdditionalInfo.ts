@@ -3,7 +3,6 @@ import { Product } from '../entities/product';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { ProductAdditionalInfo } from '../entities/productAdditionalInfo';
-import { Shop } from '../entities/shop';
 
 const productAdditionInfoRepository = ShopPDataSource.getRepository(
   ProductAdditionalInfo
