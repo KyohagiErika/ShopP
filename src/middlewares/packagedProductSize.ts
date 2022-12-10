@@ -81,7 +81,32 @@ export default class PackagedProductSizeMiddleware {
    *      description: length of product packaged
    *      example: '60'
    */
-  @ControllerService()
+  @ControllerService({
+    params: [
+      {
+        name: 'productId',
+        type: String,
+      },
+    ],
+    body: [
+      {
+        name: 'weight',
+        type: String,
+      },
+      {
+        name: 'height',
+        type: String,
+      },
+      {
+        name: 'width',
+        type: String,
+      },
+      {
+        name: 'length',
+        type: String,
+      },
+    ],
+  })
   static async postNew(req: Request, res: Response) {
     const data = req.body;
     const productId = req.params.productId;
@@ -108,7 +133,32 @@ export default class PackagedProductSizeMiddleware {
     }
   }
 
-  @ControllerService()
+  @ControllerService({
+    params: [
+      {
+        name: 'id',
+        type: String,
+      },
+    ],
+    body: [
+      {
+        name: 'weight',
+        type: String,
+      },
+      {
+        name: 'height',
+        type: String,
+      },
+      {
+        name: 'width',
+        type: String,
+      },
+      {
+        name: 'length',
+        type: String,
+      },
+    ],
+  })
   static async edit(req: Request, res: Response) {
     const data = req.body;
     const id = +req.params.id;
