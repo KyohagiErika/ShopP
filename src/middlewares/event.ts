@@ -47,6 +47,7 @@ export default class EventMiddleware {
         .send({ message: result.getMessage(), data: result.getData() });
     else res.status(result.getCode()).send({ message: result.getMessage() });
   }
+
   @ControllerService({
     body: [
       {
