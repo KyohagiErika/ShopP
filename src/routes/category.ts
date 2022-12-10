@@ -85,7 +85,7 @@ routes.get('/:id([0-9]+)', CategoryMiddleware.getOneById);
 routes.post(
   '/new',
   uploadImage('image'),
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
   CategoryMiddleware.postNew
 );
 

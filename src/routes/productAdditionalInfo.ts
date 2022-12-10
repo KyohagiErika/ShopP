@@ -77,8 +77,6 @@ routes.get(
  *  get:
  *   tags:
  *    - Product Additional Info
- *   security:
- *    - bearerAuth: []
  *   summary: Get one product information 
  *   description: Get one product information
  *   parameters:
@@ -103,7 +101,6 @@ routes.get(
  */
 routes.get(
   '/product-information/:id',
-  AuthMiddleware.checkJwt,
   ProductAdditionalInfo.getOneByProductId
 );
 
