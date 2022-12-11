@@ -34,6 +34,8 @@ const routes = Router();
  *        $ref: '#/components/schemas/EvaluationListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/list-all/:productId',
@@ -68,6 +70,8 @@ routes.get(
  *        $ref: '#/components/schemas/EvaluationResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/:evaluationId',
@@ -111,6 +115,8 @@ routes.get(
  *        $ref: '#/components/schemas/EvaluationResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/new/:orderProductId',
@@ -154,6 +160,8 @@ routes.post(
  *        $ref: '#/components/schemas/EvaluationResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/edit/:evaluationId([0-9]+)',
@@ -185,6 +193,8 @@ routes.post(
  *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/delete/:evaluationId([0-9]+)',
@@ -224,6 +234,8 @@ routes.get(
  *          example: 10
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/alter-likes/:evaluationId([0-9]+)',
