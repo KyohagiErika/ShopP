@@ -25,6 +25,8 @@ const routes = Router();
  *        $ref: '#/components/schemas/EventListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/list-admin-events',
@@ -51,6 +53,8 @@ routes.get(
  *        $ref: '#/components/schemas/EventListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/list-shop-events',
@@ -85,6 +89,8 @@ routes.get(
  *        $ref: '#/components/schemas/EventResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/new',
@@ -128,6 +134,8 @@ routes.post(
  *        $ref: '#/components/schemas/EventResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/:id([0-9]+)',
@@ -159,6 +167,8 @@ routes.post(
  *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/delete/:id([0-9]+)',
@@ -193,6 +203,8 @@ routes.get(
  *        $ref: '#/components/schemas/EventResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/:id([0-9]+)',
@@ -228,6 +240,8 @@ routes.get(
  *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/join-event/:eventId([0-9]+)',
@@ -263,6 +277,8 @@ routes.post(
  *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/edit-products-discount/:eventId([0-9]+)',
@@ -303,6 +319,8 @@ routes.post(
  *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/delete-products/:eventId([0-9]+)',
@@ -337,6 +355,8 @@ routes.post(
  *        $ref: '#/components/schemas/EventProductListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/show-products/:eventId([0-9]+)',
