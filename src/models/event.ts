@@ -149,7 +149,7 @@ export default class EventModel {
     banner: LocalFile,
     startingDate: Date,
     endingDate: Date,
-    additionalInfo: object,
+    additionalInfo: object
   ) {
     if (user.role.role == RoleEnum.CUSTOMER)
       return new Response(
@@ -169,7 +169,7 @@ export default class EventModel {
     event.createdBy = user;
     event.roleCreator = user.role.role;
 
-    const eventEntity =  await eventRepository.save(event);
+    const eventEntity = await eventRepository.save(event);
 
     let arrayKeys = Object.keys(additionalInfo);
     let arrayValues = Object.values(additionalInfo);
@@ -239,26 +239,26 @@ export default class EventModel {
       });
     }
     let result = await eventRepository.update(
-        { id },
-        {
-          name: name,
-          content: content,
-          startingDate: startingDate,
-          endingDate: endingDate,
-        }
-      );
+      { id },
+      {
+        name: name,
+        content: content,
+        startingDate: startingDate,
+        endingDate: endingDate,
+      }
+    );
 
-      const localFileEdit = await localFileRepository.update(
-        {
-          id: event.banner.id,
-        },
-        {
-          filename: file.filename,
-          mimetype: file.mimetype,
-          path: file.path,
-        }
-      );
-      deleteFile(event.banner.path);
+    const localFileEdit = await localFileRepository.update(
+      {
+        id: event.banner.id,
+      },
+      {
+        filename: file.filename,
+        mimetype: file.mimetype,
+        path: file.path,
+      }
+    );
+    deleteFile(event.banner.path);
 
     if (result.affected != 0 && localFileEdit.affected == 1)
       return new Response(HttpStatusCode.OK, 'Edit Event successfully!');
