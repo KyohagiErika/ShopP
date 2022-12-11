@@ -8,6 +8,7 @@ import UploadModel from '../models/upload';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import ModelResponse from '../utils/response';
+import { Product } from '../entities/product';
 
 export default class ProductMiddleware {
   @ControllerService()
@@ -52,15 +53,10 @@ export default class ProductMiddleware {
   })
   static async searchByName(req: Request, res: Response) {
     const name = req.params.name;
-    const nameArr = name.split(" ");
-    let resultArr = []
-    for (let i = 0; i < nameArr.length; i++) {
-      const result = await ProductModel.searchByName(nameArr[i]);
-      resultArr.push(result)
-    }
-
-    if (resultArr) {
-      res.status(HttpStatusCode.OK).send({ data: resultArr });
+    const result = await ProductModel.searchByName(name);
+    if (result) {
+      console.log(result)
+      res.status(HttpStatusCode.OK).send({ data: result });
 
     } else {
       res
