@@ -7,6 +7,26 @@ import {
 } from 'typeorm';
 import { Customer } from './customer';
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   CartResponse:
+ *    type: object
+ *    properties:
+ *     id:
+ *      type: integer
+ *      description: id of cart
+ *      example: 1
+ *     products:
+ *      type: string
+ *      description: products of cart
+ *      example: [{id: 1234, name: "ao quan", amount: 5, color: "red" }, {id: 1234, name: "ao quan", amount: 5, color: "blue" }]
+ *   CartListResponse:
+ *    type: array
+ *    items:
+ *     $ref: '#/components/schemas/CartResponse'
+ */
 @Entity()
 export class Cart {
   @PrimaryGeneratedColumn()
