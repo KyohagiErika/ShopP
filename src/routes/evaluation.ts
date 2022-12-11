@@ -114,7 +114,7 @@ routes.get(
  */
 routes.post(
   '/new/:orderProductId',
-  [AuthMiddleware.checkJwt],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   uploadMultipleImage('evaluationImages'),
   EvaluationMiddleware.postNewEvaluation
 );
@@ -157,7 +157,7 @@ routes.post(
  */
 routes.post(
   '/edit/:evaluationId([0-9]+)',
-  [AuthMiddleware.checkJwt],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   uploadMultipleImage('evaluationImages'),
   EvaluationMiddleware.editEvaluation
 );
@@ -188,7 +188,7 @@ routes.post(
  */
 routes.get(
   '/delete/:evaluationId([0-9]+)',
-  [AuthMiddleware.checkJwt],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   EvaluationMiddleware.deleteEvaluation
 );
 
@@ -227,7 +227,7 @@ routes.get(
  */
 routes.get(
   '/alter-likes/:evaluationId([0-9]+)',
-  [AuthMiddleware.checkJwt],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   EvaluationMiddleware.alterLikesOfEvaluation
 );
 

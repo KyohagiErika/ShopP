@@ -14,14 +14,13 @@ routes.get(
 
 routes.get(
   '/list-all-processed',
-  AuthMiddleware.checkJwt,
-  checkRole(RoleEnum.ADMIN),
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
   ReportMiddleware.listAllReportProcessed
 );
 
 routes.get(
   '/view-report/:id([0-9]+)',
-  AuthMiddleware.checkJwt,
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
   ReportMiddleware.viewReport
 );
 
@@ -39,7 +38,7 @@ routes.post(
 
 routes.post(
   '/edit-status/:id([0-9]+)',
-  [AuthMiddleware.checkJwt],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.ADMIN)],
   ReportMiddleware.editStatus
 );
 

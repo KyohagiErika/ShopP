@@ -63,7 +63,7 @@ export class Evaluation {
     default: 0,
   })
   likes: number;
-  
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -24,7 +24,7 @@ const routes = Router();
  *       schema:
  *        $ref: '#/components/schemas/CartResponse'
  *    400:
- *     $ref: '#/components/responses/400BadRequest' 
+ *     $ref: '#/components/responses/400BadRequest'
  */
 routes.get(
   '/',
@@ -55,7 +55,7 @@ routes.get(
  *       schema:
  *        $ref: '#/components/schemas/CartResponse'
  *    400:
- *     $ref: '#/components/responses/400BadRequest' 
+ *     $ref: '#/components/responses/400BadRequest'
  */
 routes.post(
   '/update',
