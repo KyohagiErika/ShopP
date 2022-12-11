@@ -3,7 +3,6 @@ import { Product } from '../entities/product';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { ProductAdditionalInfo } from '../entities/productAdditionalInfo';
-import { Shop } from '../entities/shop';
 
 const productAdditionInfoRepository = ShopPDataSource.getRepository(
   ProductAdditionalInfo
@@ -14,6 +13,7 @@ export default class ProductAdditionInfoModel {
   static async listAll() {
     const productAdditionalInfo = await productAdditionInfoRepository.find({
       select: {
+        id: true,
         key: true,
         value: true,
       },
@@ -26,6 +26,7 @@ export default class ProductAdditionInfoModel {
   static async getOneById(id: number) {
     const productAdditionalInfo = await productAdditionInfoRepository.findOne({
       select: {
+        id: true,
         key: true,
         value: true,
       },
@@ -37,8 +38,9 @@ export default class ProductAdditionInfoModel {
   }
 
   static async getOneByProductId(productId: string) {
-    const productAdditionalInfo = await productAdditionInfoRepository.findOne({
+    const productAdditionalInfo = await productAdditionInfoRepository.find({
       select: {
+        id: true,
         key: true,
         value: true,
       },

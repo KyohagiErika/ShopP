@@ -28,7 +28,7 @@ const routes = Router();
  */
 routes.get(
   '/list-admin-events',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   EventMiddleware.listAll
 );
 
@@ -54,7 +54,7 @@ routes.get(
  */
 routes.get(
   '/list-shop-events',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   EventMiddleware.listShopEvents
 );
 

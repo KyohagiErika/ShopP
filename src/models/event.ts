@@ -181,11 +181,6 @@ export default class EventModel {
     event.roleCreator = user.role.role;
 
     const eventEntity = await eventRepository.save(event);
-    console.log(additionalInfo);
-    console.log(additionalInfo.length);
-
-    // let arrayKeys = Object.keys(additionalInfo);
-    // let arrayValues = Object.values(additionalInfo);
     for (let i = 0; i < additionalInfo.length; i++) {
       const eventAdditionalInfo = await additionalInfoRepository.save({
         key: additionalInfo[i].key,

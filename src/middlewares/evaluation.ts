@@ -39,10 +39,6 @@ export default class EvaluationMiddleware {
    *   EvaluationRequest:
    *    type: object
    *    properties:
-   *     id:
-   *      type: number
-   *      description: id of evaluation
-   *      example: 1
    *     star:
    *      type: number
    *      description: star of evaluation
@@ -51,15 +47,6 @@ export default class EvaluationMiddleware {
    *      type: string
    *      description: feedback of evaluation
    *      example: it is good. Hope you will get dropped.
-   *     likes:
-   *      type: integer
-   *      description: number of likes of evaluation
-   *      example: 10
-   *     createdAt:
-   *      type: string
-   *      description: day created of evaluation
-   *      format: date-time
-   *      example: 2022-10-29
    *     evaluationImages:
    *      type: array
    *      items:
