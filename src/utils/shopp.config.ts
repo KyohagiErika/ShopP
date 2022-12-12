@@ -15,4 +15,6 @@ export default class ShopPConfig {
   static SMTP_PASSWORD = process.env.SMTP_PASSWORD;
   static SMTP_SENDER = process.env.SMTP_SENDER;
   static FILE_SIZE = parseInt(process.env.FILE_SIZE || '100');
+  static CLIENT_SOCKET_ENDPOINT =
+    process.env.CLIENT_SOCKET_ENDPOINT || 'http://localhost:8080';
 }

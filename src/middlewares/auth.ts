@@ -81,7 +81,6 @@ class AuthMiddleware {
       flag
     );
     if (result.getCode() === HttpStatusCode.OK) {
-      //Send the jwt in the response
       res
         .status(result.getCode())
         .send({ message: result.getMessage(), token: result.getData() });
@@ -478,13 +477,13 @@ class AuthMiddleware {
       if (user === false) {
         return res
           .status(HttpStatusCode.UNAUTHORIZATION)
-          .send({ message: 'Unauthorized: authentication required' });
+          .send({ message: 'Unauthorized: Authentication required' });
       } else res.locals.user = user;
     } catch (error) {
       //If token is not valid, respond with 401 (unauthorized)
       return res
         .status(HttpStatusCode.UNAUTHORIZATION)
-        .send({ message: 'Unauthorized: authentication required!' });
+        .send({ message: 'Unauthorized: Authentication required!' });
     }
 
     //The token is valid for 1 hour
