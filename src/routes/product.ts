@@ -41,8 +41,8 @@ routes.get('/list-all', ProductMiddleware.listAll); //[checkJwt, checkRole(RoleE
  *      schema:
  *       type: string
  *       format: uuid
- *       required: true
- *       description: id of the product
+ *      required: true
+ *      description: id of the product
  *   responses:
  *    200:
  *     description: Success
@@ -68,8 +68,8 @@ routes.get('/get-one-by-id/:id', ProductMiddleware.getOneById);
  *      name: name
  *      schema:
  *       type: string
- *       required: true
- *       description: name of the product
+ *      required: true
+ *      description: name of the product
  *   responses:
  *    200:
  *     description: Success
@@ -168,6 +168,72 @@ routes.get(
  *     $ref: '#/components/responses/400BadRequest'
  */
 routes.get('/search-by-shop/:shopId', ProductMiddleware.searchByShop);
+
+/**
+ * @swagger
+ * /product/filter-by-price/{max}/{min}:
+ *  get:
+ *   tags:
+ *    - Product
+ *   summary: Filter product by price
+ *   description: Filter product by price
+ *   parameters:
+ *    - in: path
+ *      name: max
+ *      schema:
+ *       type: string
+ *      required: true
+ *      description: max price
+ *    - in: path
+ *      name: min
+ *      schema:
+ *       type: string
+ *      required: true
+ *      description: min price
+ *   responses:
+ *    200:
+ *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductListResponse'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ */
+routes.get('/filter-by-price/:max/:min', ProductMiddleware.filterByPrice);
+
+/**
+ * @swagger
+ * /product/filter-by-star/{max}/{min}:
+ *  get:
+ *   tags:
+ *    - Product
+ *   summary: Filter product by star
+ *   description: Filter product by star
+ *   parameters:
+ *    - in: path
+ *      name: max
+ *      schema:
+ *       type: string
+ *      required: true
+ *      description: max star
+ *    - in: path
+ *      name: min
+ *      schema:
+ *       type: string
+ *      required: true
+ *      description: min star
+ *   responses:
+ *    200:
+ *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductListResponse'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ */
+routes.get('/filter-by-star/:max/:min', ProductMiddleware.filterByStar);
 
 /**
  * @swagger
