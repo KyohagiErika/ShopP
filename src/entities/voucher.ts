@@ -34,7 +34,7 @@ import { VoucherCustomerResponse } from '../interfaces/voucher';
  *      example: Freeship
  *     condition:
  *      type: string
- *      description: type of voucher
+ *      description: condition of voucher
  *      example: Freeship
  *     mfgDate:
  *      type: string

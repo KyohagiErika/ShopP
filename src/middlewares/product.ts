@@ -8,7 +8,6 @@ import UploadModel from '../models/upload';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import ModelResponse from '../utils/response';
-import { Product } from '../entities/product';
 
 export default class ProductMiddleware {
   @ControllerService()
@@ -55,9 +54,7 @@ export default class ProductMiddleware {
     const name = req.params.name;
     const result = await ProductModel.searchByName(name);
     if (result) {
-      console.log(result)
       res.status(HttpStatusCode.OK).send({ data: result });
-
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -146,7 +143,9 @@ export default class ProductMiddleware {
     const max = +req.params.max;
     const min = +req.params.min;
     if (max < min) {
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'min must be less than max' })
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'min must be less than max' });
     }
     const result = await ProductModel.filterByPrice(max, min);
     if (result) {
@@ -186,7 +185,9 @@ export default class ProductMiddleware {
     const max = +req.params.max;
     const min = +req.params.min;
     if (max < min) {
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'min must be less than max' })
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'min must be less than max' });
     }
     const result = await ProductModel.filterByStar(max, min);
     if (result) {
