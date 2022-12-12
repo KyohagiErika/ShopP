@@ -121,6 +121,38 @@ export default class VoucherMiddleware {
     res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   VoucherRequest:
+   *    type: object
+   *    properties:
+   *     title:
+   *      type: string
+   *      description: title of voucher
+   *      example: Tat ca hinh thuc thanh toan
+   *     type:
+   *      type: string
+   *      description: type of voucher
+   *      example: Freeship
+   *     amount:
+   *      type: int
+   *      description: amount of voucher
+   *      example: 100
+   *     condition:
+   *      type: string
+   *      description: type of voucher
+   *      example: Freeship
+   *     mfgDate:
+   *      type: string
+   *      description: start day of voucher
+   *      example: 1-1-2023
+   *     expDate:
+   *      type: string
+   *      description: expire day of voucher
+   *      example: 2-2-2023
+   */
   @ControllerService({
     body: [
       {
@@ -146,7 +178,6 @@ export default class VoucherMiddleware {
       },
       {
         name: 'amount',
-        type: String,
         validator: (propName: string, value: string) => {
           const number = Number(value);
           if (!number) return `${propName} must be a number`;
@@ -215,11 +246,7 @@ export default class VoucherMiddleware {
   static async saveVoucher(req: Request, res: Response) {
     const id = req.params.id;
     const result = await VoucherModel.saveVoucher(res.locals.user, id);
-    if (result.getCode() == HttpStatusCode.OK)
-      res
-        .status(result.getCode())
-        .send({ message: result.getMessage(), data: result.getData() });
-    else res.status(result.getCode()).send({ message: result.getMessage() });
+    res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
   @ControllerService()

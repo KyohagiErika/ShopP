@@ -52,15 +52,9 @@ export default class ProductMiddleware {
   })
   static async searchByName(req: Request, res: Response) {
     const name = req.params.name;
-    const nameArr = name.split(' ');
-    let resultArr = [];
-    for (let i = 0; i < nameArr.length; i++) {
-      const result = await ProductModel.searchByName(nameArr[i]);
-      resultArr.push(result);
-    }
-
-    if (resultArr) {
-      res.status(HttpStatusCode.OK).send({ data: resultArr });
+    const result = await ProductModel.searchByName(name);
+    if (result) {
+      res.status(HttpStatusCode.OK).send({ data: result });
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)

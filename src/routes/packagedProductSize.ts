@@ -53,11 +53,11 @@ routes.get('/list-all', PackagedProductSize.listAll);
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  */
-routes.get('/:id', PackagedProductSize.getOneById);
+routes.get('/:id([0-9]+)', PackagedProductSize.getOneById);
 
 /**
  * @swagger
- * /packaged-product-size/packaged-product/{id}:
+ * /packaged-product-size/packaged-product/{productId}:
  *  get:
  *   tags:
  *    - Packaged product size
@@ -65,7 +65,7 @@ routes.get('/:id', PackagedProductSize.getOneById);
  *   description: Get one product packaged
  *   parameters:
  *    - in: path
- *      name: id
+ *      name: productId
  *      schema:
  *       type: string
  *       format: uuid
@@ -81,11 +81,14 @@ routes.get('/:id', PackagedProductSize.getOneById);
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  */
-routes.get('/packaged-product/:id', PackagedProductSize.getOneByProductId);
+routes.get(
+  '/packaged-product/:productId',
+  PackagedProductSize.getOneByProductId
+);
 
 /**
  * @swagger
- * /packaged-product-size/new/{id}:
+ * /packaged-product-size/new/{productId}:
  *  post:
  *   tags:
  *    - Packaged product size
@@ -95,7 +98,7 @@ routes.get('/packaged-product/:id', PackagedProductSize.getOneByProductId);
  *   description: Create a new Packaged product size (Shop)
  *   parameters:
  *    - in: path
- *      name: id
+ *      name: productId
  *      schema:
  *       type: string
  *       format: uuid
@@ -149,7 +152,7 @@ routes.post(
  *     $ref: '#/components/responses/400BadRequest'
  */
 routes.post(
-  '/edit/:id',
+  '/edit/:id([0-9]+)',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   PackagedProductSize.edit
 );

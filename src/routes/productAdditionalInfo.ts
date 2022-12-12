@@ -57,7 +57,7 @@ routes.get('/:id([0-9]+)', ProductAdditionalInfo.getOneById);
 
 /**
  * @swagger
- * /product-additional-info/product-information/{id}:
+ * /product-additional-info/product-information/{productId}:
  *  get:
  *   tags:
  *    - Product Additional Info
@@ -65,7 +65,7 @@ routes.get('/:id([0-9]+)', ProductAdditionalInfo.getOneById);
  *   description: Get one product information
  *   parameters:
  *    - in: path
- *      name: id
+ *      name: productId
  *      schema:
  *       type: string
  *       format: uuid
@@ -81,11 +81,14 @@ routes.get('/:id([0-9]+)', ProductAdditionalInfo.getOneById);
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  */
-routes.get('/product-information/:id', ProductAdditionalInfo.getOneByProductId);
+routes.get(
+  '/product-information/:productId',
+  ProductAdditionalInfo.getOneByProductId
+);
 
 /**
  * @swagger
- * /product-additional-info/new/{id}:
+ * /product-additional-info/new/{productId}:
  *  post:
  *   tags:
  *    - Product Additional Info
@@ -95,7 +98,7 @@ routes.get('/product-information/:id', ProductAdditionalInfo.getOneByProductId);
  *   description: Create a new Product Additional Info (Shop)
  *   parameters:
  *    - in: path
- *      name: id
+ *      name: productId
  *      schema:
  *       type: string
  *       format: uuid

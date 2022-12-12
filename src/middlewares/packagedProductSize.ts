@@ -46,7 +46,7 @@ export default class PackagedProductSizeMiddleware {
     ],
   })
   static async getOneByProductId(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = req.params.productId;
     const result = await PackagedProductSizeModel.getOneByProductId(id);
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
