@@ -25,7 +25,7 @@ const routes = Router();
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  */
-routes.get('/list-all', ProductMiddleware.listAll); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.get('/list-all', ProductMiddleware.listAll);
 
 /**
  * @swagger
