@@ -123,9 +123,8 @@ export default class EventMiddleware {
         name: 'additionalInfo',
         type: String,
         validator: (propName: string, value: string) => {
-          if(value) {
-            if(!JSON.parse('[' + value + ']'))
-              return `${propName} is invalid`;
+          if (value) {
+            if (!JSON.parse('[' + value + ']')) return `${propName} is invalid`;
           }
           return null;
         },
@@ -146,7 +145,7 @@ export default class EventMiddleware {
         return;
       }
       const additionalInfo = JSON.parse('[' + data.additionalInfo + ']');
-      
+
       const result = await EventModel.newEvent(
         res.locals.user,
         data.name,
