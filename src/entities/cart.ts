@@ -22,10 +22,6 @@ import { Customer } from './customer';
  *      type: string
  *      description: products of cart
  *      example: [{id: 1234, name: "ao quan", amount: 5, color: "red" }, {id: 1234, name: "ao quan", amount: 5, color: "blue" }]
- *   CartListResponse:
- *    type: array
- *    items:
- *     $ref: '#/components/schemas/CartResponse'
  */
 @Entity()
 export class Cart {
