@@ -18,6 +18,7 @@ import { Cart } from './cart';
 import { LocalFile } from './localFile';
 import { Report } from './report';
 import { Order } from './order';
+import { ChatRoom } from './chatRoom';
 
 /**
  * @swagger
@@ -127,6 +128,10 @@ export class Customer {
   @ManyToMany(() => Shop, shop => shop.followers)
   @JoinTable()
   shopsFollowed: Shop[];
+
+  @OneToMany(() => ChatRoom, chatRooms => chatRooms.customer)
+  @JoinTable()
+  chatRooms: ChatRoom[];
 
   @ManyToMany(() => Evaluation, evaluation => evaluation.likedPeople)
   likedEvaluations: Evaluation[];

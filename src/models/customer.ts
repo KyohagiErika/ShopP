@@ -327,4 +327,14 @@ export default class CustomerModel {
       customer.shopsFollowed
     );
   }
+
+  static async getById(customerId: string) {
+    const customerRepository = ShopPDataSource.getRepository(Customer);
+    return await customerRepository.findOne({
+      where: {
+        id: customerId,
+        user: { status: StatusEnum.ACTIVE },
+      },
+    });
+  }
 }

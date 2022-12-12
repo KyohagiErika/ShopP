@@ -16,6 +16,8 @@ import order from './order';
 import payment from './payment';
 import shoppingUnit from './shoppingUnit';
 import orderProduct from './orderProduct';
+import message from './message';
+import chatRoom from './chatRoom';
 import enumeration from './enum';
 import evaluation from './evaluation';
 import swagger from './swagger';
@@ -104,6 +106,8 @@ routes.use('/order', order);
 routes.use('/payment', payment);
 routes.use('/shopping-unit', shoppingUnit);
 routes.use('/order-product', orderProduct);
+routes.use('/message', message);
+routes.use('/chat-room', chatRoom);
 routes.use('/enum', enumeration);
 routes.use('/evaluation', evaluation);
 

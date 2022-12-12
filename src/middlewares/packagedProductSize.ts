@@ -46,7 +46,7 @@ export default class PackagedProductSizeMiddleware {
     ],
   })
   static async getOneByProductId(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = req.params.productId;
     const result = await PackagedProductSizeModel.getOneByProductId(id);
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
@@ -57,6 +57,30 @@ export default class PackagedProductSizeMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   PackagedRequest:
+   *    type: object
+   *    properties:
+   *     weight:
+   *      type: double
+   *      description: weight of product packaged
+   *      example: '25'
+   *     height:
+   *      type: double
+   *      description: height of product packaged
+   *      example: '34'
+   *     width:
+   *      type: double
+   *      description: width of product packaged
+   *      example: '60'
+   *     length:
+   *      type: double
+   *      description: length of product packaged
+   *      example: '60'
+   */
   @ControllerService({
     params: [
       {
