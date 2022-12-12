@@ -32,6 +32,28 @@ export default class EvaluationMiddleware {
     else res.status(result.getCode()).send({ message: result.getMessage() });
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   EvaluationRequest:
+   *    type: object
+   *    properties:
+   *     star:
+   *      type: number
+   *      description: star of evaluation
+   *      example: 5
+   *     feedback:
+   *      type: string
+   *      description: feedback of evaluation
+   *      example: it is good. Hope you will get dropped.
+   *     evaluationImages:
+   *      type: array
+   *      items:
+   *       type: string
+   *       format: binary
+   *       description: images of evaluation
+   */
   @ControllerService({
     body: [
       {

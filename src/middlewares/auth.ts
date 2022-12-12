@@ -148,11 +148,11 @@ class AuthMiddleware {
   })
   static async changePassword(req: Request, res: Response) {
     //Get ID from JWT
-    const id = res.locals.user;
+    const id = res.locals.user.id;
 
     //Get parameters from the body
     const data = req.body;
-    if (data.oldPassword !== data.confirmNewPassword)
+    if (data.newPassword !== data.confirmNewPassword)
       res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'Wrong confirm new password' });

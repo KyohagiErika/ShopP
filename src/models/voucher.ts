@@ -386,14 +386,14 @@ export default class VoucherModel {
       },
       where: {
         id: user.customer.id,
-        voucher: { expDate: MoreThan(now) },
+        // voucher: { expDate: MoreThan(now) },
       },
     });
     if (customer == null)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Customer not exist');
     let length = customer.voucher.length;
     customer.voucher = customer.voucher.filter(item => {
-      return item.id != id;
+      return item.id != id && item.expDate > now;
     });
     if (length == customer.voucher.length)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Unavailable voucher');
