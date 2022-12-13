@@ -1,3 +1,21 @@
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   Enum:
+ *    type: object
+ *    properties:
+ *     name:
+ *      type: string
+ *      description: name of enum
+ *     description:
+ *      type: string
+ *      description: description of enum
+ *   EnumList:
+ *    type: array
+ *    items:
+ *     $ref: '#/components/schemas/Enum'
+ */
 export enum HttpStatusCode {
   OK = 200,
   CREATED = 201,
@@ -15,7 +33,6 @@ export enum StatusEnum {
   INACTIVE = 'INACTIVE',
   LOCKED = 'LOCKED',
 }
-
 export enum RoleEnum {
   ADMIN = 2,
   SHOP = 1,

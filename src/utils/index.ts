@@ -47,7 +47,8 @@ const instanceOfOrderProductRequest = (data: OrderProductRequest) => {
 };
 
 const enumToArray = (enumType: any) => {
-  return Object.keys(enumType).map(key => ({
+  const keys = Object.keys(enumType).filter(key => !Number.isInteger(+key));
+  return keys.map(key => ({
     name: key,
     description: enumType[key],
   }));
