@@ -40,8 +40,12 @@ services:
     restart: unless-stopped
     environment:
       PMA_HOST: mysql
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: longmetmoivcl
     depends_on:
       - mysql
+    networks:
+      - shopp
     ports:
       - 8080:80
 
