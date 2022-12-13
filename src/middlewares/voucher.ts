@@ -65,7 +65,6 @@ export default class VoucherMiddleware {
       },
       {
         name: 'amount',
-        type: String,
         validator: (propName: string, value: string) => {
           const number = Number(value);
           if (!number) return `${propName} must be a number`;
@@ -96,7 +95,7 @@ export default class VoucherMiddleware {
     const mfgDate = new Date(ConvertDate(data.mfgDate));
     const expDate = new Date(ConvertDate(data.expDate));
     const now = new Date();
-    if (now <= mfgDate) {
+    if (now >= mfgDate) {
       res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'mfgDate must be after today!' });
