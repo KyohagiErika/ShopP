@@ -6,8 +6,6 @@ import {
   CreateDateColumn,
   OneToMany,
   OneToOne,
-  ManyToMany,
-  JoinTable,
 } from 'typeorm';
 
 import bcrypt from 'bcryptjs';
@@ -77,7 +75,6 @@ export class User {
   })
   status: StatusEnum;
 
-  @Column()
   @CreateDateColumn()
   createdAt: Date;
 

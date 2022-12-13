@@ -14,7 +14,7 @@ import {
   StatusEnum,
 } from '../utils/shopp.enum';
 import { OrderRequest } from '../interfaces/order';
-import { In, LessThan, MoreThan } from 'typeorm';
+import { In } from 'typeorm';
 
 const orderReposity = ShopPDataSource.getRepository(Order);
 const shopReposity = ShopPDataSource.getRepository(Shop);

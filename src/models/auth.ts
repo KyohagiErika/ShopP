@@ -73,7 +73,7 @@ export default class AuthModel {
       user.password = newPassword;
       //Hash the new password and save
       user.hashPassword();
-      userRepository.save(user);
+      await userRepository.save(user);
       return new Response(HttpStatusCode.OK, 'Change password successfully!');
     } else
       return new Response(
