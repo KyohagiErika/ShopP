@@ -113,7 +113,9 @@ export default class VoucherMiddleware {
       data.title,
       data.type,
       data.amount,
-      data.condition,
+      data.minBillPrice,
+      data.priceDiscount,
+      data.maxPriceDiscount,
       mfgDate,
       expDate
     );
@@ -136,13 +138,21 @@ export default class VoucherMiddleware {
    *      description: type of voucher
    *      example: Freeship
    *     amount:
-   *      type: int
+   *      type: integer
    *      description: amount of voucher
    *      example: 100
-   *     condition:
-   *      type: string
-   *      description: type of voucher
-   *      example: Freeship
+   *     minBillPrice:
+   *      type: integer
+   *      description: minimum price of Bill that can apply
+   *      example: 100000
+   *     priceDiscount:
+   *      type: integer
+   *      description: price discount of voucher
+   *      example: 50
+   *     maxPriceDiscount:
+   *      type: integer
+   *      description: maximum price discount of voucher
+   *      example: 20000
    *     mfgDate:
    *      type: string
    *      description: start day of voucher
@@ -177,6 +187,30 @@ export default class VoucherMiddleware {
       },
       {
         name: 'amount',
+        validator: (propName: string, value: string) => {
+          const number = Number(value);
+          if (!number) return `${propName} must be a number`;
+          return null;
+        },
+      },
+      {
+        name: 'minBillPrice',
+        validator: (propName: string, value: string) => {
+          const number = Number(value);
+          if (!number) return `${propName} must be a number`;
+          return null;
+        },
+      },
+      {
+        name: 'priceDiscount',
+        validator: (propName: string, value: string) => {
+          const number = Number(value);
+          if (!number) return `${propName} must be a number`;
+          return null;
+        },
+      },
+      {
+        name: 'maxPriceDiscount',
         validator: (propName: string, value: string) => {
           const number = Number(value);
           if (!number) return `${propName} must be a number`;
@@ -223,7 +257,9 @@ export default class VoucherMiddleware {
       data.title,
       data.type,
       data.amount,
-      data.condition,
+      data.minBillPrice,
+      data.priceDiscount,
+      data.maxPriceDiscount,
       mfgDate,
       expDate
     );
