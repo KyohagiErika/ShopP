@@ -232,7 +232,7 @@ routes.get(
 /**
  * @swagger
  * /order/new:
- *  get:
+ *  post:
  *   tags:
  *    - Order
  *   security:
@@ -265,7 +265,7 @@ routes.post(
 /**
  * @swagger
  * /order/cancel-order/{id}:
- *  get:
+ *  post:
  *   tags:
  *    - Order
  *   security:
@@ -298,7 +298,7 @@ routes.post(
 /**
  * @swagger
  * /order/edit-status/{id}:
- *  get:
+ *  post:
  *   tags:
  *    - Order
  *   security:

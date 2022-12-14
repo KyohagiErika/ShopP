@@ -168,7 +168,7 @@ export default class OrderMiddleware {
    *   OrderItemRequest:
    *    type: object
    *    properties:
-   *     estimateDeliveryTime"
+   *     estimateDeliveryTime:
    *      type: string
    *      description: estimate delivery time of order
    *      example: '12/12/2022-15/12/2022'
@@ -189,11 +189,9 @@ export default class OrderMiddleware {
    *      example: '1'
    *     voucherIds:
    *      type: array
-   *       items:
-   *         type: string
-   *         format: uuid
-   *         description: voucher id
-   *         example: 'f191d8ad-3d10-4681-9b14-95d8de1e61e1'
+   *      items:
+   *       type: string
+   *      example: ['f191d8ad-3d10-4681-9b14-95d8de1e61e1', 'f191d8ad-3d10-4681-9b14-95d8de1e61e1']
    *     orderProducts:
    *      type: array
    *      items:
