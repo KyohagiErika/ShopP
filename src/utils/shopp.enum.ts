@@ -16,6 +16,7 @@
  *    items:
  *     $ref: '#/components/schemas/Enum'
  */
+
 export enum HttpStatusCode {
   OK = 200,
   CREATED = 201,
@@ -71,6 +72,21 @@ export enum StatusReportEnum {
   PROCESSED = 'PROCESSED',
 }
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   DeliveryStatusEnum:
+ *    type: string
+ *    enum:
+ *    - CHECKING
+ *    - CONFIRMED
+ *    - PACKAGING
+ *    - DELIVERING
+ *    - DELIVERED
+ *    - CANCELLED
+ *    - RETURNED
+ */
 export enum DeliveryStatusEnum {
   CHECKING = '0',
   CONFIRMED = '1',
