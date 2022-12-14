@@ -14,7 +14,7 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     restart: always
-    
+
   be:
     container_name: shopp_be
     build:
