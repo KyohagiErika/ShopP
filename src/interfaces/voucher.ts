@@ -4,7 +4,9 @@ export interface VoucherCustomerResponse {
   id: string;
   title: string;
   type: VoucherTypeEnum;
-  condition: string;
+  minBillPrice: number;
+  priceDiscount: number;
+  maxPriceDiscount: number;
   mfgDate: Date;
   expDate: Date;
 }

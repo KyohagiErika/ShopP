@@ -24,7 +24,7 @@ export default class CartMiddleware {
    *      products:
    *       type: string
    *       description: products of cart
-   *       example: [{id: 1234, name: "ao quan", amount: 5, color: "red" }, {id: 1234, name: "ao quan", amount: 5, color: "blue" }]
+   *       example: '[{id: 1234, name: "ao quan", amount: 5, color: "red" }, {id: 1234, name: "ao quan", amount: 5, color: "blue" }]'
    */
   @ControllerService()
   static async update(req: Request, res: Response) {

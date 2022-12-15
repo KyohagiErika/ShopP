@@ -7,7 +7,6 @@ export default class orderProductModel {
     const order = await orderProductRepository.find({
       relations: {
         product: true,
-        orderNumber: true,
       },
       where: {
         orderNumber: { id: orderNumber },

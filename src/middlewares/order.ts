@@ -145,6 +145,80 @@ export default class OrderMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   OrderRequest:
+   *    type: object
+   *    properties:
+   *     address:
+   *      type: string
+   *      description: address of delivery
+   *      example: 'Thu Duc, Ho Chi Minh City'
+   *     paymentId:
+   *      type: number
+   *      format: int64
+   *      description: paymentId of payment
+   *      example: '2'
+   *     orders:
+   *      type: array
+   *      items:
+   *       $ref: '#/components/schemas/OrderItemRequest'
+   *   OrderItemRequest:
+   *    type: object
+   *    properties:
+   *     estimateDeliveryTime:
+   *      type: string
+   *      description: estimate delivery time of order
+   *      example: '12/12/2022-15/12/2022'
+   *     totalBill:
+   *      type: number
+   *      format: int64
+   *      description: total bill of order
+   *      example: '100000'
+   *     transportFee:
+   *      type: number
+   *      format: int64
+   *      description: transport fee of order
+   *      example: '10000'
+   *     shoppingUnitId:
+   *      type: number
+   *      format: int64
+   *      description: shopping unit id
+   *      example: '1'
+   *     voucherIds:
+   *      type: array
+   *      items:
+   *       type: string
+   *      example: ['f191d8ad-3d10-4681-9b14-95d8de1e61e1', 'f191d8ad-3d10-4681-9b14-95d8de1e61e1']
+   *     orderProducts:
+   *      type: array
+   *      items:
+   *       $ref: '#/components/schemas/OrderProductRequest'    
+   *   OrderProductRequest:
+   *    type: object
+   *    properties:
+   *     price:
+   *      type: number
+   *      format: int64
+   *      description: price of product
+   *      example: '100000'
+   *     additionalInfo:
+   *      type: string
+   *      description: additional info of product
+   *      example: 'no sugar'
+   *     quantity:
+   *      type: number
+   *      format: int64
+   *      description: quantity of product
+   *      example: '1'
+   *     productId:
+   *      type: string
+   *      format: uuid 
+   *      description: product id
+   *      example: 'f191d8ad-3d10-4681-9b14-95d8de1e61e1'
+   */
   @ControllerService({
     body: [
       {
@@ -191,7 +265,7 @@ export default class OrderMiddleware {
       orders,
       customer
     );
-    if (result.getCode() === HttpStatusCode.CREATED) {
+    if (result.getCode() === HttpStatusCode.OK) {
       return res
         .status(result.getCode())
         .send({ message: result.getMessage(), data: result.getData() });

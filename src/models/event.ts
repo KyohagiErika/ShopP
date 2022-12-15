@@ -308,16 +308,17 @@ export default class EventModel {
     if (!event) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
     }
+    if (event.endingDate < now)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Event has been already ended!'
+    );
     if (event.startingDate <= now)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Event is happening, can not join anymore!'
       );
-    if (event.endingDate < now)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Event has been already ended!'
-      );
+    
     if (
       event.status == StatusEnum.INACTIVE ||
       event.status == StatusEnum.LOCKED
@@ -418,15 +419,15 @@ export default class EventModel {
     });
     if (!event)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
-    if (event.startingDate <= now)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Event is happening, can not join anymore!'
-      );
     if (event.endingDate < now)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Event has been already ended!'
+      );
+    if (event.startingDate <= now)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Event is happening, can not join anymore!'
       );
     if (
       event.status == StatusEnum.INACTIVE ||
@@ -520,15 +521,15 @@ export default class EventModel {
     });
     if (!event)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event not exist!');
-    if (event.startingDate <= now)
-      return new Response(
-        HttpStatusCode.BAD_REQUEST,
-        'Event is happening, can not join anymore!'
-      );
     if (event.endingDate < now)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Event has been already ended!'
+      );
+    if (event.startingDate <= now)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Event is happening, can not join anymore!'
       );
     if (
       event.status == StatusEnum.INACTIVE ||
@@ -606,6 +607,11 @@ export default class EventModel {
       event.status == StatusEnum.LOCKED
     )
       return new Response(HttpStatusCode.BAD_REQUEST, 'Event is inactive!');
+    if (event.endingDate < new Date())
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Event has been already ended!'
+      );
     const eventProducts = await eventProductRepository.find({
       select: {
         id: true,
