@@ -196,9 +196,10 @@ export default class EvaluationModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Evaluation not exist!');
     const likedPeople: Customer[] = evaluation.likedPeople;
     const lengthOfLikedPeopleBefore = likedPeople.length;
-    evaluation.likedPeople.filter(customer => {
-      return customer.id != user.customer.id;
+    evaluation.likedPeople = likedPeople.filter(customer => {
+      return customer.id != user.customer.id 
     });
+    
     if (evaluation.likedPeople.length != lengthOfLikedPeopleBefore) {
       evaluation.likes--;
       await evaluationRepository.save(evaluation);

@@ -32,10 +32,18 @@ import { VoucherCustomerResponse } from '../interfaces/voucher';
  *      type: string
  *      description: type of voucher
  *      example: Freeship
- *     condition:
- *      type: string
- *      description: condition of voucher
- *      example: Freeship
+ *     minBillPrice:
+ *      type: integer
+ *      description: minimum price of Bill that can apply
+ *      example: 100000
+ *     priceDiscount:
+ *      type: integer
+ *      description: price discount of voucher
+ *      example: 50
+ *     maxPriceDiscount:
+ *      type: integer
+ *      description: maximum price discount of voucher
+ *      example: 20000
  *     mfgDate:
  *      type: string
  *      description: start day of voucher
@@ -77,8 +85,17 @@ export class Voucher {
   @Column()
   amount: number;
 
-  @Column('json', { nullable: true })
-  condition: string;
+  // @Column( { nullable: true })
+  // condition: string;
+
+  @Column()
+  minBillPrice: number;
+
+  @Column()
+  priceDiscount: number
+
+  @Column({nullable: true})
+  maxPriceDiscount: number
 
   @Column()
   mfgDate: Date;
@@ -98,7 +115,9 @@ export class Voucher {
       id: voucherEntity.id,
       title: voucherEntity.title,
       type: voucherEntity.type,
-      condition: voucherEntity.condition,
+      minBillPrice: voucherEntity.minBillPrice,
+      priceDiscount: voucherEntity.priceDiscount,
+      maxPriceDiscount: voucherEntity.maxPriceDiscount,
       mfgDate: voucherEntity.mfgDate,
       expDate: voucherEntity.expDate,
     };
