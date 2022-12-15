@@ -5,10 +5,12 @@ import {
   OneToOne,
   JoinColumn,
   CreateDateColumn,
-  OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { RoleEnum } from '../utils/shopp.enum';
 import { LocalFile } from './localFile';
-import { UserNotification } from './userNotification';
+import { User } from './user';
 
 @Entity()
 export class Notification {
@@ -28,9 +30,14 @@ export class Notification {
   @CreateDateColumn()
   createdAt: Date;
 
-  @OneToMany(
-    () => UserNotification,
-    userNotifications => userNotifications.notification
-  )
-  userNotifications: UserNotification[];
+  @ManyToMany(() => User, receivers => receivers.notifications)
+  @JoinTable()
+  receivers: User[];
+
+  @Column({
+    type: 'enum',
+    enum: RoleEnum,
+    default: RoleEnum.CUSTOMER,
+  })
+  roleReceiver: RoleEnum;
 }

@@ -12,7 +12,12 @@ const swaggerOptions = {
       version: '1.0.0',
       description:
         'Web Application API Documentation for ShopP E-Commerce Platform built with NodeJS, ExpressJS, TypeScript, TypeORM, and MySQL',
-      servers: ['http://localhost:3001'],
+      servers: [
+        {
+          url: 'http://localhost:3001',
+          description: 'Development server',
+        },
+      ],
       basePath: '/',
     },
     components: {

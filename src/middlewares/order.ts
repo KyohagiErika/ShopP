@@ -3,6 +3,7 @@ import { Customer } from '../entities/customer';
 import { Shop } from '../entities/shop';
 import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
+import io from '../socket';
 import { instanceOfOrderRequest } from '../utils';
 import { ControllerService } from '../utils/decorators';
 import { DeliveryStatusEnum, HttpStatusCode } from '../utils/shopp.enum';
@@ -195,7 +196,7 @@ export default class OrderMiddleware {
    *     orderProducts:
    *      type: array
    *      items:
-   *       $ref: '#/components/schemas/OrderProductRequest'    
+   *       $ref: '#/components/schemas/OrderProductRequest'
    *   OrderProductRequest:
    *    type: object
    *    properties:
@@ -215,7 +216,7 @@ export default class OrderMiddleware {
    *      example: '1'
    *     productId:
    *      type: string
-   *      format: uuid 
+   *      format: uuid
    *      description: product id
    *      example: 'f191d8ad-3d10-4681-9b14-95d8de1e61e1'
    */
@@ -266,6 +267,10 @@ export default class OrderMiddleware {
       customer
     );
     if (result.getCode() === HttpStatusCode.OK) {
+      // //send notification
+      // io.to(res.locals.user.id.toString).emit("customer-notification", result.getData())
+      // io.to(res.locals.user.id.toString).emit("shop-notification", result.getData())
+
       return res
         .status(result.getCode())
         .send({ message: result.getMessage(), data: result.getData() });

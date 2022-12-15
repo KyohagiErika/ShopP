@@ -8,7 +8,6 @@ import ChatRoomModel from './models/chatRoom';
 import { HttpStatusCode, TypeTransferEnum } from './utils/shopp.enum';
 import { Message } from './entities/message';
 import { ShopPDataSource } from './data';
-import { NextFunction } from 'express';
 
 const messageRepository = ShopPDataSource.getRepository(Message);
 
