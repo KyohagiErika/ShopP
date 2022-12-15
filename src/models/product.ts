@@ -39,6 +39,11 @@ export default class ProductModel {
         },
         { status: ProductEnum.OUT_OF_ORDER },
       ],
+      order: {
+        star: 'DESC',
+        sold: 'DESC',
+        amount: 'ASC',
+      },
     });
     return product && product.length > 0 ? product : false;
   }
@@ -110,6 +115,11 @@ export default class ProductModel {
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],
+      order: {
+        star: 'DESC',
+        sold: 'DESC',
+        amount: 'ASC',
+      },
     });
     return product ? product : false;
   }
@@ -145,6 +155,11 @@ export default class ProductModel {
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],
+      order: {
+        star: 'DESC',
+        sold: 'DESC',
+        amount: 'ASC',
+      },
     });
     return product ? product : false;
   }
@@ -180,6 +195,11 @@ export default class ProductModel {
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],
+      order: {
+        star: 'DESC',
+        sold: 'DESC',
+        amount: 'ASC',
+      },
     });
     return product ? product : false;
   }
@@ -215,6 +235,11 @@ export default class ProductModel {
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],
+      order: {
+        star: 'DESC',
+        sold: 'DESC',
+        amount: 'ASC',
+      },
     });
     return product ? product : false;
   }
@@ -250,6 +275,11 @@ export default class ProductModel {
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],
+      order: {
+        star: 'DESC',
+        sold: 'DESC',
+        amount: 'ASC',
+      },
     });
     return product ? product : false;
   }
@@ -285,6 +315,11 @@ export default class ProductModel {
           status: ProductEnum.OUT_OF_ORDER,
         },
       ],
+      order: {
+        star: 'DESC',
+        sold: 'DESC',
+        amount: 'ASC',
+      },
     });
     return product ? product : false;
   }

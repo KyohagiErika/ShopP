@@ -55,7 +55,6 @@ export default class ProductMiddleware {
     const name = req.params.name;
     const result = await ProductModel.searchByName(name);
     if (result) {
-      console.log(result)
       res.status(HttpStatusCode.OK).send({ data: result });
 
     } else {
