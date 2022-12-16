@@ -102,8 +102,8 @@ routes.get(
  *      schema:
  *       type: string
  *       format: uuid
- *       required: true
- *       description: id of the product
+ *      required: true
+ *      description: id of the product
  *   requestBody:
  *    content:
  *     application/json:
