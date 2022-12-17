@@ -17,16 +17,8 @@ export default class UserMiddleware {
   }
 
   @ControllerService()
-  static async getOneById(req: Request, res: Response) {
-    const id = +req.params.id;
-    const result = await UserModel.getOneById(id);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'This user not exist!' });
-    }
+  static async getOwn(req: Request, res: Response) {
+    res.status(HttpStatusCode.OK).send({ data: res.locals.user });
   }
 
   /**

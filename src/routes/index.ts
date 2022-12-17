@@ -85,9 +85,6 @@ const routes = Router();
  *      type: string
  *      description: Message Response
  */
-routes.use('/get', async (req, res) => {
-  res.send('Hello World!');
-});
 routes.use('/api-docs', swagger);
 routes.use('/auth', auth);
 routes.use('/account', user);
