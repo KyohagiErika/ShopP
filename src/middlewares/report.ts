@@ -47,6 +47,22 @@ export default class ReportMiddleware {
     }
   }
 
+  /**
+* @swagger
+* components:
+*  schemas:
+*   ReportRequest:
+*    type: object
+*    properties:
+*     reason:
+*      type: string
+*      description: reason report
+*      example: 'scam'
+*     description:
+*      type: string
+*      description: description of the reason
+*      example: 'I did not receive my stuff'
+*/
   @ControllerService({
     params: [
       {

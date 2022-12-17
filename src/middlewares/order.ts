@@ -193,6 +193,11 @@ export default class OrderMiddleware {
    *      items:
    *       type: string
    *      example: ['f191d8ad-3d10-4681-9b14-95d8de1e61e1', 'f191d8ad-3d10-4681-9b14-95d8de1e61e1']
+   *     shopId:
+   *      type: string
+   *      format: uuid
+   *      description: shop id
+   *      example: 'f191d8ad-3d10-4681-9b14-95d8de1e61e1'
    *     orderProducts:
    *      type: array
    *      items:
@@ -200,25 +205,26 @@ export default class OrderMiddleware {
    *   OrderProductRequest:
    *    type: object
    *    properties:
-   *     price:
-   *      type: number
-   *      format: int64
-   *      description: price of product
-   *      example: '100000'
-   *     additionalInfo:
-   *      type: string
-   *      description: additional info of product
-   *      example: 'no sugar'
-   *     quantity:
-   *      type: number
-   *      format: int64
-   *      description: quantity of product
-   *      example: '1'
    *     productId:
    *      type: string
    *      format: uuid
    *      description: product id
    *      example: 'f191d8ad-3d10-4681-9b14-95d8de1e61e1'
+   *     price:
+   *      type: number
+   *      format: int64
+   *      description: price of product
+   *      example: '100000'
+   *     quantity:
+   *      type: number
+   *      format: int64
+   *      description: quantity of product
+   *      example: '1'
+   *     additionalInfo:
+   *      type: string
+   *      format: uuid
+   *      description: additional info of product
+   *      example: 'no sugar'
    */
   @ControllerService({
     body: [
