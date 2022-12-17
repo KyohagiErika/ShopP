@@ -197,9 +197,9 @@ export default class EvaluationModel {
     const likedPeople: Customer[] = evaluation.likedPeople;
     const lengthOfLikedPeopleBefore = likedPeople.length;
     evaluation.likedPeople = likedPeople.filter(customer => {
-      return customer.id != user.customer.id 
+      return customer.id != user.customer.id;
     });
-    
+
     if (evaluation.likedPeople.length != lengthOfLikedPeopleBefore) {
       evaluation.likes--;
       await evaluationRepository.save(evaluation);

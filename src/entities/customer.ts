@@ -130,7 +130,6 @@ export class Customer {
   shopsFollowed: Shop[];
 
   @OneToMany(() => ChatRoom, chatRooms => chatRooms.customer)
-  @JoinTable()
   chatRooms: ChatRoom[];
 
   @ManyToMany(() => Evaluation, evaluation => evaluation.likedPeople)

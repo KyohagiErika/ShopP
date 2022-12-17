@@ -92,10 +92,10 @@ export class Voucher {
   minBillPrice: number;
 
   @Column()
-  priceDiscount: number
+  priceDiscount: number;
 
-  @Column({nullable: true})
-  maxPriceDiscount: number
+  @Column({ nullable: true })
+  maxPriceDiscount: number;
 
   @Column()
   mfgDate: Date;

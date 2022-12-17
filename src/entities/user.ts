@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   OneToMany,
   OneToOne,
+  ManyToMany,
 } from 'typeorm';
 
 import bcrypt from 'bcryptjs';
@@ -14,6 +15,7 @@ import { Customer } from './customer';
 import { StatusEnum } from '../utils/shopp.enum';
 import { Shop } from './shop';
 import { Event } from './event';
+import { Notification } from './notification';
 
 /**
  * @swagger
@@ -95,6 +97,9 @@ export class User {
 
   @OneToMany(() => Voucher, voucher => voucher.createdBy)
   voucher: Voucher[];
+
+  @ManyToMany(() => Notification, notifications => notifications.receivers)
+  notifications: Notification[];
 
   hashPassword() {
     this.password = bcrypt.hashSync(this.password, 8);
