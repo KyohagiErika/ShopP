@@ -312,13 +312,13 @@ export default class EventModel {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Event has been already ended!'
-    );
+      );
     if (event.startingDate <= now)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Event is happening, can not join anymore!'
       );
-    
+
     if (
       event.status == StatusEnum.INACTIVE ||
       event.status == StatusEnum.LOCKED

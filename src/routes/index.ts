@@ -21,6 +21,7 @@ import chatRoom from './chatRoom';
 import enumeration from './enum';
 import evaluation from './evaluation';
 import swagger from './swagger';
+import notification from './notification';
 import UploadModel from '../models/upload';
 
 const routes = Router();
@@ -107,6 +108,7 @@ routes.use('/message', message);
 routes.use('/chat-room', chatRoom);
 routes.use('/enum', enumeration);
 routes.use('/evaluation', evaluation);
+routes.use('/notification', notification);
 
 /**
  * @swagger
