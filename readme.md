@@ -38,6 +38,7 @@ npm start
 * [Express](https://expressjs.com/)
 * [TypeOrm](https://typeorm.io/)
 * [MySQL Server](https://www.mysql.com/)
+* [SocketIO](https://socket.io/)
 ### Organization
 The `root` dir of the project is the `src` folder which has the following structure:
 * `index.ts` - the main file to be started.

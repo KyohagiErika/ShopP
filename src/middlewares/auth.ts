@@ -103,11 +103,11 @@ class AuthMiddleware {
    *     newPassword:
    *      type: string
    *      description: new password of the user
-   *      example: 'abcABC213&'
+   *      example: 'abcABC213&123'
    *     confirmNewPassword:
    *      type: string
    *      description: confirm password of the user
-   *      example: 'abcABC213&'
+   *      example: 'abcABC213&123'
    * */
   @ControllerService({
     body: [
@@ -156,6 +156,10 @@ class AuthMiddleware {
       res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'Wrong confirm new password' });
+    if (data.oldPassword == data.newPassword)
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'New password must be different from Old password' });
 
     const result = await AuthModel.changePassword(
       id,
