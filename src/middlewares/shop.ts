@@ -195,9 +195,24 @@ export default class ShopMiddleware {
       } else {
         res.status(result.getCode()).send({ message: result.getMessage() });
       }
-    } else
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ error: 'Please upload image' });
+    } else {
+      const data = req.body;
+      const shop: Shop = res.locals.user.shop;
+      const result = await ShopModel.edit(
+        shop,
+        data.name.toString(),
+        null,
+        data.email.toString(),
+        data.phone.toString(),
+        data.placeOfReceipt.toString()
+      );
+      if (result.getCode() === HttpStatusCode.OK) {
+        res
+          .status(result.getCode())
+          .send({ message: result.getMessage(), data: result.getData() });
+      } else {
+        res.status(result.getCode()).send({ message: result.getMessage() });
+      }
+    }
   }
 }

@@ -87,7 +87,7 @@ export default class ShopModel {
   static async edit(
     shop: Shop,
     name: string,
-    file: Express.Multer.File,
+    file: Express.Multer.File | null,
     email: string,
     phone: string,
     placeOfReceipt: string
@@ -102,23 +102,34 @@ export default class ShopModel {
       }
     );
 
-    const localFileEdit = await localFileRepository.update(
-      {
-        id: shop.avatar.id,
-      },
-      {
-        filename: file.filename,
-        mimetype: file.mimetype,
-        path: file.path,
+    if (file) {
+      const localFileEdit = await localFileRepository.update(
+        {
+          id: shop.avatar.id,
+        },
+        {
+          filename: file.filename,
+          mimetype: file.mimetype,
+          path: file.path,
+        }
+      );
+
+      deleteFile(shop.avatar.path);
+
+      if (shopEdit.affected == 1 && localFileEdit.affected == 1) {
+        return new Response(HttpStatusCode.OK, 'Edit shop successfully!');
+      } else {
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Edit shop failed !');
       }
-    );
-
-    deleteFile(shop.avatar.path);
-
-    if (shopEdit.affected == 1 && localFileEdit.affected == 1) {
-      return new Response(HttpStatusCode.OK, 'Edit shop successfully!');
     } else {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Edit shop failed !');
+      if (shopEdit.affected == 1) {
+        return new Response(HttpStatusCode.OK, 'Edit shop successfully!');
+      } else {
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Edit shop failed !');
+      }
     }
   }
+
+
+
 }
