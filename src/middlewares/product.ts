@@ -8,7 +8,6 @@ import UploadModel from '../models/upload';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import ModelResponse from '../utils/response';
-import { Product } from '../entities/product';
 
 export default class ProductMiddleware {
   @ControllerService()

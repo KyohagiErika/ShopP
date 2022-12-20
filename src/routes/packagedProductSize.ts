@@ -12,8 +12,6 @@ const routes = Router();
  *  get:
  *   tags:
  *    - Packaged product size
- *   security:
- *    - bearerAuth: []
  *   summary: List all Packaged product size
  *   description: List all Packaged product size
  *   responses:
@@ -25,10 +23,8 @@ const routes = Router();
  *        $ref: '#/components/schemas/PackagedListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
- *    401:
- *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get('/list-all', [AuthMiddleware.checkJwt], PackagedProductSize.listAll);
+routes.get('/list-all', PackagedProductSize.listAll);
 
 /**
  * @swagger
@@ -36,8 +32,6 @@ routes.get('/list-all', [AuthMiddleware.checkJwt], PackagedProductSize.listAll);
  *  get:
  *   tags:
  *    - Packaged product size
- *   security:
- *    - bearerAuth: []
  *   summary: Get one Packaged product size
  *   description: Get one Packaged product size
  *   parameters:
@@ -58,24 +52,20 @@ routes.get('/list-all', [AuthMiddleware.checkJwt], PackagedProductSize.listAll);
  *        $ref: '#/components/schemas/PackagedResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
- *    401:
- *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get('/:id', AuthMiddleware.checkJwt, PackagedProductSize.getOneById);
+routes.get('/:id([0-9]+)', PackagedProductSize.getOneById);
 
 /**
  * @swagger
- * /packaged-product-size/packaged-product/{id}:
+ * /packaged-product-size/packaged-product/{productId}:
  *  get:
  *   tags:
  *    - Packaged product size
- *   security:
- *    - bearerAuth: []
  *   summary: Get one product packaged
  *   description: Get one product packaged
  *   parameters:
  *    - in: path
- *      name: id
+ *      name: productId
  *      schema:
  *       type: string
  *       format: uuid
@@ -90,18 +80,15 @@ routes.get('/:id', AuthMiddleware.checkJwt, PackagedProductSize.getOneById);
  *        $ref: '#/components/schemas/PackagedListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
- *    401:
- *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
-  '/packaged-product/:id',
-  AuthMiddleware.checkJwt,
+  '/packaged-product/:productId',
   PackagedProductSize.getOneByProductId
 );
 
 /**
  * @swagger
- * /packaged-product-size/new/{id}:
+ * /packaged-product-size/new/{productId}:
  *  post:
  *   tags:
  *    - Packaged product size
@@ -111,7 +98,7 @@ routes.get(
  *   description: Create a new Packaged product size (Shop)
  *   parameters:
  *    - in: path
- *      name: id
+ *      name: productId
  *      schema:
  *       type: string
  *       format: uuid
@@ -165,7 +152,7 @@ routes.post(
  *     $ref: '#/components/responses/400BadRequest'
  */
 routes.post(
-  '/edit/:id',
+  '/edit/:id([0-9]+)',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   PackagedProductSize.edit
 );

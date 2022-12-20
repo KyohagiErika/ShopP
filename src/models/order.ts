@@ -14,7 +14,7 @@ import {
   StatusEnum,
 } from '../utils/shopp.enum';
 import { OrderRequest } from '../interfaces/order';
-import { In, LessThan, MoreThan } from 'typeorm';
+import { In } from 'typeorm';
 
 const orderReposity = ShopPDataSource.getRepository(Order);
 const shopReposity = ShopPDataSource.getRepository(Shop);
@@ -30,7 +30,7 @@ export default class orderModel {
         payment: true,
         shoppingUnit: true,
         voucher: true,
-        customer: true,
+        shop: true,
       },
       where: [
         {
@@ -100,7 +100,7 @@ export default class orderModel {
         payment: true,
         shoppingUnit: true,
         voucher: true,
-        customer: true,
+        shop: true,
       },
 
       where: {
@@ -120,7 +120,6 @@ export default class orderModel {
         voucher: true,
         customer: true,
       },
-
       where: {
         shop: { id: shop.id },
         status: StatusEnum.ACTIVE,
@@ -136,7 +135,7 @@ export default class orderModel {
         payment: true,
         shoppingUnit: true,
         voucher: true,
-        customer: true,
+        shop: true,
       },
       where: {
         customer: { id: customer.id },
@@ -170,7 +169,7 @@ export default class orderModel {
         payment: true,
         shoppingUnit: true,
         voucher: true,
-        customer: true,
+        shop: true,
       },
 
       where: {
@@ -301,7 +300,7 @@ export default class orderModel {
     const order: Order[] = await orderReposity.save(orderArr);
 
     return new Response(
-      HttpStatusCode.CREATED,
+      HttpStatusCode.OK,
       'Create new order successfully!',
       order
     );
