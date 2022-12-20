@@ -8,6 +8,10 @@ import UploadModel from '../models/upload';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import ModelResponse from '../utils/response';
+import {
+  instanceOfPriceProductFilterRequest,
+  instanceOfStarProductFilterRequest,
+} from '../utils';
 
 export default class ProductMiddleware {
   @ControllerService()
@@ -197,6 +201,135 @@ export default class ProductMiddleware {
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'Get Product failed!' });
     }
+  }
+
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   FilterProductRequest:
+   *    type: object
+   *    properties:
+   *     take:
+   *      type: integer
+   *      format: int32
+   *      description: limit number of products to be taken.
+   *      example: 5
+   *     skip:
+   *      type: integer
+   *      format: int32
+   *      description: offset (paginated) from where products should be taken.
+   *      example: 0
+   *     categoryIds:
+   *      type: array
+   *      items:
+   *       type: integer
+   *       format: int32
+   *       description: categoryId of product
+   *       example: '1'
+   *     price:
+   *      type: object
+   *      properties:
+   *       min:
+   *        type: integer
+   *        format: int32
+   *        description: min price of product
+   *        example: 10000
+   *       max:
+   *        type: integer
+   *        format: int32
+   *        description: max price of product
+   *        example: 100000
+   *       orderBy:
+   *        type: string
+   *        description: order by price('ASC' or 'DESC')
+   *        example: 'ASC'
+   *     star:
+   *      type: object
+   *      properties:
+   *       min:
+   *        type: integer
+   *        format: int32
+   *        description: min star of product
+   *        example: 1
+   *       max:
+   *        type: integer
+   *        format: int32
+   *        description: max star of product
+   *        example: 5
+   */
+  @ControllerService({
+    body: [
+      {
+        name: 'take',
+        type: Number,
+        required: true,
+        validator(propertyName, value) {
+          if (!Number.isInteger(value)) {
+            return `${propertyName} must be an integer`;
+          }
+          return null;
+        },
+      },
+      {
+        name: 'skip',
+        type: Number,
+        required: true,
+        validator(propertyName, value) {
+          if (!Number.isInteger(value)) {
+            return `${propertyName} must be an integer`;
+          }
+          return null;
+        },
+      },
+      {
+        name: 'categoryIds',
+        required: false,
+        validator(propertyName, value) {
+          if (value !== undefined && !value.every((item: any) => Number.isInteger(item))) {
+            return `${propertyName} must be an integer array`;
+          }
+          return null;
+        },
+      },
+      {
+        name: 'price',
+        required: false,
+        validator(propertyName, value) {
+          if (value !== undefined && !instanceOfPriceProductFilterRequest(value)) {
+            return `${propertyName} must be valid`;
+          }
+          return null;
+        },
+      },
+      {
+        name: 'star',
+        required: false,
+        validator(propertyName, value) {
+          if (value !== undefined && !instanceOfStarProductFilterRequest(value)) {
+            return `${propertyName} must be valid`;
+          }
+          return null;
+        },
+      },
+    ],
+  })
+  static async filter(req: Request, res: Response) {
+    const take = +req.body.take;
+    const skip = +req.body.skip;
+    const categoryIds = req.body?.categoryIds ? req.body.categoryIds : null;
+    const price = req.body?.price ? req.body.price : null;
+    const star = req.body?.star ? req.body.star : null;
+    const result = await ProductModel.filter(
+      take,
+      skip,
+      categoryIds,
+      price,
+      star
+    );
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   /**

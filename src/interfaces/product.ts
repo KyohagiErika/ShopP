@@ -1,7 +1,5 @@
 export interface FilterProductRequest {
-  name: string;
-  categoryId: number[];
-  shopName: string;
+  categoryIds: number[];
   price: {
     min: number;
     max: number;
