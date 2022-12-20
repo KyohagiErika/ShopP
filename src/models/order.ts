@@ -315,7 +315,7 @@ export default class orderModel {
         id: id,
       },
     });
-    if (order != null && deliveryStatus <= order.deliveryStatus) {
+    if (order != null && deliveryStatus < order.deliveryStatus) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Cannot change status backward'

@@ -41,6 +41,12 @@ export default class trackingOrderModel {
         if (order == null) {
             return new Response(HttpStatusCode.BAD_REQUEST, 'Order not exist!')
         }
+        if (order != null && deliveryStatus < order.deliveryStatus) {
+            return new Response(
+                HttpStatusCode.BAD_REQUEST,
+                'Cannot change status backward'
+            );
+        }
         const trackingOrder = await trackingOrderRepository.find({
             select: {
                 deliveryStatus: true,
@@ -49,20 +55,7 @@ export default class trackingOrderModel {
                 orderNumber: { id: orderId }
             }
         })
-        let max = DeliveryStatusEnum.CHECKING
-        for (let i = 0; i < trackingOrder.length; i++) {
-            for (let j = 0; j < trackingOrder.length; j++) {
-                if (trackingOrder[i].deliveryStatus < trackingOrder[j].deliveryStatus) {
-                    max = trackingOrder[j].deliveryStatus
-                }
-            }
-        }
-        if (order != null && deliveryStatus <= max) {
-            return new Response(
-                HttpStatusCode.BAD_REQUEST,
-                'Cannot change status backward'
-            );
-        }
+
         if (deliveryStatus != 3) {
             if (deliveryStatus != title) {
                 return new Response(
@@ -71,7 +64,7 @@ export default class trackingOrderModel {
                 );
             }
         } else if (deliveryStatus = 3) {
-            if (title < 3.1 && title > 3.4) {
+            if (title < 3.1 || title > 3.4) {
                 return new Response(
                     HttpStatusCode.BAD_REQUEST,
                     'Title is not match delivery status'

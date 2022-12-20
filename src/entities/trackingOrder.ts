@@ -27,7 +27,7 @@ export class TrackingOrder {
     @Column({
         type: 'enum',
         enum: DeliveryStatusEnum,
-        default: DeliveryStatusEnum.CHECKING,
+        default: DeliveryStatusEnum.CONFIRMED,
     })
     deliveryStatus: DeliveryStatusEnum;
 

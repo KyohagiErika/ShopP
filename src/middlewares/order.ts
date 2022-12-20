@@ -7,7 +7,7 @@ import trackingOrderModel from '../models/trackingOrder';
 import io from '../socket';
 import { instanceOfOrderRequest } from '../utils';
 import { ControllerService } from '../utils/decorators';
-import { DeliveryStatusEnum, HttpStatusCode } from '../utils/shopp.enum';
+import { DeliveryStatusEnum, HttpStatusCode, TitleStatusEnum } from '../utils/shopp.enum';
 
 export default class OrderMiddleware {
   @ControllerService()
@@ -288,6 +288,26 @@ export default class OrderMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   EditRequest:
+   *    type: object
+   *    properties:
+   *     title:
+   *      type: string
+   *      description: title of order tracking
+   *      example: 'ORDER_HAS_ARRIVED_TO_STATION_3'
+   *     deliveryStatus:
+   *      type: string
+   *      description: deliveryStatus of order tracking
+   *      example: 'DELIVERING'
+   *     location:
+   *      type: string
+   *      description: location of package
+   *      example: 'ho chi minh city'
+   */
   @ControllerService({
     body: [
       {
@@ -336,11 +356,26 @@ export default class OrderMiddleware {
     } else {
       deliveryStatus = DeliveryStatusEnum.DELIVERED;
     }
+    let title: TitleStatusEnum;
+    if (data.title.toString().toUpperCase() === 'ORDER_IS_REPARING') {
+      title = TitleStatusEnum.ORDER_IS_REPARING;
+    } else if (data.title.toString().toUpperCase() === 'ORDER_READY_TO_BE_SENDED') {
+      title = TitleStatusEnum.ORDER_READY_TO_BE_SENDED;
+    } else if (data.title.toString().toUpperCase() === 'ORDER_HAS_ARRIVED_TO_STATION_1') {
+      title = TitleStatusEnum.ORDER_HAS_ARRIVED_TO_STATION_1;
+    } else if (data.title.toString().toUpperCase() === 'ORDER_HAS_ARRIVED_TO_STATION_2') {
+      title = TitleStatusEnum.ORDER_HAS_ARRIVED_TO_STATION_2;
+    } else if (data.title.toString().toUpperCase() === 'ORDER_HAS_ARRIVED_TO_STATION_3') {
+      title = TitleStatusEnum.ORDER_HAS_ARRIVED_TO_STATION_3;
+    } else if (data.title.toString().toUpperCase() === 'ORDER_IS_BEING_DELIVERY_TO_YOU') {
+      title = TitleStatusEnum.ORDER_IS_BEING_DELIVERY_TO_YOU;
+    } else {
+      title = TitleStatusEnum.DELIVERY_COMPLETED;
+    }
 
     const result1 = await orderModel.editDeliveryStatus(id, deliveryStatus);
-    const result2 = await trackingOrderModel.postNew(id, data.title.toUpperCase(), deliveryStatus, data.location)
+    const result2 = await trackingOrderModel.postNew(id, title, deliveryStatus, data.location)
     if (result1 && result2.getCode() === HttpStatusCode.CREATED) {
-      res.status(result1.getCode()).send({ message: result1.getMessage() });
       return res
         .status(result2.getCode())
         .send({ message: result2.getMessage(), data: result2.getData() });

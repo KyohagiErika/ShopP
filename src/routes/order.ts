@@ -283,7 +283,7 @@ routes.post(
  *      example: 1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p
  *   responses:
  *    200:
- *     $ref: '#/components/responses/200Ok'
+ *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  *    401:
@@ -314,9 +314,14 @@ routes.post(
  *      required: true
  *      description: id of the order
  *      example: 1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/components/schemas/EditRequest'
  *   responses:
  *    200:
- *     $ref: '#/components/responses/200Ok'
+ *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  *    401:
