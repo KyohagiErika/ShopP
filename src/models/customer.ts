@@ -190,17 +190,23 @@ export default class CustomerModel {
         }
       );
       deleteFile(user.customer.avatar.path);
-      
+
       if (result.affected == 1 && localFileEdit.affected == 1) {
-      return new Response(HttpStatusCode.OK, 'Edit customer successfully!');
+        return new Response(HttpStatusCode.OK, 'Edit customer successfully!');
       } else {
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Edit customer failed !');
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Edit customer failed !'
+        );
       }
     } else {
       if (result.affected == 1) {
         return new Response(HttpStatusCode.OK, 'Edit customer successfully!');
       } else {
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Edit customer failed !');
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Edit customer failed !'
+        );
       }
     }
   }

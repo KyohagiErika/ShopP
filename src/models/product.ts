@@ -45,7 +45,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product && product.length > 0 ? product : false;
+    return product;
   }
 
   static async getOneById(id: string) {
@@ -120,7 +120,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
   }
 
   static async searchByCategory(categoryId: number) {
@@ -160,7 +160,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
   }
 
   static async searchByCategoryName(name: string) {
@@ -200,7 +200,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
   }
 
   static async searchByShop(shopId: string) {
@@ -240,7 +240,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
   }
 
   static async filterByPrice(max: number, min: number) {
@@ -280,7 +280,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
   }
 
   static async filterByStar(max: number, min: number) {
@@ -320,7 +320,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
   }
 
   static async filter(
