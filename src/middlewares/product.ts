@@ -17,13 +17,9 @@ export default class ProductMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
     const result = await ProductModel.listAll();
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService({
@@ -57,26 +53,18 @@ export default class ProductMiddleware {
   static async searchByName(req: Request, res: Response) {
     const name = req.params.name;
     const result = await ProductModel.searchByName(name);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService()
   static async searchByCategory(req: Request, res: Response) {
     const id = +req.params.categoryId;
     const result = await ProductModel.searchByCategory(id);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService({
@@ -90,13 +78,9 @@ export default class ProductMiddleware {
   static async searchByCategoryName(req: Request, res: Response) {
     const name = req.params.name;
     const result = await ProductModel.searchByCategoryName(name);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService({
@@ -110,13 +94,9 @@ export default class ProductMiddleware {
   static async searchByShop(req: Request, res: Response) {
     const shopId = req.params.shopId;
     const result = await ProductModel.searchByShop(shopId);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService({
@@ -152,13 +132,9 @@ export default class ProductMiddleware {
         .send({ message: 'min must be less than max' });
     }
     const result = await ProductModel.filterByPrice(max, min);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService({
@@ -194,13 +170,9 @@ export default class ProductMiddleware {
         .send({ message: 'min must be less than max' });
     }
     const result = await ProductModel.filterByStar(max, min);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   /**
