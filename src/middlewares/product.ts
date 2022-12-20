@@ -56,7 +56,6 @@ export default class ProductMiddleware {
     const result = await ProductModel.searchByName(name);
     if (result) {
       res.status(HttpStatusCode.OK).send({ data: result });
-
     } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
@@ -145,7 +144,9 @@ export default class ProductMiddleware {
     const max = +req.params.max;
     const min = +req.params.min;
     if (max < min) {
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'min must be less than max' })
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'min must be less than max' });
     }
     const result = await ProductModel.filterByPrice(max, min);
     if (result) {
@@ -185,7 +186,9 @@ export default class ProductMiddleware {
     const max = +req.params.max;
     const min = +req.params.min;
     if (max < min) {
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'min must be less than max' })
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'min must be less than max' });
     }
     const result = await ProductModel.filterByStar(max, min);
     if (result) {

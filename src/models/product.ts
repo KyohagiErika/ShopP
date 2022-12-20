@@ -84,7 +84,6 @@ export default class ProductModel {
   }
 
   static async searchByName(name: string) {
-
     const product = await productRepository.find({
       relations: {
         shop: {

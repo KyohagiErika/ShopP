@@ -61,11 +61,7 @@ routes.get('/list-all', [AuthMiddleware.checkJwt], PackagedProductSize.listAll);
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get(
-  '/:id',
-  AuthMiddleware.checkJwt,
-  PackagedProductSize.getOneById
-);
+routes.get('/:id', AuthMiddleware.checkJwt, PackagedProductSize.getOneById);
 
 /**
  * @swagger
@@ -75,7 +71,7 @@ routes.get(
  *    - Packaged product size
  *   security:
  *    - bearerAuth: []
- *   summary: Get one product packaged 
+ *   summary: Get one product packaged
  *   description: Get one product packaged
  *   parameters:
  *    - in: path
