@@ -286,7 +286,10 @@ export default class ProductMiddleware {
         name: 'categoryIds',
         required: false,
         validator(propertyName, value) {
-          if (value !== undefined && !value.every((item: any) => Number.isInteger(item))) {
+          if (
+            value !== undefined &&
+            !value.every((item: any) => Number.isInteger(item))
+          ) {
             return `${propertyName} must be an integer array`;
           }
           return null;
@@ -296,7 +299,10 @@ export default class ProductMiddleware {
         name: 'price',
         required: false,
         validator(propertyName, value) {
-          if (value !== undefined && !instanceOfPriceProductFilterRequest(value)) {
+          if (
+            value !== undefined &&
+            !instanceOfPriceProductFilterRequest(value)
+          ) {
             return `${propertyName} must be valid`;
           }
           return null;
@@ -306,7 +312,10 @@ export default class ProductMiddleware {
         name: 'star',
         required: false,
         validator(propertyName, value) {
-          if (value !== undefined && !instanceOfStarProductFilterRequest(value)) {
+          if (
+            value !== undefined &&
+            !instanceOfStarProductFilterRequest(value)
+          ) {
             return `${propertyName} must be valid`;
           }
           return null;

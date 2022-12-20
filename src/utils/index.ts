@@ -53,8 +53,7 @@ const instanceOfPriceProductFilterRequest = (data: any) => {
     'orderBy' in data &&
     Number.isInteger(data.min) &&
     Number.isInteger(data.max) &&
-    (data.orderBy === 'ASC' ||
-    data.orderBy === 'DESC') &&
+    (data.orderBy === 'ASC' || data.orderBy === 'DESC') &&
     data.min >= 0 &&
     data.max >= 0 &&
     data.min <= data.max
