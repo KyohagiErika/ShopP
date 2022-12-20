@@ -237,6 +237,29 @@ routes.get('/filter-by-star/:max/:min', ProductMiddleware.filterByStar);
 
 /**
  * @swagger
+ * /product/filter:
+ *  post:
+ *   tags:
+ *    - Product
+ *   summary: Filter product with options
+ *   description: Filter product with options
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/components/schemas/FilterProductRequest'
+ *   responses:
+ *    200:
+ *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductListResponse'
+ */
+routes.post('/filter', ProductMiddleware.filter);
+
+/**
+ * @swagger
  * /product/new:
  *  post:
  *   tags:

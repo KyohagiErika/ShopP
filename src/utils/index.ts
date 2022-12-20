@@ -46,6 +46,32 @@ const instanceOfOrderProductRequest = (data: OrderProductRequest) => {
   );
 };
 
+const instanceOfPriceProductFilterRequest = (data: any) => {
+  return (
+    'min' in data &&
+    'max' in data &&
+    'orderBy' in data &&
+    Number.isInteger(data.min) &&
+    Number.isInteger(data.max) &&
+    (data.orderBy === 'ASC' || data.orderBy === 'DESC') &&
+    data.min >= 0 &&
+    data.max >= 0 &&
+    data.min <= data.max
+  );
+};
+
+const instanceOfStarProductFilterRequest = (data: any) => {
+  return (
+    'min' in data &&
+    'max' in data &&
+    Number.isInteger(data.min) &&
+    Number.isInteger(data.max) &&
+    data.min >= 0 &&
+    data.max <= 5 &&
+    data.min <= data.max
+  );
+};
+
 const enumToArray = (enumType: any) => {
   const keys = Object.keys(enumType).filter(key => !Number.isInteger(+key));
   return keys.map(key => ({
@@ -54,4 +80,11 @@ const enumToArray = (enumType: any) => {
   }));
 };
 
-export { generateOtp, deleteFile, instanceOfOrderRequest, enumToArray };
+export {
+  generateOtp,
+  deleteFile,
+  instanceOfOrderRequest,
+  enumToArray,
+  instanceOfPriceProductFilterRequest,
+  instanceOfStarProductFilterRequest,
+};
