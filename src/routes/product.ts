@@ -25,7 +25,7 @@ const routes = Router();
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  */
-routes.get('/list-all', ProductMiddleware.listAll); //[checkJwt, checkRole(RoleEnum.ADMIN)],
+routes.get('/list-all', ProductMiddleware.listAll);
 
 /**
  * @swagger
@@ -189,7 +189,7 @@ routes.get('/search-by-shop/:shopId', ProductMiddleware.searchByShop);
  *      schema:
  *       type: string
  *      required: true
- *      description: min price 
+ *      description: min price
  *   responses:
  *    200:
  *     description: Success
@@ -200,10 +200,7 @@ routes.get('/search-by-shop/:shopId', ProductMiddleware.searchByShop);
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  */
-routes.get(
-  '/filter-by-price/:max/:min',
-  ProductMiddleware.filterByPrice
-);
+routes.get('/filter-by-price/:max/:min', ProductMiddleware.filterByPrice);
 
 /**
  * @swagger
@@ -225,7 +222,7 @@ routes.get(
  *      schema:
  *       type: string
  *      required: true
- *      description: min star 
+ *      description: min star
  *   responses:
  *    200:
  *     description: Success
@@ -236,10 +233,30 @@ routes.get(
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  */
-routes.get(
-  '/filter-by-star/:max/:min',
-  ProductMiddleware.filterByStar
-);
+routes.get('/filter-by-star/:max/:min', ProductMiddleware.filterByStar);
+
+/**
+ * @swagger
+ * /product/filter:
+ *  post:
+ *   tags:
+ *    - Product
+ *   summary: Filter product with options
+ *   description: Filter product with options
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/components/schemas/FilterProductRequest'
+ *   responses:
+ *    200:
+ *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductListResponse'
+ */
+routes.post('/filter', ProductMiddleware.filter);
 
 /**
  * @swagger

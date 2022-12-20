@@ -8,19 +8,18 @@ import UploadModel from '../models/upload';
 import { ControllerService } from '../utils/decorators';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import ModelResponse from '../utils/response';
-import { Product } from '../entities/product';
+import {
+  instanceOfPriceProductFilterRequest,
+  instanceOfStarProductFilterRequest,
+} from '../utils';
 
 export default class ProductMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
     const result = await ProductModel.listAll();
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService({
@@ -54,27 +53,18 @@ export default class ProductMiddleware {
   static async searchByName(req: Request, res: Response) {
     const name = req.params.name;
     const result = await ProductModel.searchByName(name);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService()
   static async searchByCategory(req: Request, res: Response) {
     const id = +req.params.categoryId;
     const result = await ProductModel.searchByCategory(id);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService({
@@ -88,13 +78,9 @@ export default class ProductMiddleware {
   static async searchByCategoryName(req: Request, res: Response) {
     const name = req.params.name;
     const result = await ProductModel.searchByCategoryName(name);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService({
@@ -108,13 +94,9 @@ export default class ProductMiddleware {
   static async searchByShop(req: Request, res: Response) {
     const shopId = req.params.shopId;
     const result = await ProductModel.searchByShop(shopId);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
-    }
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService({
@@ -145,16 +127,14 @@ export default class ProductMiddleware {
     const max = +req.params.max;
     const min = +req.params.min;
     if (max < min) {
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'min must be less than max' })
-    }
-    const result = await ProductModel.filterByPrice(max, min);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
+        .send({ message: 'min must be less than max' });
     }
+    const result = await ProductModel.filterByPrice(max, min);
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   @ControllerService({
@@ -185,16 +165,152 @@ export default class ProductMiddleware {
     const max = +req.params.max;
     const min = +req.params.min;
     if (max < min) {
-      res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'min must be less than max' })
-    }
-    const result = await ProductModel.filterByStar(max, min);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
       res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Product failed!' });
+        .send({ message: 'min must be less than max' });
     }
+    const result = await ProductModel.filterByStar(max, min);
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
+  }
+
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   FilterProductRequest:
+   *    type: object
+   *    properties:
+   *     take:
+   *      type: integer
+   *      format: int32
+   *      description: limit number of products to be taken.
+   *      example: 5
+   *     skip:
+   *      type: integer
+   *      format: int32
+   *      description: offset (paginated) from where products should be taken.
+   *      example: 0
+   *     categoryIds:
+   *      type: array
+   *      items:
+   *       type: integer
+   *       format: int32
+   *       description: categoryId of product
+   *       example: '1'
+   *     price:
+   *      type: object
+   *      properties:
+   *       min:
+   *        type: integer
+   *        format: int32
+   *        description: min price of product
+   *        example: 10000
+   *       max:
+   *        type: integer
+   *        format: int32
+   *        description: max price of product
+   *        example: 100000
+   *       orderBy:
+   *        type: string
+   *        description: order by price('ASC' or 'DESC')
+   *        example: 'ASC'
+   *     star:
+   *      type: object
+   *      properties:
+   *       min:
+   *        type: integer
+   *        format: int32
+   *        description: min star of product
+   *        example: 1
+   *       max:
+   *        type: integer
+   *        format: int32
+   *        description: max star of product
+   *        example: 5
+   */
+  @ControllerService({
+    body: [
+      {
+        name: 'take',
+        type: Number,
+        required: true,
+        validator(propertyName, value) {
+          if (!Number.isInteger(value)) {
+            return `${propertyName} must be an integer`;
+          }
+          return null;
+        },
+      },
+      {
+        name: 'skip',
+        type: Number,
+        required: true,
+        validator(propertyName, value) {
+          if (!Number.isInteger(value)) {
+            return `${propertyName} must be an integer`;
+          }
+          return null;
+        },
+      },
+      {
+        name: 'categoryIds',
+        required: false,
+        validator(propertyName, value) {
+          if (
+            value !== undefined &&
+            !value.every((item: any) => Number.isInteger(item))
+          ) {
+            return `${propertyName} must be an integer array`;
+          }
+          return null;
+        },
+      },
+      {
+        name: 'price',
+        required: false,
+        validator(propertyName, value) {
+          if (
+            value !== undefined &&
+            !instanceOfPriceProductFilterRequest(value)
+          ) {
+            return `${propertyName} must be valid`;
+          }
+          return null;
+        },
+      },
+      {
+        name: 'star',
+        required: false,
+        validator(propertyName, value) {
+          if (
+            value !== undefined &&
+            !instanceOfStarProductFilterRequest(value)
+          ) {
+            return `${propertyName} must be valid`;
+          }
+          return null;
+        },
+      },
+    ],
+  })
+  static async filter(req: Request, res: Response) {
+    const take = +req.body.take;
+    const skip = +req.body.skip;
+    const categoryIds = req.body?.categoryIds ? req.body.categoryIds : null;
+    const price = req.body?.price ? req.body.price : null;
+    const star = req.body?.star ? req.body.star : null;
+    const result = await ProductModel.filter(
+      take,
+      skip,
+      categoryIds,
+      price,
+      star
+    );
+    return res
+      .status(HttpStatusCode.OK)
+      .send({ total: result.length, data: result });
   }
 
   /**

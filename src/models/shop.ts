@@ -102,7 +102,7 @@ export default class ShopModel {
       }
     );
 
-    if (file) {
+    if (file !== null) {
       const localFileEdit = await localFileRepository.update(
         {
           id: shop.avatar.id,
@@ -113,7 +113,6 @@ export default class ShopModel {
           path: file.path,
         }
       );
-
       deleteFile(shop.avatar.path);
 
       if (shopEdit.affected == 1 && localFileEdit.affected == 1) {
@@ -129,7 +128,4 @@ export default class ShopModel {
       }
     }
   }
-
-
-
 }

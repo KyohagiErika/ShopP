@@ -14,7 +14,6 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     restart: always
-    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --init-connect='SET NAMES UTF8;' --innodb-flush-log-at-trx-commit=0
 
   be:
     container_name: shopp_be
@@ -34,6 +33,21 @@ services:
     volumes:
       - file-data:/app/public/uploads
     restart: always
+
+  phpmyadmin:
+    container_name: shopp_phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: longmetmoivcl
+    depends_on:
+      - mysql
+    networks:
+      - shopp
+    ports:
+      - 8080:80
 
 volumes:
   mysql-data:

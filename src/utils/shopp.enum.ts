@@ -1,3 +1,22 @@
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   Enum:
+ *    type: object
+ *    properties:
+ *     name:
+ *      type: string
+ *      description: name of enum
+ *     description:
+ *      type: string
+ *      description: description of enum
+ *   EnumList:
+ *    type: array
+ *    items:
+ *     $ref: '#/components/schemas/Enum'
+ */
+
 export enum HttpStatusCode {
   OK = 200,
   CREATED = 201,
@@ -15,7 +34,6 @@ export enum StatusEnum {
   INACTIVE = 'INACTIVE',
   LOCKED = 'LOCKED',
 }
-
 export enum RoleEnum {
   ADMIN = 2,
   SHOP = 1,
@@ -54,6 +72,21 @@ export enum StatusReportEnum {
   PROCESSED = 'PROCESSED',
 }
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   DeliveryStatusEnum:
+ *    type: string
+ *    enum:
+ *    - CHECKING
+ *    - CONFIRMED
+ *    - PACKAGING
+ *    - DELIVERING
+ *    - DELIVERED
+ *    - CANCELLED
+ *    - RETURNED
+ */
 export enum DeliveryStatusEnum {
   CHECKING = 0,
   CONFIRMED = 1,

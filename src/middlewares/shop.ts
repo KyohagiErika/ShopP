@@ -176,11 +176,12 @@ export default class ShopMiddleware {
     ],
   })
   static async edit(req: Request, res: Response) {
+    let result;
+    const data = req.body;
+    const shop: Shop = res.locals.user.shop;
     if (req.file != undefined) {
       const file = req.file;
-      const data = req.body;
-      const shop: Shop = res.locals.user.shop;
-      const result = await ShopModel.edit(
+      result = await ShopModel.edit(
         shop,
         data.name.toString(),
         file,
@@ -188,17 +189,8 @@ export default class ShopMiddleware {
         data.phone.toString(),
         data.placeOfReceipt.toString()
       );
-      if (result.getCode() === HttpStatusCode.OK) {
-        res
-          .status(result.getCode())
-          .send({ message: result.getMessage(), data: result.getData() });
-      } else {
-        res.status(result.getCode()).send({ message: result.getMessage() });
-      }
     } else {
-      const data = req.body;
-      const shop: Shop = res.locals.user.shop;
-      const result = await ShopModel.edit(
+      result = await ShopModel.edit(
         shop,
         data.name.toString(),
         null,
@@ -206,13 +198,13 @@ export default class ShopMiddleware {
         data.phone.toString(),
         data.placeOfReceipt.toString()
       );
-      if (result.getCode() === HttpStatusCode.OK) {
-        res
-          .status(result.getCode())
-          .send({ message: result.getMessage(), data: result.getData() });
-      } else {
-        res.status(result.getCode()).send({ message: result.getMessage() });
-      }
+    }
+    if (result.getCode() === HttpStatusCode.OK) {
+      res
+        .status(result.getCode())
+        .send({ message: result.getMessage(), data: result.getData() });
+    } else {
+      res.status(result.getCode()).send({ message: result.getMessage() });
     }
   }
 }

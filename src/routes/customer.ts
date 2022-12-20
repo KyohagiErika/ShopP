@@ -104,7 +104,7 @@ routes.post(
 /**
  * @swagger
  * /customer/follow-shop/{shopId}:
- *  get:
+ *  post:
  *   tags:
  *    - Customer
  *   security:
@@ -119,6 +119,7 @@ routes.post(
  *       format: uuid
  *       required: true
  *       description: id of the shop
+ *       example: 1fbe4ea5-a957-40bf-9d59-6f390aecaaa3
  *   responses:
  *    200:
  *     $ref: '#/components/responses/200OK'
@@ -136,7 +137,7 @@ routes.post(
 /**
  * @swagger
  * /customer/unfollow-shop/{shopId}:
- *  get:
+ *  post:
  *   tags:
  *    - Customer
  *   security:
@@ -151,6 +152,7 @@ routes.post(
  *       format: uuid
  *       required: true
  *       description: id of the shop
+ *       example: 1fbe4ea5-a957-40bf-9d59-6f390aecaaa3
  *   responses:
  *    200:
  *     $ref: '#/components/responses/200OK'
@@ -167,7 +169,7 @@ routes.post(
 
 /**
  * @swagger
- * /show-followed-shops-list:
+ * /customer/show-followed-shops-list:
  *  get:
  *   tags:
  *    - Customer

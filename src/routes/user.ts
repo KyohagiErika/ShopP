@@ -36,23 +36,14 @@ routes.get(
 
 /**
  * @swagger
- * /account/{id}:
+ * /account/own:
  *  get:
  *   tags:
  *    - Account
  *   security:
  *    - bearerAuth: []
- *   summary: Get one account information
- *   description: Get one account information
- *   parameters:
- *    - in: path
- *      name: id
- *      schema:
- *       type: integer
- *       format: int32
- *      required: true
- *      description: id of the user
- *      example: 2
+ *   summary: Get own user information
+ *   description: Get own user information
  *   responses:
  *    200:
  *     description: Success
@@ -65,7 +56,7 @@ routes.get(
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */
-routes.get('/:id([0-9]+)', AuthMiddleware.checkJwt, UserMiddleware.getOneById);
+routes.get('/own', AuthMiddleware.checkJwt, UserMiddleware.getOwn);
 
 /**
  * @swagger

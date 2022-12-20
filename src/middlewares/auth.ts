@@ -81,7 +81,6 @@ class AuthMiddleware {
       flag
     );
     if (result.getCode() === HttpStatusCode.OK) {
-      //Send the jwt in the response
       res
         .status(result.getCode())
         .send({ message: result.getMessage(), token: result.getData() });
@@ -104,11 +103,11 @@ class AuthMiddleware {
    *     newPassword:
    *      type: string
    *      description: new password of the user
-   *      example: 'abcABC213&'
+   *      example: 'abcABC213&123'
    *     confirmNewPassword:
    *      type: string
    *      description: confirm password of the user
-   *      example: 'abcABC213&'
+   *      example: 'abcABC213&123'
    * */
   @ControllerService({
     body: [
@@ -149,14 +148,18 @@ class AuthMiddleware {
   })
   static async changePassword(req: Request, res: Response) {
     //Get ID from JWT
-    const id = res.locals.user;
+    const id = res.locals.user.id;
 
     //Get parameters from the body
     const data = req.body;
-    if (data.oldPassword !== data.confirmNewPassword)
+    if (data.newPassword !== data.confirmNewPassword)
       res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'Wrong confirm new password' });
+    if (data.oldPassword == data.newPassword)
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'New password must be different from Old password' });
 
     const result = await AuthModel.changePassword(
       id,
@@ -478,13 +481,13 @@ class AuthMiddleware {
       if (user === false) {
         return res
           .status(HttpStatusCode.UNAUTHORIZATION)
-          .send({ message: 'Unauthorized: authentication required' });
+          .send({ message: 'Unauthorized: Authentication required' });
       } else res.locals.user = user;
     } catch (error) {
       //If token is not valid, respond with 401 (unauthorized)
       return res
         .status(HttpStatusCode.UNAUTHORIZATION)
-        .send({ message: 'Unauthorized: authentication required!' });
+        .send({ message: 'Unauthorized: Authentication required!' });
     }
 
     //The token is valid for 1 hour

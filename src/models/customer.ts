@@ -156,12 +156,11 @@ export default class CustomerModel {
     placeOfDelivery: string,
     bio: string,
     user: User,
-    file: Express.Multer.File
+    file: Express.Multer.File | null
   ) {
     // find customer on database
     const customerRepository = ShopPDataSource.getRepository(Customer);
     const localFileRepository = ShopPDataSource.getRepository(LocalFile);
-
     if (user.customer == null)
       return new Response(
         HttpStatusCode.REDIRECT,
@@ -179,24 +178,36 @@ export default class CustomerModel {
         bio,
       }
     );
+    if (file != null) {
+      const localFileEdit = await localFileRepository.update(
+        {
+          id: user.customer.avatar.id,
+        },
+        {
+          filename: file.filename,
+          mimetype: file.mimetype,
+          path: file.path,
+        }
+      );
+      deleteFile(user.customer.avatar.path);
 
-    const localFileEdit = await localFileRepository.update(
-      {
-        id: user.customer.avatar.id,
-      },
-      {
-        filename: file.filename,
-        mimetype: file.mimetype,
-        path: file.path,
+      if (result.affected == 1 && localFileEdit.affected == 1) {
+        return new Response(HttpStatusCode.OK, 'Edit customer successfully!');
+      } else {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Edit customer failed !'
+        );
       }
-    );
-
-    deleteFile(user.customer.avatar.path);
-
-    if (result.affected == 1 && localFileEdit.affected == 1) {
-      return new Response(HttpStatusCode.OK, 'Edit customer successfully!');
     } else {
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Edit customer failed !');
+      if (result.affected == 1) {
+        return new Response(HttpStatusCode.OK, 'Edit customer successfully!');
+      } else {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Edit customer failed !'
+        );
+      }
     }
   }
 
@@ -326,5 +337,15 @@ export default class CustomerModel {
       'Show followed shops successfully!',
       customer.shopsFollowed
     );
+  }
+
+  static async getById(customerId: string) {
+    const customerRepository = ShopPDataSource.getRepository(Customer);
+    return await customerRepository.findOne({
+      where: {
+        id: customerId,
+        user: { status: StatusEnum.ACTIVE },
+      },
+    });
   }
 }

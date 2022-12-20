@@ -4,7 +4,7 @@ import { Shop } from '../entities/shop';
 import { HttpStatusCode, ProductEnum } from '../utils/shopp.enum';
 import Response from '../utils/response';
 import { Category } from '../entities/category';
-import { Between, Double, EntityManager, Like } from 'typeorm';
+import { Between, Double, EntityManager, In, Like } from 'typeorm';
 import { LocalFile } from '../entities/localFile';
 import { ProductImage } from '../entities/productImage';
 import { ModelService } from '../utils/decorators';
@@ -45,7 +45,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product && product.length > 0 ? product : false;
+    return product;
   }
 
   static async getOneById(id: string) {
@@ -84,7 +84,6 @@ export default class ProductModel {
   }
 
   static async searchByName(name: string) {
-
     const product = await productRepository.find({
       relations: {
         shop: {
@@ -121,7 +120,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
   }
 
   static async searchByCategory(categoryId: number) {
@@ -161,7 +160,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
   }
 
   static async searchByCategoryName(name: string) {
@@ -201,7 +200,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
   }
 
   static async searchByShop(shopId: string) {
@@ -241,7 +240,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
   }
 
   static async filterByPrice(max: number, min: number) {
@@ -281,7 +280,7 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
   }
 
   static async filterByStar(max: number, min: number) {
@@ -321,7 +320,315 @@ export default class ProductModel {
         amount: 'ASC',
       },
     });
-    return product ? product : false;
+    return product;
+  }
+
+  static async filter(
+    take: number,
+    skip: number,
+    categoryIds: number[] | null,
+    price: any | null,
+    star: any | null
+  ) {
+    let product: Product[] = [];
+    if (categoryIds !== null) {
+      if (star !== null) {
+        if (price !== null) {
+          product = await productRepository.find({
+            relations: {
+              shop: true,
+              category: true,
+              productImage: {
+                localFile: true,
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              shop: {
+                id: true,
+              },
+              detail: true,
+              amount: true,
+              quantity: true,
+              sold: true,
+              star: true,
+              status: true,
+            },
+            where: {
+              category: {
+                id: In(categoryIds),
+              },
+              star: Between(star.min, star.max),
+              amount: Between(price.min, price.max),
+              status: In([ProductEnum.AVAILABLE, ProductEnum.OUT_OF_ORDER]),
+            },
+            order: {
+              star: 'DESC',
+              sold: 'DESC',
+              amount: price.orderBy,
+            },
+            take: take,
+            skip: skip,
+          });
+        } else {
+          product = await productRepository.find({
+            relations: {
+              shop: true,
+              category: true,
+              productImage: {
+                localFile: true,
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              shop: {
+                id: true,
+              },
+              detail: true,
+              amount: true,
+              quantity: true,
+              sold: true,
+              star: true,
+              status: true,
+            },
+            where: {
+              category: {
+                id: In(categoryIds),
+              },
+              star: Between(star.min, star.max),
+              status: In([ProductEnum.AVAILABLE, ProductEnum.OUT_OF_ORDER]),
+            },
+            order: {
+              star: 'DESC',
+              sold: 'DESC',
+              amount: 'ASC',
+            },
+            take: take,
+            skip: skip,
+          });
+        }
+      } else {
+        if (price !== null) {
+          product = await productRepository.find({
+            relations: {
+              shop: true,
+              category: true,
+              productImage: {
+                localFile: true,
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              shop: {
+                id: true,
+              },
+              detail: true,
+              amount: true,
+              quantity: true,
+              sold: true,
+              star: true,
+              status: true,
+            },
+            where: {
+              category: {
+                id: In(categoryIds),
+              },
+              amount: Between(price.min, price.max),
+              status: In([ProductEnum.AVAILABLE, ProductEnum.OUT_OF_ORDER]),
+            },
+            order: {
+              star: 'DESC',
+              sold: 'DESC',
+              amount: price.orderBy,
+            },
+            take: take,
+            skip: skip,
+          });
+        } else {
+          product = await productRepository.find({
+            relations: {
+              shop: true,
+              category: true,
+              productImage: {
+                localFile: true,
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              shop: {
+                id: true,
+              },
+              detail: true,
+              amount: true,
+              quantity: true,
+              sold: true,
+              star: true,
+              status: true,
+            },
+            where: {
+              category: {
+                id: In(categoryIds),
+              },
+              status: In([ProductEnum.AVAILABLE, ProductEnum.OUT_OF_ORDER]),
+            },
+            order: {
+              star: 'DESC',
+              sold: 'DESC',
+              amount: 'ASC',
+            },
+            take: take,
+            skip: skip,
+          });
+        }
+      }
+    } else {
+      if (star !== null) {
+        if (price !== null) {
+          product = await productRepository.find({
+            relations: {
+              shop: true,
+              category: true,
+              productImage: {
+                localFile: true,
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              shop: {
+                id: true,
+              },
+              detail: true,
+              amount: true,
+              quantity: true,
+              sold: true,
+              star: true,
+              status: true,
+            },
+            where: {
+              star: Between(star.min, star.max),
+              amount: Between(price.min, price.max),
+              status: In([ProductEnum.AVAILABLE, ProductEnum.OUT_OF_ORDER]),
+            },
+            order: {
+              star: 'DESC',
+              sold: 'DESC',
+              amount: price.orderBy,
+            },
+            take: take,
+            skip: skip,
+          });
+        } else {
+          product = await productRepository.find({
+            relations: {
+              shop: true,
+              category: true,
+              productImage: {
+                localFile: true,
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              shop: {
+                id: true,
+              },
+              detail: true,
+              amount: true,
+              quantity: true,
+              sold: true,
+              star: true,
+              status: true,
+            },
+            where: {
+              star: Between(star.min, star.max),
+              status: In([ProductEnum.AVAILABLE, ProductEnum.OUT_OF_ORDER]),
+            },
+            order: {
+              star: 'DESC',
+              sold: 'DESC',
+              amount: 'ASC',
+            },
+            take: take,
+            skip: skip,
+          });
+        }
+      } else {
+        if (price !== null) {
+          product = await productRepository.find({
+            relations: {
+              shop: true,
+              category: true,
+              productImage: {
+                localFile: true,
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              shop: {
+                id: true,
+              },
+              detail: true,
+              amount: true,
+              quantity: true,
+              sold: true,
+              star: true,
+              status: true,
+            },
+            where: {
+              amount: Between(price.min, price.max),
+              status: In([ProductEnum.AVAILABLE, ProductEnum.OUT_OF_ORDER]),
+            },
+            order: {
+              star: 'DESC',
+              sold: 'DESC',
+              amount: price.orderBy,
+            },
+            take: take,
+            skip: skip,
+          });
+        } else {
+          product = await productRepository.find({
+            relations: {
+              shop: true,
+              category: true,
+              productImage: {
+                localFile: true,
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              shop: {
+                id: true,
+              },
+              detail: true,
+              amount: true,
+              quantity: true,
+              sold: true,
+              star: true,
+              status: true,
+            },
+            where: {
+              status: In([ProductEnum.AVAILABLE, ProductEnum.OUT_OF_ORDER]),
+            },
+            order: {
+              star: 'DESC',
+              sold: 'DESC',
+              amount: 'ASC',
+            },
+            take: take,
+            skip: skip,
+          });
+        }
+      }
+    }
+    return product;
   }
 
   @ModelService()
@@ -441,8 +748,7 @@ export default class ProductModel {
       {
         id: productId,
       },
-
-      { status: ProductEnum.DELETED }
+      { status: ProductEnum.DELETED, deletedAt: new Date() }
     );
     if (result.affected == 1) {
       return new Response(HttpStatusCode.OK, 'Delete product successfully!');

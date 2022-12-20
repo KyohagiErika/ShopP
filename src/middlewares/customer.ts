@@ -205,10 +205,20 @@ export default class CustomerMiddleware {
         file
       );
       res.status(result.getCode()).send({ message: result.getMessage() });
-    } else
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ error: 'Please upload image' });
+    } else {
+      const data = req.body;
+      var dateTrueFormat = ConvertDate(data.dob);
+      const result = await CustomerModel.edit(
+        data.name,
+        data.gender,
+        new Date(dateTrueFormat),
+        data.placeOfDelivery,
+        data.bio,
+        res.locals.user,
+        null
+      );
+      res.status(result.getCode()).send({ message: result.getMessage() });
+    }
   }
 
   @ControllerService()
