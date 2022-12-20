@@ -20,6 +20,7 @@ import enumeration from './enum';
 import evaluation from './evaluation';
 import swagger from './swagger';
 import UploadModel from '../models/upload';
+import trackingOrder from './trackingOrder'
 
 const routes = Router();
 /**
@@ -106,6 +107,7 @@ routes.use('/shopping-unit', shoppingUnit);
 routes.use('/order-product', orderProduct);
 routes.use('/enum', enumeration);
 routes.use('/evaluation', evaluation);
+routes.use('/tracking-order', trackingOrder);
 
 /**
  * @swagger

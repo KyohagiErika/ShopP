@@ -3,6 +3,7 @@ import { Customer } from '../entities/customer';
 import { Shop } from '../entities/shop';
 import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
+import trackingOrderModel from '../models/trackingOrder';
 import { instanceOfOrderRequest } from '../utils';
 import { ControllerService } from '../utils/decorators';
 import { DeliveryStatusEnum, HttpStatusCode } from '../utils/shopp.enum';
@@ -218,6 +219,23 @@ export default class OrderMiddleware {
           return null;
         },
       },
+      {
+        name: 'title',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (
+            value.toUpperCase() !== 'ORDER_IS_REPARING' &&
+            value.toUpperCase() !== 'ORDER_READY_TO_BE_SENDED' &&
+            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_1' &&
+            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_2' &&
+            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_3' &&
+            value.toUpperCase() !== 'ORDER_IS_BEING_DELIVERY_TO_YOU' &&
+            value.toUpperCase() !== 'DELIVERY_COMPLETED'
+          )
+            return `${propName} is not correct`;
+          return null;
+        },
+      }
     ],
   })
   static async editDeliveryStatus(req: Request, res: Response) {
@@ -234,9 +252,17 @@ export default class OrderMiddleware {
       deliveryStatus = DeliveryStatusEnum.DELIVERED;
     }
 
-    const result = await orderModel.editDeliveryStatus(id, deliveryStatus);
-    if (result) {
-      res.status(result.getCode()).send({ message: result.getMessage() });
+    const result1 = await orderModel.editDeliveryStatus(id, deliveryStatus);
+    const result2 = await trackingOrderModel.postNew(id, data.title.toUpperCase(), deliveryStatus, data.location)
+    if (result1 && result2.getCode() === HttpStatusCode.CREATED) {
+      res.status(result1.getCode()).send({ message: result1.getMessage() });
+      return res
+        .status(result2.getCode())
+        .send({ message: result2.getMessage(), data: result2.getData() });
+    } else {
+      return res
+        .status(result2.getCode())
+        .send({ message: result2.getMessage() });
     }
   }
 

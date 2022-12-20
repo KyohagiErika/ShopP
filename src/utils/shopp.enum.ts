@@ -55,11 +55,22 @@ export enum StatusReportEnum {
 }
 
 export enum DeliveryStatusEnum {
-  CHECKING = '0',
-  CONFIRMED = '1',
-  PACKAGING = '2',
-  DELIVERING = '3',
-  DELIVERED = '4',
-  CANCELLED = '5',
-  RETURNED = '6',
+  CHECKING = 0,
+  CONFIRMED = 1,
+  PACKAGING = 2,
+  DELIVERING = 3,
+  DELIVERED = 4,
+  CANCELLED = 5,
+  RETURNED = 6,
 }
+
+export enum TitleStatusEnum {
+  ORDER_IS_REPARING = 1,
+  ORDER_READY_TO_BE_SENDED = 2,
+  ORDER_HAS_ARRIVED_TO_STATION_1 = 3.1,
+  ORDER_HAS_ARRIVED_TO_STATION_2 = 3.2,
+  ORDER_HAS_ARRIVED_TO_STATION_3 = 3.3,
+  ORDER_IS_BEING_DELIVERY_TO_YOU = 3.4,
+  DELIVERY_COMPLETED = 4,
+}
+
