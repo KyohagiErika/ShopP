@@ -4,7 +4,6 @@ import { Shop } from '../entities/shop';
 import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
 import trackingOrderModel from '../models/trackingOrder';
-import io from '../socket';
 import { instanceOfOrderRequest } from '../utils';
 import { ControllerService } from '../utils/decorators';
 import { DeliveryStatusEnum, HttpStatusCode, TitleStatusEnum } from '../utils/shopp.enum';
@@ -374,24 +373,134 @@ export default class OrderMiddleware {
     }
 
     const result1 = await orderModel.editDeliveryStatus(id, deliveryStatus);
-    const result2 = await trackingOrderModel.postNew(id, title, deliveryStatus, data.location)
-    if (result1 && result2.getCode() === HttpStatusCode.CREATED) {
-      return res
-        .status(result2.getCode())
-        .send({ message: result2.getMessage(), data: result2.getData() });
+    if (result1.getCode() !== HttpStatusCode.OK) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({
+        message1: result1.getMessage()
+      });
     } else {
-      return res
-        .status(result2.getCode())
-        .send({ message: result2.getMessage() });
+      const result2 = await trackingOrderModel.postNew(id, title, deliveryStatus, data.location)
+      if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
+        return res.status(result2.getCode()).send({
+          message1: result1.getMessage(),
+          message2: result2.getMessage(), data: result2.getData()
+        });
+      } else {
+        return res.status(HttpStatusCode.BAD_REQUEST).send({
+          message1: result1.getMessage(),
+          message2: result2.getMessage()
+        });
+      }
+    }
+
+  }
+
+
+  @ControllerService({
+    body: [
+      {
+        name: 'title',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (
+            value.toUpperCase() !== 'ORDER_IS_CANCELLED_BY_CUSTOMER' &&
+            value.toUpperCase() !== 'ORDER_IS_CANCELLED_BY_SHOP'
+          )
+            return `${propName} is not correct`;
+          return null;
+        },
+      }
+    ]
+  })
+  static async cancelOrder(req: Request, res: Response) {
+    const id = req.params.id;
+    const data = req.body;
+    let title: TitleStatusEnum;
+    if (data.title.toString().toUpperCase() === 'ORDER_IS_CANCELLED_BY_CUSTOMER') {
+      title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_CUSTOMER;
+    } else {
+      title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_SHOP;
+    }
+    const result1 = await orderModel.cancelOrder(id);
+    if (result1.getCode() !== HttpStatusCode.OK) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({
+        message1: result1.getMessage()
+      });
+    } else {
+      const result2 = await trackingOrderModel.postNew(id, title, DeliveryStatusEnum.CANCELLED, data.location)
+      if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
+        return res.status(result2.getCode()).send({
+          message1: result1.getMessage(),
+          message2: result2.getMessage(), data: result2.getData()
+        });
+      } else {
+        return res.status(HttpStatusCode.BAD_REQUEST).send({
+          message1: result1.getMessage(),
+          message2: result2.getMessage()
+        });
+      }
     }
   }
 
-  @ControllerService()
-  static async cancelOrder(req: Request, res: Response) {
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ReturnRequest:
+   *    type: object
+   *    properties:
+   *     title:
+   *      type: string
+   *      description: title of order tracking
+   *      example: 'ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY'
+   *     location:
+   *      type: string
+   *      description: location of package
+   *      example: 'ho chi minh city'
+   */
+  @ControllerService({
+    body: [
+      {
+        name: 'title',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (
+            value.toUpperCase() !== 'ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY' &&
+            value.toUpperCase() !== 'ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER'
+          )
+            return `${propName} is not correct`;
+          return null;
+        },
+      }
+    ]
+  })
+  static async returnOrder(req: Request, res: Response) {
     const id = req.params.id;
-    const result = await orderModel.cancelOrder(id);
-    if (result) {
-      res.status(result.getCode()).send({ message: result.getMessage() });
+    const data = req.body;
+    let title: TitleStatusEnum;
+    if (data.title.toString().toUpperCase() === 'ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY') {
+      title = TitleStatusEnum.ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY;
+    } else {
+      title = TitleStatusEnum.ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER;
+    }
+
+    const result1 = await orderModel.returnOrder(id);
+    if (result1.getCode() !== HttpStatusCode.OK) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({
+        message1: result1.getMessage()
+      });
+    } else {
+      const result2 = await trackingOrderModel.postNew(id, title, DeliveryStatusEnum.RETURNED, data.location)
+      if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
+        return res.status(result2.getCode()).send({
+          message1: result1.getMessage(),
+          message2: result2.getMessage(), data: result2.getData()
+        });
+      } else {
+        return res.status(HttpStatusCode.BAD_REQUEST).send({
+          message1: result1.getMessage(),
+          message2: result2.getMessage()
+        });
+      }
     }
   }
 }

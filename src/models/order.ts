@@ -12,9 +12,11 @@ import {
   DeliveryStatusEnum,
   HttpStatusCode,
   StatusEnum,
+  TitleStatusEnum,
 } from '../utils/shopp.enum';
 import { OrderRequest } from '../interfaces/order';
 import { In } from 'typeorm';
+import { TrackingOrder } from '../entities/trackingOrder';
 
 const orderReposity = ShopPDataSource.getRepository(Order);
 const shopReposity = ShopPDataSource.getRepository(Shop);
@@ -22,6 +24,7 @@ const paymentReposity = ShopPDataSource.getRepository(Payment);
 const shoppingUnitReposity = ShopPDataSource.getRepository(ShoppingUnit);
 const voucherReposity = ShopPDataSource.getRepository(Voucher);
 const productRepository = ShopPDataSource.getRepository(Product);
+const trackingRepository = ShopPDataSource.getRepository(TrackingOrder);
 
 export default class orderModel {
   static async viewOrderForCustomer(customer: Customer) {
@@ -354,10 +357,7 @@ export default class orderModel {
     if (order == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Order not exist.');
     }
-    if (
-      order.deliveryStatus == DeliveryStatusEnum.PACKAGING ||
-      order.deliveryStatus == DeliveryStatusEnum.DELIVERING
-    ) {
+    if (order.deliveryStatus < 0 || order.deliveryStatus > 1) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not cancel');
     }
 
@@ -378,8 +378,68 @@ export default class orderModel {
     }
   }
 
-  // static async returnOrder(id: string){
-  //     const now = new Date();
+  static async returnOrder(id: string) {
+    const order = await orderReposity.findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (order == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Order not exist.');
+    }
+    if (
+      order.deliveryStatus !== DeliveryStatusEnum.DELIVERED &&
+      order.deliveryStatus !== DeliveryStatusEnum.DELIVERING
+    ) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not return');
+    }
 
-  // }
+    if (order.deliveryStatus == 3) {
+      const trackingOrder = await trackingRepository.findOne({
+        where: {
+          orderNumber: { id: id },
+
+        }
+      });
+      if (trackingOrder == null) {
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not return');
+      }
+    } else if (order.deliveryStatus == 4) {
+      const trackingOrder = await trackingRepository.findOne({
+        where: {
+          orderNumber: { id: id },
+        }
+      })
+      if (trackingOrder == null) {
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not return');
+      } else {
+        let date = new Date();
+        let deliverDate = new Date(trackingOrder.time)
+
+        let difference = date.getTime() - deliverDate.getTime();
+        let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
+
+        if (TotalDays < 0 || TotalDays > 4) {
+          return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not return');
+        }
+      }
+    }
+
+    const result = await orderReposity.update(
+      {
+        id: id,
+      },
+
+      {
+        deliveryStatus: DeliveryStatusEnum.RETURNED,
+        status: StatusEnum.INACTIVE,
+      }
+    );
+    if (result.affected == 1) {
+      return new Response(HttpStatusCode.OK, 'Return order successfully!');
+    } else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Return order failed!');
+    }
+
+  }
 }
