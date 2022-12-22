@@ -372,7 +372,7 @@ routes.post(
  */
 routes.post(
   '/return-order/:id',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  [AuthMiddleware.checkJwt],
   OrderMiddleware.returnOrder
 );
 
