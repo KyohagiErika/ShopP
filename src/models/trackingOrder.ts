@@ -3,7 +3,7 @@ import { ShopPDataSource } from "../data";
 import { Order } from "../entities/order";
 import { TrackingOrder } from "../entities/trackingOrder";
 import Response from "../utils/response";
-import { DeliveryStatusEnum, HttpStatusCode, TitleStatusEnum } from "../utils/shopp.enum";
+import { HttpStatusCode } from "../utils/shopp.enum";
 
 const trackingOrderRepository = ShopPDataSource.getRepository(TrackingOrder);
 const orderRepository = ShopPDataSource.getRepository(Order);
@@ -46,45 +46,6 @@ export default class trackingOrderModel {
                 HttpStatusCode.BAD_REQUEST,
                 'Cannot change status backward'
             );
-        }
-
-        // if (deliveryStatus != 3 && deliveryStatus != 5 && deliveryStatus != 6) {
-        //     if (deliveryStatus != title) {
-        //         return new Response(
-        //             HttpStatusCode.BAD_REQUEST,
-        //             'Title is not match delivery status 1'
-        //         );
-        //     }
-        // } 
-        if (deliveryStatus == 3) {
-            if (title < 3.1 || title > 3.4) {
-                return new Response(
-                    HttpStatusCode.BAD_REQUEST,
-                    'Title is not match delivery status 3'
-                );
-            }
-        } else if (deliveryStatus == 5) {
-            if (title < 5.1 || title > 5.2) {
-                return new Response(
-                    HttpStatusCode.BAD_REQUEST,
-                    'Title is not match delivery status 5'
-                );
-            }
-        } else if (deliveryStatus == 6) {
-            if (title < 6.1 || title > 6.2) {
-                return new Response(
-                    HttpStatusCode.BAD_REQUEST,
-                    'Title is not match delivery status 6'
-                );
-            }
-        } else {
-            if (deliveryStatus != title) {
-                return new Response(
-                    HttpStatusCode.BAD_REQUEST,
-                    'Title is not match delivery status 1'
-                );
-            }
-
         }
 
         const newTrackingOrder = new TrackingOrder()

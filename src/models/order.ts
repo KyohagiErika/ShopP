@@ -312,7 +312,24 @@ export default class orderModel {
   static async editDeliveryStatus(
     id: string,
     deliveryStatus: DeliveryStatusEnum,
+    title: number
   ) {
+    if (deliveryStatus == 3) {
+      if (title < 3.1 || title > 3.4) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Title is not match delivery status 3'
+        );
+      }
+    } else {
+      if (deliveryStatus != title) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Title is not match delivery status '
+        );
+      }
+
+    }
     const order = await orderReposity.findOne({
       where: {
         id: id,
@@ -348,7 +365,7 @@ export default class orderModel {
     }
   }
 
-  static async cancelOrder(id: string) {
+  static async cancelOrder(id: string, title: number) {
     const order = await orderReposity.findOne({
       where: {
         id: id,
@@ -356,6 +373,13 @@ export default class orderModel {
     });
     if (order == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Order not exist.');
+    }
+
+    if (title < 5.1 || title > 5.2) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Title is not match delivery status 5'
+      );
     }
     if (order.deliveryStatus < 0 || order.deliveryStatus > 1) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not cancel');
@@ -378,7 +402,7 @@ export default class orderModel {
     }
   }
 
-  static async returnOrder(id: string) {
+  static async returnOrder(id: string, title: number) {
     const order = await orderReposity.findOne({
       where: {
         id: id,
@@ -386,6 +410,12 @@ export default class orderModel {
     });
     if (order == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Order not exist.');
+    }
+    if (title < 6.1 || title > 6.2) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Title is not match delivery status 6'
+      );
     }
     if (
       order.deliveryStatus !== DeliveryStatusEnum.DELIVERED &&
@@ -413,14 +443,13 @@ export default class orderModel {
       if (trackingOrder == null) {
         return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not return');
       } else {
-        let date = new Date();
-        let deliverDate = new Date(trackingOrder.time)
-
-        let difference = date.getTime() - deliverDate.getTime();
-        let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
+        var date = new Date();
+        var deliverDate = trackingOrder.time
+        var difference = date.getTime() - deliverDate.getTime();
+        var TotalDays = Math.round(difference / (1000 * 3600 * 24));
 
         if (TotalDays < 0 || TotalDays > 4) {
-          return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not return');
+          return new Response(HttpStatusCode.BAD_REQUEST, 'Only returned order in three days after received order ');
         }
       }
     }

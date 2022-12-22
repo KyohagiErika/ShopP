@@ -285,7 +285,7 @@ routes.post(
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/components/schemas/EditRequest'
+ *       $ref: '#/components/schemas/ReturnRequest'
  *   responses:
  *    200:
  *     $ref: '#/components/responses/200OK'
@@ -323,7 +323,7 @@ routes.post(
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/components/schemas/ReturnRequest'
+ *       $ref: '#/components/schemas/EditRequest'
  *   responses:
  *    200:
  *     $ref: '#/components/responses/200OK'

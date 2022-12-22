@@ -372,7 +372,7 @@ export default class OrderMiddleware {
       title = TitleStatusEnum.DELIVERY_COMPLETED;
     }
 
-    const result1 = await orderModel.editDeliveryStatus(id, deliveryStatus);
+    const result1 = await orderModel.editDeliveryStatus(id, deliveryStatus, title);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
         message1: result1.getMessage()
@@ -420,7 +420,7 @@ export default class OrderMiddleware {
     } else {
       title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_SHOP;
     }
-    const result1 = await orderModel.cancelOrder(id);
+    const result1 = await orderModel.cancelOrder(id, title);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
         message1: result1.getMessage()
@@ -483,7 +483,7 @@ export default class OrderMiddleware {
       title = TitleStatusEnum.ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER;
     }
 
-    const result1 = await orderModel.returnOrder(id);
+    const result1 = await orderModel.returnOrder(id, title);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
         message1: result1.getMessage()
