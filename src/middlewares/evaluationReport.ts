@@ -1,5 +1,5 @@
-import EvaluationReportModel from "../models/evaluationReport";
-import { ControllerService } from "../utils/decorators";
+import EvaluationReportModel from '../models/evaluationReport';
+import { ControllerService } from '../utils/decorators';
 import { Request, Response } from 'express';
 import { HttpStatusCode } from '../utils/shopp.enum';
 

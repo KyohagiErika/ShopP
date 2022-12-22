@@ -63,7 +63,12 @@ export default class EvaluationReportModel {
   }
 
   static async getEvaluationsReportsofReporter(user: User) {
-    let roleReporter = (user.role.role == RoleEnum.CUSTOMER ? 0 : (user.role.role == RoleEnum.ADMIN ? 2 : 1))
+    let roleReporter =
+      user.role.role == RoleEnum.CUSTOMER
+        ? 0
+        : user.role.role == RoleEnum.ADMIN
+        ? 2
+        : 1;
     const evaluationReports = await evaluationReportRepository.find({
       where: {
         reporter: { id: user.id },
