@@ -1,5 +1,6 @@
 import { Customer } from './customer';
 import { EvaluationImage } from './evaluationImage';
+import { EvaluationReport } from './evaluationReport';
 import { OrderProduct } from './orderProduct';
 import {
   Entity,
@@ -81,4 +82,10 @@ export class Evaluation {
   )
   @JoinColumn()
   evaluationImages: EvaluationImage[];
+
+  @OneToMany(
+    () => EvaluationReport,
+    evaluationReport => evaluationReport.evaluation
+  )
+  evaluationReport: EvaluationReport[];
 }

@@ -1,3 +1,4 @@
+import { EvaluationReport } from './evaluationReport';
 import { Voucher } from './voucher';
 import {
   Entity,
@@ -97,6 +98,12 @@ export class User {
 
   @OneToMany(() => Voucher, voucher => voucher.createdBy)
   voucher: Voucher[];
+
+  @OneToMany(
+    () => EvaluationReport,
+    evaluationReport => evaluationReport.reporter
+  )
+  evaluationReport: EvaluationReport[];
 
   @ManyToMany(() => Notification, notifications => notifications.receivers)
   notifications: Notification[];
