@@ -15,7 +15,7 @@ import {
   TitleStatusEnum,
 } from '../utils/shopp.enum';
 import { OrderRequest } from '../interfaces/order';
-import { In } from 'typeorm';
+import { In, Like } from 'typeorm';
 import { TrackingOrder } from '../entities/trackingOrder';
 
 const orderReposity = ShopPDataSource.getRepository(Order);
@@ -428,6 +428,7 @@ export default class orderModel {
       const trackingOrder = await trackingRepository.findOne({
         where: {
           orderNumber: { id: id },
+          title: Like(TitleStatusEnum.ORDER_IS_BEING_DELIVERY_TO_YOU)
 
         }
       });
@@ -438,6 +439,7 @@ export default class orderModel {
       const trackingOrder = await trackingRepository.findOne({
         where: {
           orderNumber: { id: id },
+          deliveryStatus: Like(DeliveryStatusEnum.DELIVERED)
         }
       })
       if (trackingOrder == null) {
