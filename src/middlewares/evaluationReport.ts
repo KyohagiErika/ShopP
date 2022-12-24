@@ -66,7 +66,7 @@ export default class EvaluationReportMiddleware {
    *      type: string
    *      description: reason of evaluation report
    *      require: true
-   *      example: It is not true
+   *      example: INACCURATE_MISLEADING
    *     description:
    *      type: string
    *      description: description of evaluation report

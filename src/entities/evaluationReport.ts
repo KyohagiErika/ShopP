@@ -29,7 +29,7 @@ import { RoleEnum } from '../utils/shopp.enum';
  *     reason:
  *      type: string
  *      description: reason of evaluation report
- *      example: It is not true
+ *      example: INACCURATE_MISLEADING
  *     description:
  *      type: string
  *      description: description of evaluation report
