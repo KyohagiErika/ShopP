@@ -1,4 +1,4 @@
-import { StatusReportEnum } from './../utils/shopp.enum';
+import { ReasonEvaluationReport, StatusReportEnum } from './../utils/shopp.enum';
 import { User } from './user';
 import {
   Entity,
@@ -54,8 +54,11 @@ export class EvaluationReport {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  reason: string;
+  @Column({
+    type: 'enum',
+    enum: ReasonEvaluationReport,
+  })
+  reason: ReasonEvaluationReport;
 
   @Column()
   description: string;

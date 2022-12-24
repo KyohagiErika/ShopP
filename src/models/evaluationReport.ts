@@ -1,4 +1,4 @@
-import { RoleEnum } from './../utils/shopp.enum';
+import { ReasonEvaluationReport, RoleEnum } from './../utils/shopp.enum';
 import { EvaluationReport } from './../entities/evaluationReport';
 import { ShopPDataSource } from '../data';
 import { Evaluation } from '../entities/evaluation';
@@ -141,7 +141,7 @@ export default class EvaluationReportModel {
 
   static async newEvaluationReport(
     evaluationId: number,
-    reason: string,
+    reason: ReasonEvaluationReport,
     description: string,
     reporter: User
   ) {
@@ -168,7 +168,7 @@ export default class EvaluationReportModel {
 
   static async editEvaluationReport(
     evaluationReportId: number,
-    reason: string,
+    reason: ReasonEvaluationReport,
     description: string,
     reporter: User
   ) {
