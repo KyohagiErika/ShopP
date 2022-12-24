@@ -80,7 +80,7 @@ export class EvaluationReport {
   @JoinColumn()
   evaluation: Evaluation;
 
-  @ManyToOne(() => User, user => user.evaluationReport)
+  @ManyToOne(() => User, user => user.evaluationReports)
   @JoinColumn()
   reporter: User;
 }

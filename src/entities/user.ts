@@ -103,7 +103,7 @@ export class User {
     () => EvaluationReport,
     evaluationReport => evaluationReport.reporter
   )
-  evaluationReport: EvaluationReport[];
+  evaluationReports: EvaluationReport[];
 
   @ManyToMany(() => Notification, notifications => notifications.receivers)
   notifications: Notification[];

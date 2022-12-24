@@ -78,14 +78,20 @@ export class Evaluation {
 
   @OneToMany(
     () => EvaluationImage,
-    evaluationImage => evaluationImage.evaluation
+    evaluationImage => evaluationImage.evaluation,
+    {
+      cascade: ['remove'],
+    }
   )
   @JoinColumn()
   evaluationImages: EvaluationImage[];
 
   @OneToMany(
     () => EvaluationReport,
-    evaluationReport => evaluationReport.evaluation
+    evaluationReport => evaluationReport.evaluation,
+    {
+      cascade: ['remove'],
+    }
   )
   evaluationReports: EvaluationReport[];
 }
