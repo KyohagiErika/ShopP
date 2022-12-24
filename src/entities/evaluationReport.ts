@@ -1,4 +1,7 @@
-import { ReasonEvaluationReport, StatusReportEnum } from './../utils/shopp.enum';
+import {
+  ReasonEvaluationReport,
+  StatusReportEnum,
+} from './../utils/shopp.enum';
 import { User } from './user';
 import {
   Entity,
