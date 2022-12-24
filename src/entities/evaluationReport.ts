@@ -76,7 +76,7 @@ export class EvaluationReport {
   })
   status: StatusReportEnum;
 
-  @ManyToOne(() => Evaluation, evaluation => evaluation.evaluationReport)
+  @ManyToOne(() => Evaluation, evaluation => evaluation.evaluationReports)
   @JoinColumn()
   evaluation: Evaluation;
 

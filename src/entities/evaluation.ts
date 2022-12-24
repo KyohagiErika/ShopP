@@ -87,5 +87,5 @@ export class Evaluation {
     () => EvaluationReport,
     evaluationReport => evaluationReport.evaluation
   )
-  evaluationReport: EvaluationReport[];
+  evaluationReports: EvaluationReport[];
 }
