@@ -80,6 +80,14 @@ const enumToArray = (enumType: any) => {
   }));
 };
 
+const enumObject = (enumType: any) => {
+  const keys = Object.keys(enumType).filter(key => !Number.isInteger(+key));
+  return keys
+};
+const getValueByKeyEnum = (enumType: any, value: string) => {
+  return Object.entries(enumType).find(([key, val]) => key === value)?.[1] as number
+};
+
 export {
   generateOtp,
   deleteFile,
@@ -87,4 +95,6 @@ export {
   enumToArray,
   instanceOfPriceProductFilterRequest,
   instanceOfStarProductFilterRequest,
+  enumObject,
+  getValueByKeyEnum
 };

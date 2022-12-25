@@ -311,7 +311,7 @@ export default class orderModel {
 
   static async editDeliveryStatus(
     id: string,
-    deliveryStatus: DeliveryStatusEnum,
+    deliveryStatus: number,
     title: number
   ) {
     if (deliveryStatus == 3) {
@@ -340,29 +340,29 @@ export default class orderModel {
         HttpStatusCode.BAD_REQUEST,
         'Cannot change status backward'
       );
-    } else {
-      if (deliveryStatus == DeliveryStatusEnum.DELIVERED) {
-        const order = await orderReposity.update(
-          { id: id },
-          { deliveryStatus: deliveryStatus, status: StatusEnum.INACTIVE }
-        );
-        if (order.affected == 1) {
-          return new Response(HttpStatusCode.OK, 'Done!');
-        } else {
-          return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
-        }
+    }
+    if (deliveryStatus == 4) {
+      const order = await orderReposity.update(
+        { id: id },
+        { deliveryStatus: deliveryStatus, status: StatusEnum.INACTIVE }
+      );
+      if (order.affected == 1) {
+        return new Response(HttpStatusCode.OK, 'Done!');
       } else {
-        const order = await orderReposity.update(
-          { id: id },
-          { deliveryStatus: deliveryStatus, status: StatusEnum.ACTIVE }
-        );
-        if (order.affected == 1) {
-          return new Response(HttpStatusCode.OK, 'Done!');
-        } else {
-          return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
-        }
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
+      }
+    } else {
+      const order = await orderReposity.update(
+        { id: id },
+        { deliveryStatus: deliveryStatus, status: StatusEnum.ACTIVE }
+      );
+      if (order.affected == 1) {
+        return new Response(HttpStatusCode.OK, 'Done!');
+      } else {
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
       }
     }
+
   }
 
   static async cancelOrder(id: string, title: number) {

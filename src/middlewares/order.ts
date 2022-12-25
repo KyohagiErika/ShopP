@@ -1,10 +1,11 @@
+import { parse } from 'dotenv';
 import { Request, Response } from 'express';
 import { Customer } from '../entities/customer';
 import { Shop } from '../entities/shop';
 import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
 import trackingOrderModel from '../models/trackingOrder';
-import { instanceOfOrderRequest } from '../utils';
+import { enumObject, getValueByKeyEnum, instanceOfOrderRequest } from '../utils';
 import { ControllerService } from '../utils/decorators';
 import { DeliveryStatusEnum, HttpStatusCode, TitleStatusEnum } from '../utils/shopp.enum';
 
@@ -307,78 +308,34 @@ export default class OrderMiddleware {
    *      description: location of package
    *      example: 'ho chi minh city'
    */
-  @ControllerService({
-    body: [
-      {
-        name: 'deliveryStatus',
-        type: String,
-        validator: (propName: string, value: string) => {
-          if (
-            value.toUpperCase() !== 'CONFIRMED' &&
-            value.toUpperCase() !== 'PACKAGING' &&
-            value.toUpperCase() !== 'DELIVERING' &&
-            value.toUpperCase() !== 'DELIVERED'
-          )
-            return `${propName} is not correct`;
-          return null;
-        },
-      },
-      {
-        name: 'title',
-        type: String,
-        validator: (propName: string, value: string) => {
-          if (
-            value.toUpperCase() !== 'ORDER_IS_REPARING' &&
-            value.toUpperCase() !== 'ORDER_READY_TO_BE_SENDED' &&
-            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_1' &&
-            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_2' &&
-            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_3' &&
-            value.toUpperCase() !== 'ORDER_IS_BEING_DELIVERY_TO_YOU' &&
-            value.toUpperCase() !== 'DELIVERY_COMPLETED'
-          )
-            return `${propName} is not correct`;
-          return null;
-        },
-      }
-    ],
-  })
+  @ControllerService()
   static async editDeliveryStatus(req: Request, res: Response) {
     const id = req.params.id;
     const data = req.body;
-    let deliveryStatus: DeliveryStatusEnum;
-    if (data.deliveryStatus.toString().toUpperCase() === 'CONFIRMED') {
-      deliveryStatus = DeliveryStatusEnum.CONFIRMED;
-    } else if (data.deliveryStatus.toString().toUpperCase() === 'PACKAGING') {
-      deliveryStatus = DeliveryStatusEnum.PACKAGING;
-    } else if (data.deliveryStatus.toString().toUpperCase() === 'DELIVERING') {
-      deliveryStatus = DeliveryStatusEnum.DELIVERING;
-    } else {
-      deliveryStatus = DeliveryStatusEnum.DELIVERED;
-    }
-    let title: TitleStatusEnum;
-    if (data.title.toString().toUpperCase() === 'ORDER_IS_REPARING') {
-      title = TitleStatusEnum.ORDER_IS_REPARING;
-    } else if (data.title.toString().toUpperCase() === 'ORDER_READY_TO_BE_SENDED') {
-      title = TitleStatusEnum.ORDER_READY_TO_BE_SENDED;
-    } else if (data.title.toString().toUpperCase() === 'ORDER_HAS_ARRIVED_TO_STATION_1') {
-      title = TitleStatusEnum.ORDER_HAS_ARRIVED_TO_STATION_1;
-    } else if (data.title.toString().toUpperCase() === 'ORDER_HAS_ARRIVED_TO_STATION_2') {
-      title = TitleStatusEnum.ORDER_HAS_ARRIVED_TO_STATION_2;
-    } else if (data.title.toString().toUpperCase() === 'ORDER_HAS_ARRIVED_TO_STATION_3') {
-      title = TitleStatusEnum.ORDER_HAS_ARRIVED_TO_STATION_3;
-    } else if (data.title.toString().toUpperCase() === 'ORDER_IS_BEING_DELIVERY_TO_YOU') {
-      title = TitleStatusEnum.ORDER_IS_BEING_DELIVERY_TO_YOU;
-    } else {
-      title = TitleStatusEnum.DELIVERY_COMPLETED;
+    const deliveryObj = enumObject(DeliveryStatusEnum);
+    const titleObj = enumObject(TitleStatusEnum);
+
+    let deliveryStatus = data.deliveryStatus.toUpperCase();
+    const newDeliveryStatus = getValueByKeyEnum(DeliveryStatusEnum, deliveryStatus)
+
+    if (!deliveryObj.includes(deliveryStatus.toString())) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'delivery status is not correct' })
     }
 
-    const result1 = await orderModel.editDeliveryStatus(id, deliveryStatus, title);
+    let title = data.title.toUpperCase();
+    if (!titleObj.includes(title.toString())) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'title is not correct' })
+    }
+    const newTitle = getValueByKeyEnum(TitleStatusEnum, title)
+
+
+    const result1 = await orderModel.editDeliveryStatus(id, newDeliveryStatus, newTitle);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
         message1: result1.getMessage()
       });
     } else {
-      const result2 = await trackingOrderModel.postNew(id, title, deliveryStatus, data.location)
+      const result2 = await trackingOrderModel.postNew(id, newTitle, newDeliveryStatus, data.location)
       if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
         return res.status(result2.getCode()).send({
           message1: result1.getMessage(),
