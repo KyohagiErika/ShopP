@@ -37,9 +37,7 @@ import { ChatRoom } from './chatRoom';
  *      description: name of the customer
  *      example: 'bello'
  *     gender:
- *      type: string
- *      description: gender of the customer
- *      example: 'MALE'
+ *      $ref: '#/components/schemas/GenderEnum'
  *     dob:
  *      type: string
  *      description: Date of birth
