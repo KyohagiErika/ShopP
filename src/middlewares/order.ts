@@ -5,9 +5,17 @@ import { Shop } from '../entities/shop';
 import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
 import trackingOrderModel from '../models/trackingOrder';
-import { enumObject, getValueByKeyEnum, instanceOfOrderRequest } from '../utils';
+import {
+  enumObject,
+  getValueByKeyEnum,
+  instanceOfOrderRequest,
+} from '../utils';
 import { ControllerService } from '../utils/decorators';
-import { DeliveryStatusEnum, HttpStatusCode, TitleStatusEnum } from '../utils/shopp.enum';
+import {
+  DeliveryStatusEnum,
+  HttpStatusCode,
+  TitleStatusEnum,
+} from '../utils/shopp.enum';
 
 export default class OrderMiddleware {
   @ControllerService()
@@ -259,7 +267,6 @@ export default class OrderMiddleware {
     const data = req.body;
     let orders: OrderRequest[] = [];
     try {
-      //orders = JSON.parse(data.orders) as OrderRequest[];
       orders = data.orders as OrderRequest[];
     } catch (error) {
       return res
@@ -302,7 +309,7 @@ export default class OrderMiddleware {
    *     location:
    *      type: string
    *      description: location of package
-   *      example: 'ho chi minh city'
+   *      example: 'Ho Chi Minh city'
    */
   @ControllerService()
   static async editDeliveryStatus(req: Request, res: Response) {
@@ -312,41 +319,58 @@ export default class OrderMiddleware {
     const titleObj = enumObject(TitleStatusEnum);
 
     let deliveryStatus = data.deliveryStatus.toUpperCase();
-    const newDeliveryStatus = getValueByKeyEnum(DeliveryStatusEnum, deliveryStatus)
-
     if (!deliveryObj.includes(deliveryStatus.toString())) {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'delivery status is not correct' })
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'delivery status is not correct' });
     }
+    const newDeliveryStatus = getValueByKeyEnum(
+      DeliveryStatusEnum,
+      deliveryStatus
+    );
 
     let title = data.title.toUpperCase();
     if (!titleObj.includes(title.toString())) {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'title is not correct' })
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'title is not correct' });
     }
-    const newTitle = getValueByKeyEnum(TitleStatusEnum, title)
+    const newTitle = getValueByKeyEnum(TitleStatusEnum, title);
 
+    const result1 = await orderModel.editDeliveryStatus(
+      id,
+      newDeliveryStatus,
+      newTitle
+    );
 
-    const result1 = await orderModel.editDeliveryStatus(id, newDeliveryStatus, newTitle);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
-        message1: result1.getMessage()
+        message1: result1.getMessage(),
       });
     } else {
-      const result2 = await trackingOrderModel.postNew(id, newTitle, newDeliveryStatus, data.location)
-      if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
+      const result2 = await trackingOrderModel.postNew(
+        id,
+        newTitle,
+        newDeliveryStatus,
+        data.location
+      );
+      if (
+        result1.getCode() === HttpStatusCode.OK &&
+        result2.getCode() === HttpStatusCode.CREATED
+      ) {
         return res.status(result2.getCode()).send({
           message1: result1.getMessage(),
-          message2: result2.getMessage(), data: result2.getData()
+          message2: result2.getMessage(),
+          data: result2.getData(),
         });
       } else {
         return res.status(HttpStatusCode.BAD_REQUEST).send({
           message1: result1.getMessage(),
-          message2: result2.getMessage()
+          message2: result2.getMessage(),
         });
       }
     }
-
   }
-
 
   @ControllerService({
     body: [
@@ -361,14 +385,16 @@ export default class OrderMiddleware {
             return `${propName} is not correct`;
           return null;
         },
-      }
-    ]
+      },
+    ],
   })
   static async cancelOrder(req: Request, res: Response) {
     const id = req.params.id;
     const data = req.body;
     let title: TitleStatusEnum;
-    if (data.title.toString().toUpperCase() === 'ORDER_IS_CANCELLED_BY_CUSTOMER') {
+    if (
+      data.title.toString().toUpperCase() === 'ORDER_IS_CANCELLED_BY_CUSTOMER'
+    ) {
       title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_CUSTOMER;
     } else {
       title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_SHOP;
@@ -376,19 +402,28 @@ export default class OrderMiddleware {
     const result1 = await orderModel.cancelOrder(id, title);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
-        message1: result1.getMessage()
+        message1: result1.getMessage(),
       });
     } else {
-      const result2 = await trackingOrderModel.postNew(id, title, DeliveryStatusEnum.CANCELLED, data.location)
-      if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
+      const result2 = await trackingOrderModel.postNew(
+        id,
+        title,
+        DeliveryStatusEnum.CANCELLED,
+        data.location
+      );
+      if (
+        result1.getCode() === HttpStatusCode.OK &&
+        result2.getCode() === HttpStatusCode.CREATED
+      ) {
         return res.status(result2.getCode()).send({
           message1: result1.getMessage(),
-          message2: result2.getMessage(), data: result2.getData()
+          message2: result2.getMessage(),
+          data: result2.getData(),
         });
       } else {
         return res.status(HttpStatusCode.BAD_REQUEST).send({
           message1: result1.getMessage(),
-          message2: result2.getMessage()
+          message2: result2.getMessage(),
         });
       }
     }
@@ -415,20 +450,24 @@ export default class OrderMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           if (
-            value.toUpperCase() !== 'ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY' &&
+            value.toUpperCase() !==
+              'ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY' &&
             value.toUpperCase() !== 'ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER'
           )
             return `${propName} is not correct`;
           return null;
         },
-      }
-    ]
+      },
+    ],
   })
   static async returnOrder(req: Request, res: Response) {
     const id = req.params.id;
     const data = req.body;
     let title: TitleStatusEnum;
-    if (data.title.toString().toUpperCase() === 'ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY') {
+    if (
+      data.title.toString().toUpperCase() ===
+      'ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY'
+    ) {
       title = TitleStatusEnum.ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY;
     } else {
       title = TitleStatusEnum.ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER;
@@ -437,19 +476,28 @@ export default class OrderMiddleware {
     const result1 = await orderModel.returnOrder(id, title);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
-        message1: result1.getMessage()
+        message1: result1.getMessage(),
       });
     } else {
-      const result2 = await trackingOrderModel.postNew(id, title, DeliveryStatusEnum.RETURNED, data.location)
-      if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
+      const result2 = await trackingOrderModel.postNew(
+        id,
+        title,
+        DeliveryStatusEnum.RETURNED,
+        data.location
+      );
+      if (
+        result1.getCode() === HttpStatusCode.OK &&
+        result2.getCode() === HttpStatusCode.CREATED
+      ) {
         return res.status(result2.getCode()).send({
           message1: result1.getMessage(),
-          message2: result2.getMessage(), data: result2.getData()
+          message2: result2.getMessage(),
+          data: result2.getData(),
         });
       } else {
         return res.status(HttpStatusCode.BAD_REQUEST).send({
           message1: result1.getMessage(),
-          message2: result2.getMessage()
+          message2: result2.getMessage(),
         });
       }
     }

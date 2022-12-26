@@ -18,17 +18,17 @@ import { OrderRequest } from '../interfaces/order';
 import { In, Like } from 'typeorm';
 import { TrackingOrder } from '../entities/trackingOrder';
 
-const orderReposity = ShopPDataSource.getRepository(Order);
-const shopReposity = ShopPDataSource.getRepository(Shop);
-const paymentReposity = ShopPDataSource.getRepository(Payment);
-const shoppingUnitReposity = ShopPDataSource.getRepository(ShoppingUnit);
-const voucherReposity = ShopPDataSource.getRepository(Voucher);
+const orderRepository = ShopPDataSource.getRepository(Order);
+const shopRepository = ShopPDataSource.getRepository(Shop);
+const paymentRepository = ShopPDataSource.getRepository(Payment);
+const shoppingUnitRepository = ShopPDataSource.getRepository(ShoppingUnit);
+const voucherRepository = ShopPDataSource.getRepository(Voucher);
 const productRepository = ShopPDataSource.getRepository(Product);
 const trackingRepository = ShopPDataSource.getRepository(TrackingOrder);
 
 export default class orderModel {
   static async viewOrderForCustomer(customer: Customer) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -57,7 +57,7 @@ export default class orderModel {
   }
 
   static async viewOrderForShop(shop: Shop) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -74,7 +74,7 @@ export default class orderModel {
   }
 
   static async viewConfirmOrderForShop(shop: Shop) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -98,7 +98,7 @@ export default class orderModel {
   }
 
   static async viewOrderDeliverForCus(customer: Customer) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -116,7 +116,7 @@ export default class orderModel {
   }
 
   static async viewOrderDeliverForShop(shop: Shop) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -133,7 +133,7 @@ export default class orderModel {
   }
 
   static async viewHistoryForCus(customer: Customer) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -150,7 +150,7 @@ export default class orderModel {
   }
 
   static async viewHistoryForShop(shop: Shop) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -167,7 +167,7 @@ export default class orderModel {
   }
 
   static async viewCancelOrderForCus(customer: Customer) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -191,7 +191,7 @@ export default class orderModel {
     customer: Customer
   ) {
     //check payment
-    const payment = await paymentReposity.findOne({
+    const payment = await paymentRepository.findOne({
       where: {
         id: paymentId,
       },
@@ -205,7 +205,7 @@ export default class orderModel {
     for (let i = 0; i < orders.length; i++) {
       let totalBill = orders[i].totalBill;
       //check shopping unit
-      const shoppingUnit = await shoppingUnitReposity.findOne({
+      const shoppingUnit = await shoppingUnitRepository.findOne({
         where: {
           id: orders[i].shoppingUnitId,
         },
@@ -217,7 +217,7 @@ export default class orderModel {
         );
       }
       //check valid shop
-      const shop = await shopReposity.findOne({
+      const shop = await shopRepository.findOne({
         where: {
           id: orders[i].shopId,
         },
@@ -234,7 +234,7 @@ export default class orderModel {
         orders[i].voucherIds.length !== 0
       ) {
         const now = new Date();
-        voucher = await voucherReposity.find({
+        voucher = await voucherRepository.find({
           where: {
             id: In(orders[i].voucherIds),
             //mfgDate: LessThan(now),
@@ -300,7 +300,7 @@ export default class orderModel {
     }
 
     //save order
-    const order: Order[] = await orderReposity.save(orderArr);
+    const order: Order[] = await orderRepository.save(orderArr);
 
     return new Response(
       HttpStatusCode.OK,
@@ -328,9 +328,8 @@ export default class orderModel {
           'Title is not match delivery status '
         );
       }
-
     }
-    const order = await orderReposity.findOne({
+    const order = await orderRepository.findOne({
       where: {
         id: id,
       },
@@ -342,7 +341,7 @@ export default class orderModel {
       );
     }
     if (deliveryStatus == 4) {
-      const order = await orderReposity.update(
+      const order = await orderRepository.update(
         { id: id },
         { deliveryStatus: deliveryStatus, status: StatusEnum.INACTIVE }
       );
@@ -352,7 +351,7 @@ export default class orderModel {
         return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
       }
     } else {
-      const order = await orderReposity.update(
+      const order = await orderRepository.update(
         { id: id },
         { deliveryStatus: deliveryStatus, status: StatusEnum.ACTIVE }
       );
@@ -362,11 +361,10 @@ export default class orderModel {
         return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
       }
     }
-
   }
 
   static async cancelOrder(id: string, title: number) {
-    const order = await orderReposity.findOne({
+    const order = await orderRepository.findOne({
       where: {
         id: id,
       },
@@ -385,11 +383,10 @@ export default class orderModel {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not cancel');
     }
 
-    const result = await orderReposity.update(
+    const result = await orderRepository.update(
       {
         id: id,
       },
-
       {
         deliveryStatus: DeliveryStatusEnum.CANCELLED,
         status: StatusEnum.INACTIVE,
@@ -403,7 +400,7 @@ export default class orderModel {
   }
 
   static async returnOrder(id: string, title: number) {
-    const order = await orderReposity.findOne({
+    const order = await orderRepository.findOne({
       where: {
         id: id,
       },
@@ -428,9 +425,8 @@ export default class orderModel {
       const trackingOrder = await trackingRepository.findOne({
         where: {
           orderNumber: { id: id },
-          title: Like(TitleStatusEnum.ORDER_IS_BEING_DELIVERY_TO_YOU)
-
-        }
+          title: Like(TitleStatusEnum.ORDER_IS_BEING_DELIVERY_TO_YOU),
+        },
       });
       if (trackingOrder == null) {
         return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not return');
@@ -439,24 +435,27 @@ export default class orderModel {
       const trackingOrder = await trackingRepository.findOne({
         where: {
           orderNumber: { id: id },
-          deliveryStatus: Like(DeliveryStatusEnum.DELIVERED)
-        }
-      })
+          deliveryStatus: Like(DeliveryStatusEnum.DELIVERED),
+        },
+      });
       if (trackingOrder == null) {
         return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not return');
       } else {
         var date = new Date();
-        var deliverDate = trackingOrder.time
+        var deliverDate = trackingOrder.time;
         var difference = date.getTime() - deliverDate.getTime();
         var TotalDays = Math.round(difference / (1000 * 3600 * 24));
 
         if (TotalDays < 0 || TotalDays > 4) {
-          return new Response(HttpStatusCode.BAD_REQUEST, 'Only returned order in three days after received order ');
+          return new Response(
+            HttpStatusCode.BAD_REQUEST,
+            'Only returned order in three days after received order '
+          );
         }
       }
     }
 
-    const result = await orderReposity.update(
+    const result = await orderRepository.update(
       {
         id: id,
       },
@@ -471,6 +470,5 @@ export default class orderModel {
     } else {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Return order failed!');
     }
-
   }
 }
