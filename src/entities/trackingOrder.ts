@@ -12,7 +12,7 @@ import { Order } from './order';
  * @swagger
  * components:
  *  schemas:
- *   trackingResponse:
+ *   TrackingResponse:
  *    type: object
  *    properties:
  *     id:
@@ -37,11 +37,13 @@ import { Order } from './order';
  *      description: location of tracking
  *      example: 'J&T Express'
  *     orderNumber:
- *      $ref: '#/components/schemas/CustomerOrderResponse'
+ *      type: string
+ *      description: id of the order
+ *      example: '27580e3b-6953-43cc-a482-eaa62b997883'
  *   TrackingListResponse:
  *    type: array
  *    items:
- *     $ref: '#/components/schemas/trackingResponse'
+ *     $ref: '#/components/schemas/TrackingResponse'
  */
 @Entity()
 export class TrackingOrder {

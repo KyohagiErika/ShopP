@@ -64,7 +64,7 @@ routes.get(
  *     content:
  *      application/json:
  *       schema:
- *         $ref: '#/components/schemas/trackingResponse'
+ *         $ref: '#/components/schemas/TrackingResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  *    401:

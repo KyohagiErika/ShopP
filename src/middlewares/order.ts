@@ -292,17 +292,13 @@ export default class OrderMiddleware {
    * @swagger
    * components:
    *  schemas:
-   *   EditRequest:
+   *   EditOrderRequest:
    *    type: object
    *    properties:
    *     title:
-   *      type: string
-   *      description: title of order tracking
-   *      example: 'ORDER_HAS_ARRIVED_TO_STATION_3'
+   *      $ref: '#/components/schema/TitleStatusEnum'
    *     deliveryStatus:
-   *      type: string
-   *      description: deliveryStatus of order tracking
-   *      example: 'DELIVERING'
+   *      $ref: '#/components/schema/DeliveryStatusEnum'
    *     location:
    *      type: string
    *      description: location of package
@@ -402,13 +398,11 @@ export default class OrderMiddleware {
    * @swagger
    * components:
    *  schemas:
-   *   ReturnRequest:
+   *   ReturnOrderRequest:
    *    type: object
    *    properties:
    *     title:
-   *      type: string
-   *      description: title of order tracking
-   *      example: 'ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY'
+   *      $ref: '#/components/schema/TitleStatusEnum'
    *     location:
    *      type: string
    *      description: location of package

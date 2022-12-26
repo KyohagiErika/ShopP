@@ -285,7 +285,7 @@ routes.post(
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/components/schemas/ReturnRequest'
+ *       $ref: '#/components/schemas/ReturnOrderRequest'
  *   responses:
  *    200:
  *     $ref: '#/components/responses/200OK'
@@ -296,7 +296,7 @@ routes.post(
  */
 routes.post(
   '/cancel-order/:id',
-  [AuthMiddleware.checkJwt],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   OrderMiddleware.cancelOrder
 );
 
@@ -323,7 +323,7 @@ routes.post(
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/components/schemas/EditRequest'
+ *       $ref: '#/components/schemas/EditOrderRequest'
  *   responses:
  *    200:
  *     $ref: '#/components/responses/200OK'
@@ -346,9 +346,8 @@ routes.post(
  *    - Order
  *   security:
  *    - bearerAuth: []
- *   summary: Edit Order Status (Shop)
- *   description: Edit Order Status (Shop)
- *   parameters:
+ *   summary: Return Order 
+ *   description: Return Order
  *    - in: path
  *      name: id
  *      schema:
@@ -361,7 +360,7 @@ routes.post(
  *    content:
  *     application/json:
  *      schema:
- *       $ref: '#/components/schemas/ReturnRequest'
+ *       $ref: '#/components/schemas/ReturnOrderRequest'
  *   responses:
  *    200:
  *     $ref: '#/components/responses/200OK'
@@ -372,7 +371,7 @@ routes.post(
  */
 routes.post(
   '/return-order/:id',
-  [AuthMiddleware.checkJwt],
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   OrderMiddleware.returnOrder
 );
 
