@@ -70,12 +70,6 @@ import { Voucher } from './voucher';
  *    type: array
  *    items:
  *     $ref: '#/components/schemas/CustomerOrderResponse'
- */
-
-/**
- * @swagger
- * components:
- *  schemas:
  *   ShopOrderResponse:
  *    type: object
  *    properties:

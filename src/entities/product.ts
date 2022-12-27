@@ -61,9 +61,7 @@ import { EventProduct } from './eventProduct';
  *      description: average star
  *      example: '4.5'
  *     status:
- *      type: string
- *      description: status of product
- *      example: 'AVAILABLE'
+ *      $ref: '#/components/schemas/ProductEnum'
  *     shop:
  *      $ref: '#/components/schemas/ShopResponse'
  *     category:
