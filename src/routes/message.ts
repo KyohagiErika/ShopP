@@ -47,6 +47,8 @@ routes.get(
  *  get:
  *   tags:
  *    - Message
+ *   security:
+ *    - bearerAuth: []
  *   summary: get Customer Messages
  *   description: get Customer Messages
  *   parameters:

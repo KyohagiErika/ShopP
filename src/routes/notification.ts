@@ -6,12 +6,56 @@ import { RoleEnum } from '../utils/shopp.enum';
 
 const routes = Router();
 
+/**
+ * @swagger
+ * /notification/shop:
+ *  get:
+ *   tags:
+ *    - Notification
+ *   security:
+ *    - bearerAuth: []
+ *   summary: get Shop Notifications
+ *   description: get Shop Notifications
+ *   responses:
+ *    200:
+ *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/NotificationListResponse'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
+ */
 routes.get(
   '/shop',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   NotificationMiddleware.getShopNotifications
 );
 
+/**
+ * @swagger
+ * /notification/customer:
+ *  get:
+ *   tags:
+ *    - Notification
+ *   security:
+ *    - bearerAuth: []
+ *   summary: get Customer Notifications
+ *   description: get Customer Notifications
+ *   responses:
+ *    200:
+ *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/NotificationListResponse'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
+ */
 routes.get(
   '/customer',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
