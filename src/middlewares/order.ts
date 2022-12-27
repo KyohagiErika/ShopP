@@ -173,11 +173,6 @@ export default class OrderMiddleware {
    *      type: string
    *      description: estimate delivery time of order
    *      example: '12/12/2022-15/12/2022'
-   *     totalBill:
-   *      type: number
-   *      format: int64
-   *      description: total bill of order
-   *      example: '100000'
    *     transportFee:
    *      type: number
    *      format: int64
@@ -234,7 +229,7 @@ export default class OrderMiddleware {
       },
       {
         name: 'paymentId',
-        type: String,
+        type: Number,
       },
       {
         name: 'orders',
@@ -258,7 +253,6 @@ export default class OrderMiddleware {
     const data = req.body;
     let orders: OrderRequest[] = [];
     try {
-      //orders = JSON.parse(data.orders) as OrderRequest[];
       orders = data.orders as OrderRequest[];
     } catch (error) {
       return res

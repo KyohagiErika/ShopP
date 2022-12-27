@@ -200,7 +200,7 @@ export default class orderModel {
     //For loop ORDER
     const orderArr: Order[] = [];
     for (let i = 0; i < orders.length; i++) {
-      let totalBill = orders[i].totalBill;
+      let totalBill = 0;
       //check shopping unit
       const shoppingUnit = await shoppingUnitReposity.findOne({
         where: {
@@ -248,10 +248,7 @@ export default class orderModel {
         (findOrder.address = address),
         (findOrder.estimateDeliveryTime = orders[i].estimateDeliveryTime),
         (findOrder.status = StatusEnum.ACTIVE),
-        (findOrder.totalBill = orders[i].totalBill),
         (findOrder.transportFee = orders[i].transportFee),
-        (findOrder.totalPayment =
-          +orders[i].totalBill + +orders[i].transportFee),
         (findOrder.payment = payment),
         (findOrder.shoppingUnit = shoppingUnit),
         (findOrder.shop = shop),
@@ -287,12 +284,14 @@ export default class orderModel {
             (orderProductEntity.product = product),
             (totalBill -= orderProduct[j].price * orderProduct[j].quantity);
           orderProductArr.push(orderProductEntity);
+          //Calculate total bill
+          totalBill += orderProduct[j].price * orderProduct[j].quantity;
         }
       }
-      if (totalBill != 0) {
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Invalid invoice.');
-      }
-      findOrder.orderProducts = orderProductArr;
+
+      (findOrder.totalBill = totalBill),
+        (findOrder.totalPayment = totalBill + +orders[i].transportFee),
+        (findOrder.orderProducts = orderProductArr);
       orderArr.push(findOrder);
     }
 
