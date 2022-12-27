@@ -6,7 +6,11 @@ import { User } from '../entities/user';
 import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
 import trackingOrderModel from '../models/trackingOrder';
-import { enumObject, getValueByKeyEnum, instanceOfOrderRequest } from '../utils';
+import {
+  enumObject,
+  getValueByKeyEnum,
+  instanceOfOrderRequest,
+} from '../utils';
 import { ControllerService } from '../utils/decorators';
 import { DeliveryStatusEnum, HttpStatusCode, RoleEnum, TitleStatusEnum } from '../utils/shopp.enum';
 
@@ -260,7 +264,6 @@ export default class OrderMiddleware {
     const data = req.body;
     let orders: OrderRequest[] = [];
     try {
-      //orders = JSON.parse(data.orders) as OrderRequest[];
       orders = data.orders as OrderRequest[];
     } catch (error) {
       return res
@@ -303,7 +306,7 @@ export default class OrderMiddleware {
    *     location:
    *      type: string
    *      description: location of package
-   *      example: 'ho chi minh city'
+   *      example: 'Ho Chi Minh city'
    */
   @ControllerService({
     body: [
@@ -357,27 +360,45 @@ export default class OrderMiddleware {
     const titleObj = enumObject(TitleStatusEnum);
 
     let deliveryStatus = data.deliveryStatus.toUpperCase();
-    const newDeliveryStatus = getValueByKeyEnum(DeliveryStatusEnum, deliveryStatus)
-
     if (!deliveryObj.includes(deliveryStatus.toString())) {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'delivery status is not correct' })
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'delivery status is not correct' });
     }
+    const newDeliveryStatus = getValueByKeyEnum(
+      DeliveryStatusEnum,
+      deliveryStatus
+    );
 
     let title = data.title.toUpperCase();
     if (!titleObj.includes(title.toString())) {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'title is not correct' })
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'title is not correct' });
     }
-    const newTitle = getValueByKeyEnum(TitleStatusEnum, title)
+    const newTitle = getValueByKeyEnum(TitleStatusEnum, title);
 
+    const result1 = await orderModel.editDeliveryStatus(
+      id,
+      newDeliveryStatus,
+      newTitle
+    );
 
-    const result1 = await orderModel.editDeliveryStatus(id, newDeliveryStatus, newTitle);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
-        message1: result1.getMessage()
+        message1: result1.getMessage(),
       });
     } else {
-      const result2 = await trackingOrderModel.postNew(id, newTitle, newDeliveryStatus, data.location)
-      if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
+      const result2 = await trackingOrderModel.postNew(
+        id,
+        newTitle,
+        newDeliveryStatus,
+        data.location
+      );
+      if (
+        result1.getCode() === HttpStatusCode.OK &&
+        result2.getCode() === HttpStatusCode.CREATED
+      ) {
         return res.status(result2.getCode()).send({
           message2: result2.getMessage(), data: result2.getData()
         });
@@ -387,7 +408,6 @@ export default class OrderMiddleware {
         });
       }
     }
-
   }
 
 
@@ -423,11 +443,19 @@ export default class OrderMiddleware {
     const result1 = await orderModel.cancelOrder(id, title);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
-        message1: result1.getMessage()
+        message1: result1.getMessage(),
       });
     } else {
-      const result2 = await trackingOrderModel.postNew(id, title, DeliveryStatusEnum.CANCELLED, data.location)
-      if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
+      const result2 = await trackingOrderModel.postNew(
+        id,
+        title,
+        DeliveryStatusEnum.CANCELLED,
+        data.location
+      );
+      if (
+        result1.getCode() === HttpStatusCode.OK &&
+        result2.getCode() === HttpStatusCode.CREATED
+      ) {
         return res.status(result2.getCode()).send({
           message2: result2.getMessage(), data: result2.getData()
         });
@@ -483,11 +511,19 @@ export default class OrderMiddleware {
     const result1 = await orderModel.returnOrder(id, title);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
-        message1: result1.getMessage()
+        message1: result1.getMessage(),
       });
     } else {
-      const result2 = await trackingOrderModel.postNew(id, title, DeliveryStatusEnum.RETURNED, data.location)
-      if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
+      const result2 = await trackingOrderModel.postNew(
+        id,
+        title,
+        DeliveryStatusEnum.RETURNED,
+        data.location
+      );
+      if (
+        result1.getCode() === HttpStatusCode.OK &&
+        result2.getCode() === HttpStatusCode.CREATED
+      ) {
         return res.status(result2.getCode()).send({
           message2: result2.getMessage(), data: result2.getData()
         });

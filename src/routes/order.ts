@@ -346,8 +346,8 @@ routes.post(
  *    - Order
  *   security:
  *    - bearerAuth: []
- *   summary: Return Order Status 
- *   description: Return Order Status 
+ *   summary: Return Order
+ *   description: Return Order
  *   parameters:
  *    - in: path
  *      name: id

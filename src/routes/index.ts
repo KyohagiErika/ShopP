@@ -23,7 +23,7 @@ import evaluation from './evaluation';
 import swagger from './swagger';
 import notification from './notification';
 import UploadModel from '../models/upload';
-import trackingOrder from './trackingOrder'
+import trackingOrder from './trackingOrder';
 
 const routes = Router();
 /**
