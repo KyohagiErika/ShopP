@@ -27,6 +27,23 @@ const productRepository = ShopPDataSource.getRepository(Product);
 const trackingRepository = ShopPDataSource.getRepository(TrackingOrder);
 
 export default class orderModel {
+  static async getOne(id: string) {
+    const order = await orderReposity.findOne({
+      relations: {
+        payment: true,
+        shoppingUnit: true,
+        voucher: true,
+        customer: true,
+        shop: true,
+      },
+      where: {
+        id: id,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    return order ? order : false;
+  }
+
   static async viewOrderForCustomer(customer: Customer) {
     const order = await orderReposity.find({
       relations: {
@@ -39,17 +56,17 @@ export default class orderModel {
         {
           customer: { id: customer.id },
           status: StatusEnum.ACTIVE,
-          deliveryStatus: DeliveryStatusEnum.CHECKING,
+          deliveryStatus: Like(DeliveryStatusEnum.CHECKING),
         },
         {
           customer: { id: customer.id },
           status: StatusEnum.ACTIVE,
-          deliveryStatus: DeliveryStatusEnum.CONFIRMED,
+          deliveryStatus: Like(DeliveryStatusEnum.CONFIRMED),
         },
         {
           customer: { id: customer.id },
           status: StatusEnum.ACTIVE,
-          deliveryStatus: DeliveryStatusEnum.PACKAGING,
+          deliveryStatus: Like(DeliveryStatusEnum.PACKAGING),
         },
       ],
     });
@@ -67,7 +84,7 @@ export default class orderModel {
       where: {
         shop: { id: shop.id },
         status: StatusEnum.ACTIVE,
-        deliveryStatus: DeliveryStatusEnum.CHECKING,
+        deliveryStatus: Like(DeliveryStatusEnum.CHECKING),
       },
     });
     return order ? order : false;
@@ -85,12 +102,12 @@ export default class orderModel {
         {
           shop: { id: shop.id },
           status: StatusEnum.ACTIVE,
-          deliveryStatus: DeliveryStatusEnum.CONFIRMED,
+          deliveryStatus: Like(DeliveryStatusEnum.CONFIRMED),
         },
         {
           shop: { id: shop.id },
           status: StatusEnum.ACTIVE,
-          deliveryStatus: DeliveryStatusEnum.PACKAGING,
+          deliveryStatus: Like(DeliveryStatusEnum.PACKAGING),
         },
       ],
     });
@@ -109,7 +126,7 @@ export default class orderModel {
       where: {
         customer: { id: customer.id },
         status: StatusEnum.ACTIVE,
-        deliveryStatus: DeliveryStatusEnum.DELIVERING,
+        deliveryStatus: Like(DeliveryStatusEnum.DELIVERING),
       },
     });
     return order ? order : false;
@@ -126,7 +143,7 @@ export default class orderModel {
       where: {
         shop: { id: shop.id },
         status: StatusEnum.ACTIVE,
-        deliveryStatus: DeliveryStatusEnum.DELIVERING,
+        deliveryStatus: Like(DeliveryStatusEnum.DELIVERING),
       },
     });
     return order ? order : false;
@@ -143,7 +160,7 @@ export default class orderModel {
       where: {
         customer: { id: customer.id },
         status: StatusEnum.INACTIVE,
-        deliveryStatus: DeliveryStatusEnum.DELIVERED,
+        deliveryStatus: Like(DeliveryStatusEnum.DELIVERED),
       },
     });
     return order ? order : false;
@@ -160,7 +177,7 @@ export default class orderModel {
       where: {
         shop: { id: shop.id },
         status: StatusEnum.INACTIVE,
-        deliveryStatus: DeliveryStatusEnum.DELIVERED,
+        deliveryStatus: Like(DeliveryStatusEnum.DELIVERED),
       },
     });
     return order ? order : false;
@@ -178,7 +195,7 @@ export default class orderModel {
       where: {
         customer: { id: customer.id },
         status: StatusEnum.INACTIVE,
-        deliveryStatus: DeliveryStatusEnum.CANCELLED,
+        deliveryStatus: Like(DeliveryStatusEnum.CANCELLED),
       },
     });
     return order ? order : false;

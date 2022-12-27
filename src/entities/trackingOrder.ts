@@ -23,23 +23,19 @@ import { Order } from './order';
  *     time:
  *      type: date
  *      description: date of tracking
- *      example: 'J&T Express'
+ *      example: '2022-12-27T07:41:51.093Z'
  *     title:
- *      type: string
+ *      type: integer
  *      description: title of tracking
- *      example: 'J&T Express'
+ *      example: '5.1'
  *     deliveryStatus:
- *      type: string
+ *      type: integer
  *      description: deliveryStatus of tracking
- *      example: 'J&T Express'
+ *      example: '5'
  *     location:
  *      type: string
  *      description: location of tracking
- *      example: 'J&T Express'
- *     orderNumber:
- *      type: string
- *      description: id of the order
- *      example: '27580e3b-6953-43cc-a482-eaa62b997883'
+ *      example: 'ho chi minh city'
  *   TrackingListResponse:
  *    type: array
  *    items:

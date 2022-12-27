@@ -2,12 +2,13 @@ import { parse } from 'dotenv';
 import { Request, Response } from 'express';
 import { Customer } from '../entities/customer';
 import { Shop } from '../entities/shop';
+import { User } from '../entities/user';
 import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
 import trackingOrderModel from '../models/trackingOrder';
 import { enumObject, getValueByKeyEnum, instanceOfOrderRequest } from '../utils';
 import { ControllerService } from '../utils/decorators';
-import { DeliveryStatusEnum, HttpStatusCode, TitleStatusEnum } from '../utils/shopp.enum';
+import { DeliveryStatusEnum, HttpStatusCode, RoleEnum, TitleStatusEnum } from '../utils/shopp.enum';
 
 export default class OrderMiddleware {
   @ControllerService()
@@ -304,10 +305,54 @@ export default class OrderMiddleware {
    *      description: location of package
    *      example: 'ho chi minh city'
    */
-  @ControllerService()
+  @ControllerService({
+    body: [
+      {
+        name: 'deliveryStatus',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (
+            value.toUpperCase() !== 'CONFIRMED' &&
+            value.toUpperCase() !== 'PACKAGING' &&
+            value.toUpperCase() !== 'DELIVERING' &&
+            value.toUpperCase() !== 'DELIVERED' 
+          )
+            return `${propName} is not correct`;
+          return null;
+        },
+      },
+      {
+        name: 'title',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (
+            value.toUpperCase() !== 'ORDER_IS_REPARING' &&
+            value.toUpperCase() !== 'ORDER_READY_TO_BE_SEND' &&
+            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_1' &&
+            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_2' &&
+            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_3' &&
+            value.toUpperCase() !== 'ORDER_IS_BEING_DELIVERY_TO_YOU' &&
+            value.toUpperCase() !== 'DELIVERY_COMPLETED'
+          )
+            return `${propName} is not correct`;
+          return null;
+        },
+      }
+    ]
+  })
   static async editDeliveryStatus(req: Request, res: Response) {
     const id = req.params.id;
     const data = req.body;
+    const shop: Shop = res.locals.user.shop
+    const checkOrder = await orderModel.getOne(id)
+    if(checkOrder == false){
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'order not found' })
+    }else{
+      if(!(checkOrder.shop.id == shop.id)){
+        return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'only edit your order' })
+      }
+    }
+
     const deliveryObj = enumObject(DeliveryStatusEnum);
     const titleObj = enumObject(TitleStatusEnum);
 
@@ -334,12 +379,10 @@ export default class OrderMiddleware {
       const result2 = await trackingOrderModel.postNew(id, newTitle, newDeliveryStatus, data.location)
       if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
         return res.status(result2.getCode()).send({
-          message1: result1.getMessage(),
           message2: result2.getMessage(), data: result2.getData()
         });
       } else {
         return res.status(HttpStatusCode.BAD_REQUEST).send({
-          message1: result1.getMessage(),
           message2: result2.getMessage()
         });
       }
@@ -348,30 +391,34 @@ export default class OrderMiddleware {
   }
 
 
-  @ControllerService({
-    body: [
-      {
-        name: 'title',
-        type: String,
-        validator: (propName: string, value: string) => {
-          if (
-            value.toUpperCase() !== 'ORDER_IS_CANCELLED_BY_CUSTOMER' &&
-            value.toUpperCase() !== 'ORDER_IS_CANCELLED_BY_SHOP'
-          )
-            return `${propName} is not correct`;
-          return null;
-        },
-      }
-    ]
-  })
+  @ControllerService()
   static async cancelOrder(req: Request, res: Response) {
     const id = req.params.id;
     const data = req.body;
+    const user: User = res.locals.user
     let title: TitleStatusEnum;
-    if (data.title.toString().toUpperCase() === 'ORDER_IS_CANCELLED_BY_CUSTOMER') {
-      title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_CUSTOMER;
-    } else {
-      title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_SHOP;
+    if(user.role.role == RoleEnum.CUSTOMER){
+      const checkOrder = await orderModel.getOne(id)
+    if(checkOrder == false){
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'order not found' })
+    }else{
+      if(!(checkOrder.customer.id == user.customer.id)){
+        return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'only cancel your order' })
+      }else{
+        title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_CUSTOMER
+      }
+    }
+    }else{
+      const checkOrder = await orderModel.getOne(id)
+    if(checkOrder == false){
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'order not found' })
+    }else{
+      if(!(checkOrder.shop.id == user.shop.id)){
+        return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'only cancel your order' })
+      }else{
+        title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_CUSTOMER
+      }
+    }
     }
     const result1 = await orderModel.cancelOrder(id, title);
     if (result1.getCode() !== HttpStatusCode.OK) {
@@ -382,12 +429,10 @@ export default class OrderMiddleware {
       const result2 = await trackingOrderModel.postNew(id, title, DeliveryStatusEnum.CANCELLED, data.location)
       if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
         return res.status(result2.getCode()).send({
-          message1: result1.getMessage(),
           message2: result2.getMessage(), data: result2.getData()
         });
       } else {
         return res.status(HttpStatusCode.BAD_REQUEST).send({
-          message1: result1.getMessage(),
           message2: result2.getMessage()
         });
       }
@@ -401,39 +446,40 @@ export default class OrderMiddleware {
    *   ReturnOrderRequest:
    *    type: object
    *    properties:
-   *     title:
-   *      $ref: '#/components/schema/TitleStatusEnum'
    *     location:
    *      type: string
    *      description: location of package
    *      example: 'ho chi minh city'
    */
-  @ControllerService({
-    body: [
-      {
-        name: 'title',
-        type: String,
-        validator: (propName: string, value: string) => {
-          if (
-            value.toUpperCase() !== 'ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY' &&
-            value.toUpperCase() !== 'ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER'
-          )
-            return `${propName} is not correct`;
-          return null;
-        },
-      }
-    ]
-  })
+  @ControllerService()
   static async returnOrder(req: Request, res: Response) {
     const id = req.params.id;
     const data = req.body;
+    const user: User = res.locals.user
     let title: TitleStatusEnum;
-    if (data.title.toString().toUpperCase() === 'ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY') {
-      title = TitleStatusEnum.ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY;
-    } else {
-      title = TitleStatusEnum.ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER;
+    if(user.role.role == RoleEnum.CUSTOMER){
+      const checkOrder = await orderModel.getOne(id)
+    if(checkOrder == false){
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'order not found' })
+    }else{
+      if(!(checkOrder.customer.id == user.customer.id)){
+        return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'only cancel your order' })
+      }else{
+        title = TitleStatusEnum.ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER
+      }
     }
-
+    }else{
+      const checkOrder = await orderModel.getOne(id)
+    if(checkOrder == false){
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'order not found' })
+    }else{
+      if(!(checkOrder.shop.id == user.shop.id)){
+        return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'only cancel your order' })
+      }else{
+        title = TitleStatusEnum.ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY
+      }
+    }
+    }
     const result1 = await orderModel.returnOrder(id, title);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
@@ -443,12 +489,10 @@ export default class OrderMiddleware {
       const result2 = await trackingOrderModel.postNew(id, title, DeliveryStatusEnum.RETURNED, data.location)
       if (result1.getCode() === HttpStatusCode.OK && result2.getCode() === HttpStatusCode.CREATED) {
         return res.status(result2.getCode()).send({
-          message1: result1.getMessage(),
           message2: result2.getMessage(), data: result2.getData()
         });
       } else {
         return res.status(HttpStatusCode.BAD_REQUEST).send({
-          message1: result1.getMessage(),
           message2: result2.getMessage()
         });
       }
