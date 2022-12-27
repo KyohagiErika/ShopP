@@ -12,6 +12,8 @@ const routes = Router();
  *  get:
  *   tags:
  *    - ChatRoom
+ *   security:
+ *    - bearerAuth: []
  *   summary: get Shop ChatRooms
  *   description: get Shop ChatRooms
  *   responses:
@@ -38,6 +40,8 @@ routes.get(
  *  get:
  *   tags:
  *    - ChatRoom
+ *   security:
+ *    - bearerAuth: []
  *   summary: get Customer ChatRooms
  *   description: get Customer ChatRooms
  *   responses:
@@ -64,6 +68,8 @@ routes.get(
  *  get:
  *   tags:
  *    - ChatRoom
+ *   security:
+ *    - bearerAuth: []
  *   summary: find Shop ChatRoom
  *   description: find Shop ChatRoom
  *   parameters:
@@ -99,6 +105,8 @@ routes.get(
  *  get:
  *   tags:
  *    - ChatRoom
+ *   security:
+ *    - bearerAuth: []
  *   summary: find Customer ChatRoom
  *   description: find Customer ChatRoom
  *   parameters:
@@ -134,6 +142,8 @@ routes.get(
  *  post:
  *   tags:
  *    - ChatRoom
+ *   security:
+ *    - bearerAuth: []
  *   summary: create Shop ChatRoom
  *   description: find Shop ChatRoom
  *   parameters:
@@ -165,6 +175,8 @@ routes.post(
  *  post:
  *   tags:
  *    - ChatRoom
+ *   security:
+ *    - bearerAuth: []
  *   summary: create Customer ChatRoom
  *   description: find Customer ChatRoom
  *   parameters:
@@ -196,6 +208,8 @@ routes.post(
  *  get:
  *   tags:
  *    - ChatRoom
+ *   security:
+ *    - bearerAuth: []
  *   summary: delete ChatRoom
  *   description: delete ChatRoom
  *   parameters:
