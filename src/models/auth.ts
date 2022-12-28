@@ -36,19 +36,31 @@ export default class AuthModel {
     if (user !== null) {
       //Check if encrypted password match
       if (!user.checkIfUnencryptedPasswordIsValid(password)) {
-        return new Response(HttpStatusCode.BAD_REQUEST, 'Wrong login password');
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Email/phone or password is incorrect'
+        );
       }
       //Sign JWT, valid for 1 hour
       const token = jwt.sign(
         { userId: user.id, email: user.email },
-        config.JWT_SECRET,
+        config.ACCESS_TOKEN_SECRET,
         { expiresIn: '1h' }
       );
-      return new Response(HttpStatusCode.OK, 'Login successfully', token);
+
+      const refreshToken = jwt.sign(
+        { userId: user.id, email: user.email },
+        config.REFRESH_TOKEN_SECRET,
+        { expiresIn: '7d' }
+      );
+      return new Response(HttpStatusCode.OK, 'Login successfully', {
+        token,
+        refreshToken,
+      });
     } else
       return new Response(
         HttpStatusCode.BAD_REQUEST,
-        'Email or Phone is wrong!'
+        'Email/phone or password is incorrect!'
       );
   }
 

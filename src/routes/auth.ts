@@ -32,6 +32,35 @@ router.post('/login', AuthMiddleware.loginWithEmailOrPhone);
 
 /**
  * @swagger
+ * /auth/refresh:
+ *  get:
+ *   tags:
+ *    - Auth
+ *   summary: Get Refresh Token
+ *   description: Get Refresh Token
+ *   responses:
+ *    200:
+ *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        type: object
+ *        properties:
+ *         token:
+ *          type: string
+ *          description: Access token
+ *         message:
+ *          type: string
+ *          description: Message
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
+ */
+router.get('/refresh', AuthMiddleware.refreshToken);
+
+/**
+ * @swagger
  * /auth/change-password:
  *  post:
  *   tags:
