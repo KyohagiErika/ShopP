@@ -12,20 +12,40 @@ import {
   DeliveryStatusEnum,
   HttpStatusCode,
   StatusEnum,
+  TitleStatusEnum,
 } from '../utils/shopp.enum';
 import { OrderRequest } from '../interfaces/order';
-import { In } from 'typeorm';
+import { In, Like } from 'typeorm';
+import { TrackingOrder } from '../entities/trackingOrder';
 
-const orderReposity = ShopPDataSource.getRepository(Order);
-const shopReposity = ShopPDataSource.getRepository(Shop);
-const paymentReposity = ShopPDataSource.getRepository(Payment);
-const shoppingUnitReposity = ShopPDataSource.getRepository(ShoppingUnit);
-const voucherReposity = ShopPDataSource.getRepository(Voucher);
+const orderRepository = ShopPDataSource.getRepository(Order);
+const shopRepository = ShopPDataSource.getRepository(Shop);
+const paymentRepository = ShopPDataSource.getRepository(Payment);
+const shoppingUnitRepository = ShopPDataSource.getRepository(ShoppingUnit);
+const voucherRepository = ShopPDataSource.getRepository(Voucher);
 const productRepository = ShopPDataSource.getRepository(Product);
+const trackingRepository = ShopPDataSource.getRepository(TrackingOrder);
 
 export default class orderModel {
+  static async getOne(id: string) {
+    const order = await orderRepository.findOne({
+      relations: {
+        payment: true,
+        shoppingUnit: true,
+        voucher: true,
+        customer: true,
+        shop: true,
+      },
+      where: {
+        id: id,
+        status: StatusEnum.ACTIVE,
+      },
+    });
+    return order ? order : false;
+  }
+
   static async viewOrderForCustomer(customer: Customer) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -36,17 +56,17 @@ export default class orderModel {
         {
           customer: { id: customer.id },
           status: StatusEnum.ACTIVE,
-          deliveryStatus: DeliveryStatusEnum.CHECKING,
+          deliveryStatus: Like(DeliveryStatusEnum.CHECKING),
         },
         {
           customer: { id: customer.id },
           status: StatusEnum.ACTIVE,
-          deliveryStatus: DeliveryStatusEnum.CONFIRMED,
+          deliveryStatus: Like(DeliveryStatusEnum.CONFIRMED),
         },
         {
           customer: { id: customer.id },
           status: StatusEnum.ACTIVE,
-          deliveryStatus: DeliveryStatusEnum.PACKAGING,
+          deliveryStatus: Like(DeliveryStatusEnum.PACKAGING),
         },
       ],
     });
@@ -54,7 +74,7 @@ export default class orderModel {
   }
 
   static async viewOrderForShop(shop: Shop) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -64,14 +84,14 @@ export default class orderModel {
       where: {
         shop: { id: shop.id },
         status: StatusEnum.ACTIVE,
-        deliveryStatus: DeliveryStatusEnum.CHECKING,
+        deliveryStatus: Like(DeliveryStatusEnum.CHECKING),
       },
     });
     return order ? order : false;
   }
 
   static async viewConfirmOrderForShop(shop: Shop) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -82,12 +102,12 @@ export default class orderModel {
         {
           shop: { id: shop.id },
           status: StatusEnum.ACTIVE,
-          deliveryStatus: DeliveryStatusEnum.CONFIRMED,
+          deliveryStatus: Like(DeliveryStatusEnum.CONFIRMED),
         },
         {
           shop: { id: shop.id },
           status: StatusEnum.ACTIVE,
-          deliveryStatus: DeliveryStatusEnum.PACKAGING,
+          deliveryStatus: Like(DeliveryStatusEnum.PACKAGING),
         },
       ],
     });
@@ -95,7 +115,7 @@ export default class orderModel {
   }
 
   static async viewOrderDeliverForCus(customer: Customer) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -106,14 +126,14 @@ export default class orderModel {
       where: {
         customer: { id: customer.id },
         status: StatusEnum.ACTIVE,
-        deliveryStatus: DeliveryStatusEnum.DELIVERING,
+        deliveryStatus: Like(DeliveryStatusEnum.DELIVERING),
       },
     });
     return order ? order : false;
   }
 
   static async viewOrderDeliverForShop(shop: Shop) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -123,14 +143,14 @@ export default class orderModel {
       where: {
         shop: { id: shop.id },
         status: StatusEnum.ACTIVE,
-        deliveryStatus: DeliveryStatusEnum.DELIVERING,
+        deliveryStatus: Like(DeliveryStatusEnum.DELIVERING),
       },
     });
     return order ? order : false;
   }
 
   static async viewHistoryForCus(customer: Customer) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -140,14 +160,14 @@ export default class orderModel {
       where: {
         customer: { id: customer.id },
         status: StatusEnum.INACTIVE,
-        deliveryStatus: DeliveryStatusEnum.DELIVERED,
+        deliveryStatus: Like(DeliveryStatusEnum.DELIVERED),
       },
     });
     return order ? order : false;
   }
 
   static async viewHistoryForShop(shop: Shop) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -157,14 +177,14 @@ export default class orderModel {
       where: {
         shop: { id: shop.id },
         status: StatusEnum.INACTIVE,
-        deliveryStatus: DeliveryStatusEnum.DELIVERED,
+        deliveryStatus: Like(DeliveryStatusEnum.DELIVERED),
       },
     });
     return order ? order : false;
   }
 
   static async viewCancelOrderForCus(customer: Customer) {
-    const order = await orderReposity.find({
+    const order = await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
@@ -175,7 +195,7 @@ export default class orderModel {
       where: {
         customer: { id: customer.id },
         status: StatusEnum.INACTIVE,
-        deliveryStatus: DeliveryStatusEnum.CANCELLED,
+        deliveryStatus: Like(DeliveryStatusEnum.CANCELLED),
       },
     });
     return order ? order : false;
@@ -188,7 +208,7 @@ export default class orderModel {
     customer: Customer
   ) {
     //check payment
-    const payment = await paymentReposity.findOne({
+    const payment = await paymentRepository.findOne({
       where: {
         id: paymentId,
       },
@@ -202,7 +222,7 @@ export default class orderModel {
     for (let i = 0; i < orders.length; i++) {
       let totalBill = 0;
       //check shopping unit
-      const shoppingUnit = await shoppingUnitReposity.findOne({
+      const shoppingUnit = await shoppingUnitRepository.findOne({
         where: {
           id: orders[i].shoppingUnitId,
         },
@@ -214,7 +234,7 @@ export default class orderModel {
         );
       }
       //check valid shop
-      const shop = await shopReposity.findOne({
+      const shop = await shopRepository.findOne({
         where: {
           id: orders[i].shopId,
         },
@@ -231,7 +251,7 @@ export default class orderModel {
         orders[i].voucherIds.length !== 0
       ) {
         const now = new Date();
-        voucher = await voucherReposity.find({
+        voucher = await voucherRepository.find({
           where: {
             id: In(orders[i].voucherIds),
             //mfgDate: LessThan(now),
@@ -296,7 +316,7 @@ export default class orderModel {
     }
 
     //save order
-    const order: Order[] = await orderReposity.save(orderArr);
+    const order: Order[] = await orderRepository.save(orderArr);
 
     return new Response(
       HttpStatusCode.OK,
@@ -307,45 +327,60 @@ export default class orderModel {
 
   static async editDeliveryStatus(
     id: string,
-    deliveryStatus: DeliveryStatusEnum
+    deliveryStatus: number,
+    title: number
   ) {
-    const order = await orderReposity.findOne({
+    if (deliveryStatus == 3) {
+      if (title < 3.1 || title > 3.4) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Title is not match delivery status 3'
+        );
+      }
+    } else {
+      if (deliveryStatus != title) {
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Title is not match delivery status '
+        );
+      }
+    }
+    const order = await orderRepository.findOne({
       where: {
         id: id,
       },
     });
-    if (order != null && deliveryStatus <= order.deliveryStatus) {
+    if (order != null && deliveryStatus < order.deliveryStatus) {
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Cannot change status backward'
       );
-    } else {
-      if (deliveryStatus == DeliveryStatusEnum.DELIVERED) {
-        const order = await orderReposity.update(
-          { id: id },
-          { deliveryStatus: deliveryStatus, status: StatusEnum.INACTIVE }
-        );
-        if (order.affected == 1) {
-          return new Response(HttpStatusCode.OK, 'Done!');
-        } else {
-          return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
-        }
+    }
+    if (deliveryStatus == 4) {
+      const order = await orderRepository.update(
+        { id: id },
+        { deliveryStatus: deliveryStatus, status: StatusEnum.INACTIVE }
+      );
+      if (order.affected == 1) {
+        return new Response(HttpStatusCode.OK, 'Done!');
       } else {
-        const order = await orderReposity.update(
-          { id: id },
-          { deliveryStatus: deliveryStatus, status: StatusEnum.ACTIVE }
-        );
-        if (order.affected == 1) {
-          return new Response(HttpStatusCode.OK, 'Done!');
-        } else {
-          return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
-        }
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
+      }
+    } else {
+      const order = await orderRepository.update(
+        { id: id },
+        { deliveryStatus: deliveryStatus, status: StatusEnum.ACTIVE }
+      );
+      if (order.affected == 1) {
+        return new Response(HttpStatusCode.OK, 'Done!');
+      } else {
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Not Done!');
       }
     }
   }
 
-  static async cancelOrder(id: string) {
-    const order = await orderReposity.findOne({
+  static async cancelOrder(id: string, title: number) {
+    const order = await orderRepository.findOne({
       where: {
         id: id,
       },
@@ -353,18 +388,21 @@ export default class orderModel {
     if (order == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Order not exist.');
     }
-    if (
-      order.deliveryStatus == DeliveryStatusEnum.PACKAGING ||
-      order.deliveryStatus == DeliveryStatusEnum.DELIVERING
-    ) {
+
+    if (title < 5.1 || title > 5.2) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Title is not match delivery status 5'
+      );
+    }
+    if (order.deliveryStatus < 0 || order.deliveryStatus > 1) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not cancel');
     }
 
-    const result = await orderReposity.update(
+    const result = await orderRepository.update(
       {
         id: id,
       },
-
       {
         deliveryStatus: DeliveryStatusEnum.CANCELLED,
         status: StatusEnum.INACTIVE,
@@ -377,8 +415,76 @@ export default class orderModel {
     }
   }
 
-  // static async returnOrder(id: string){
-  //     const now = new Date();
+  static async returnOrder(id: string, title: number) {
+    const order = await orderRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (order == null) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Order not exist.');
+    }
+    if (title < 6.1 || title > 6.2) {
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Title is not match delivery status 6'
+      );
+    }
+    if (
+      order.deliveryStatus !== DeliveryStatusEnum.DELIVERED &&
+      order.deliveryStatus !== DeliveryStatusEnum.DELIVERING
+    ) {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not return');
+    }
 
-  // }
+    if (order.deliveryStatus == 3) {
+      const trackingOrder = await trackingRepository.findOne({
+        where: {
+          orderNumber: { id: id },
+          title: Like(TitleStatusEnum.ORDER_IS_BEING_DELIVERY_TO_YOU),
+        },
+      });
+      if (trackingOrder == null) {
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not return');
+      }
+    } else if (order.deliveryStatus == 4) {
+      const trackingOrder = await trackingRepository.findOne({
+        where: {
+          orderNumber: { id: id },
+          deliveryStatus: Like(DeliveryStatusEnum.DELIVERED),
+        },
+      });
+      if (trackingOrder == null) {
+        return new Response(HttpStatusCode.BAD_REQUEST, 'Order can not return');
+      } else {
+        var date = new Date();
+        var deliverDate = trackingOrder.time;
+        var difference = date.getTime() - deliverDate.getTime();
+        var TotalDays = Math.round(difference / (1000 * 3600 * 24));
+
+        if (TotalDays < 0 || TotalDays > 4) {
+          return new Response(
+            HttpStatusCode.BAD_REQUEST,
+            'Only returned order in three days after received order '
+          );
+        }
+      }
+    }
+
+    const result = await orderRepository.update(
+      {
+        id: id,
+      },
+
+      {
+        deliveryStatus: DeliveryStatusEnum.RETURNED,
+        status: StatusEnum.INACTIVE,
+      }
+    );
+    if (result.affected == 1) {
+      return new Response(HttpStatusCode.OK, 'Return order successfully!');
+    } else {
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Return order failed!');
+    }
+  }
 }

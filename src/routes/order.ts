@@ -280,10 +280,15 @@ routes.post(
  *       format: uuid
  *      required: true
  *      description: id of the order
- *      example: 1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p
+ *      example: 27580e3b-6953-43cc-a482-eaa62b997883
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/components/schemas/ReturnOrderRequest'
  *   responses:
  *    200:
- *     $ref: '#/components/responses/200Ok'
+ *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  *    401:
@@ -313,10 +318,15 @@ routes.post(
  *       format: uuid
  *      required: true
  *      description: id of the order
- *      example: 1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p
+ *      example: 27580e3b-6953-43cc-a482-eaa62b997883
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/components/schemas/EditOrderRequest'
  *   responses:
  *    200:
- *     $ref: '#/components/responses/200Ok'
+ *     $ref: '#/components/responses/200OK'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  *    401:
@@ -326,6 +336,44 @@ routes.post(
   '/edit-status/:id',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
   OrderMiddleware.editDeliveryStatus
+);
+
+/**
+ * @swagger
+ * /order/return-order/{id}:
+ *  post:
+ *   tags:
+ *    - Order
+ *   security:
+ *    - bearerAuth: []
+ *   summary: Return Order
+ *   description: Return Order
+ *   parameters:
+ *    - in: path
+ *      name: id
+ *      schema:
+ *       type: string
+ *       format: uuid
+ *      required: true
+ *      description: id of the order
+ *      example: 27580e3b-6953-43cc-a482-eaa62b997883
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/components/schemas/ReturnOrderRequest'
+ *   responses:
+ *    200:
+ *     $ref: '#/components/responses/200OK'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
+ */
+routes.post(
+  '/return-order/:id',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  OrderMiddleware.returnOrder
 );
 
 export default routes;

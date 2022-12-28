@@ -1,12 +1,23 @@
+import { parse } from 'dotenv';
 import { Request, Response } from 'express';
 import { Customer } from '../entities/customer';
 import { Shop } from '../entities/shop';
+import { User } from '../entities/user';
 import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
-import io from '../socket';
-import { instanceOfOrderRequest } from '../utils';
+import trackingOrderModel from '../models/trackingOrder';
+import {
+  enumObject,
+  getValueByKeyEnum,
+  instanceOfOrderRequest,
+} from '../utils';
 import { ControllerService } from '../utils/decorators';
-import { DeliveryStatusEnum, HttpStatusCode } from '../utils/shopp.enum';
+import {
+  DeliveryStatusEnum,
+  HttpStatusCode,
+  RoleEnum,
+  TitleStatusEnum,
+} from '../utils/shopp.enum';
 
 export default class OrderMiddleware {
   @ControllerService()
@@ -281,6 +292,22 @@ export default class OrderMiddleware {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   EditOrderRequest:
+   *    type: object
+   *    properties:
+   *     title:
+   *      $ref: '#/components/schema/TitleStatusEnum'
+   *     deliveryStatus:
+   *      $ref: '#/components/schema/DeliveryStatusEnum'
+   *     location:
+   *      type: string
+   *      description: location of package
+   *      example: 'Ho Chi Minh city'
+   */
   @ControllerService({
     body: [
       {
@@ -297,34 +324,236 @@ export default class OrderMiddleware {
           return null;
         },
       },
+      {
+        name: 'title',
+        type: String,
+        validator: (propName: string, value: string) => {
+          if (
+            value.toUpperCase() !== 'ORDER_IS_REPARING' &&
+            value.toUpperCase() !== 'ORDER_READY_TO_BE_SEND' &&
+            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_1' &&
+            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_2' &&
+            value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_3' &&
+            value.toUpperCase() !== 'ORDER_IS_BEING_DELIVERY_TO_YOU' &&
+            value.toUpperCase() !== 'DELIVERY_COMPLETED'
+          )
+            return `${propName} is not correct`;
+          return null;
+        },
+      },
     ],
   })
   static async editDeliveryStatus(req: Request, res: Response) {
     const id = req.params.id;
     const data = req.body;
-    let deliveryStatus: DeliveryStatusEnum;
-    if (data.deliveryStatus.toString().toUpperCase() === 'CONFIRMED') {
-      deliveryStatus = DeliveryStatusEnum.CONFIRMED;
-    } else if (data.deliveryStatus.toString().toUpperCase() === 'PACKAGING') {
-      deliveryStatus = DeliveryStatusEnum.PACKAGING;
-    } else if (data.deliveryStatus.toString().toUpperCase() === 'DELIVERING') {
-      deliveryStatus = DeliveryStatusEnum.DELIVERING;
+    const shop: Shop = res.locals.user.shop;
+    const checkOrder = await orderModel.getOne(id);
+    if (checkOrder == false) {
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'order not found' });
     } else {
-      deliveryStatus = DeliveryStatusEnum.DELIVERED;
+      if (!(checkOrder.shop.id == shop.id)) {
+        return res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'only edit your order' });
+      }
     }
 
-    const result = await orderModel.editDeliveryStatus(id, deliveryStatus);
-    if (result) {
-      res.status(result.getCode()).send({ message: result.getMessage() });
+    const deliveryObj = enumObject(DeliveryStatusEnum);
+    const titleObj = enumObject(TitleStatusEnum);
+
+    let deliveryStatus = data.deliveryStatus.toUpperCase();
+    if (!deliveryObj.includes(deliveryStatus.toString())) {
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'delivery status is not correct' });
+    }
+    const newDeliveryStatus = getValueByKeyEnum(
+      DeliveryStatusEnum,
+      deliveryStatus
+    );
+
+    let title = data.title.toUpperCase();
+    if (!titleObj.includes(title.toString())) {
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'title is not correct' });
+    }
+    const newTitle = getValueByKeyEnum(TitleStatusEnum, title);
+
+    const result1 = await orderModel.editDeliveryStatus(
+      id,
+      newDeliveryStatus,
+      newTitle
+    );
+
+    if (result1.getCode() !== HttpStatusCode.OK) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({
+        message: result1.getMessage(),
+      });
+    } else {
+      const result2 = await trackingOrderModel.postNew(
+        id,
+        newTitle,
+        newDeliveryStatus,
+        data.location
+      );
+      if (
+        result1.getCode() === HttpStatusCode.OK &&
+        result2.getCode() === HttpStatusCode.CREATED
+      ) {
+        return res.status(result2.getCode()).send({
+          message: result2.getMessage(),
+          data: result2.getData(),
+        });
+      } else {
+        return res.status(HttpStatusCode.BAD_REQUEST).send({
+          message: result2.getMessage(),
+        });
+      }
     }
   }
 
   @ControllerService()
   static async cancelOrder(req: Request, res: Response) {
     const id = req.params.id;
-    const result = await orderModel.cancelOrder(id);
-    if (result) {
-      res.status(result.getCode()).send({ message: result.getMessage() });
+    const data = req.body;
+    const user: User = res.locals.user;
+    let title: TitleStatusEnum;
+    if (user.role.role == RoleEnum.CUSTOMER) {
+      const checkOrder = await orderModel.getOne(id);
+      if (checkOrder == false) {
+        return res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'order not found' });
+      } else {
+        if (!(checkOrder.customer.id == user.customer.id)) {
+          return res
+            .status(HttpStatusCode.BAD_REQUEST)
+            .send({ message: 'only cancel your order' });
+        } else {
+          title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_CUSTOMER;
+        }
+      }
+    } else {
+      const checkOrder = await orderModel.getOne(id);
+      if (checkOrder == false) {
+        return res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'order not found' });
+      } else {
+        if (!(checkOrder.shop.id == user.shop.id)) {
+          return res
+            .status(HttpStatusCode.BAD_REQUEST)
+            .send({ message: 'only cancel your order' });
+        } else {
+          title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_SHOP;
+        }
+      }
+    }
+    const result1 = await orderModel.cancelOrder(id, title);
+    if (result1.getCode() !== HttpStatusCode.OK) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({
+        message: result1.getMessage(),
+      });
+    } else {
+      const result2 = await trackingOrderModel.postNew(
+        id,
+        title,
+        DeliveryStatusEnum.CANCELLED,
+        data.location
+      );
+      if (
+        result1.getCode() === HttpStatusCode.OK &&
+        result2.getCode() === HttpStatusCode.CREATED
+      ) {
+        return res.status(result2.getCode()).send({
+          message: result2.getMessage(),
+          data: result2.getData(),
+        });
+      } else {
+        return res.status(HttpStatusCode.BAD_REQUEST).send({
+          message: result2.getMessage(),
+        });
+      }
+    }
+  }
+
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *   ReturnOrderRequest:
+   *    type: object
+   *    properties:
+   *     location:
+   *      type: string
+   *      description: location of package
+   *      example: 'ho chi minh city'
+   */
+  @ControllerService()
+  static async returnOrder(req: Request, res: Response) {
+    const id = req.params.id;
+    const data = req.body;
+    const user: User = res.locals.user;
+    let title: TitleStatusEnum;
+    if (user.role.role == RoleEnum.CUSTOMER) {
+      const checkOrder = await orderModel.getOne(id);
+      if (checkOrder == false) {
+        return res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'order not found' });
+      } else {
+        if (!(checkOrder.customer.id == user.customer.id)) {
+          return res
+            .status(HttpStatusCode.BAD_REQUEST)
+            .send({ message: 'only cancel your order' });
+        } else {
+          title = TitleStatusEnum.ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER;
+        }
+      }
+    } else {
+      const checkOrder = await orderModel.getOne(id);
+      if (checkOrder == false) {
+        return res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'order not found' });
+      } else {
+        if (!(checkOrder.shop.id == user.shop.id)) {
+          return res
+            .status(HttpStatusCode.BAD_REQUEST)
+            .send({ message: 'only cancel your order' });
+        } else {
+          title = TitleStatusEnum.ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY;
+        }
+      }
+    }
+    const result1 = await orderModel.returnOrder(id, title);
+    if (result1.getCode() !== HttpStatusCode.OK) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({
+        message: result1.getMessage(),
+      });
+    } else {
+      const result2 = await trackingOrderModel.postNew(
+        id,
+        title,
+        DeliveryStatusEnum.RETURNED,
+        data.location
+      );
+      if (
+        result1.getCode() === HttpStatusCode.OK &&
+        result2.getCode() === HttpStatusCode.CREATED
+      ) {
+        return res.status(result2.getCode()).send({
+          message: result2.getMessage(),
+          data: result2.getData(),
+        });
+      } else {
+        return res.status(HttpStatusCode.BAD_REQUEST).send({
+          message: result2.getMessage(),
+        });
+      }
     }
   }
 }
