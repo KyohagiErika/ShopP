@@ -12,7 +12,12 @@ import {
   instanceOfOrderRequest,
 } from '../utils';
 import { ControllerService } from '../utils/decorators';
-import { DeliveryStatusEnum, HttpStatusCode, RoleEnum, TitleStatusEnum } from '../utils/shopp.enum';
+import {
+  DeliveryStatusEnum,
+  HttpStatusCode,
+  RoleEnum,
+  TitleStatusEnum,
+} from '../utils/shopp.enum';
 
 export default class OrderMiddleware {
   @ControllerService()
@@ -318,7 +323,7 @@ export default class OrderMiddleware {
             value.toUpperCase() !== 'CONFIRMED' &&
             value.toUpperCase() !== 'PACKAGING' &&
             value.toUpperCase() !== 'DELIVERING' &&
-            value.toUpperCase() !== 'DELIVERED' 
+            value.toUpperCase() !== 'DELIVERED'
           )
             return `${propName} is not correct`;
           return null;
@@ -340,19 +345,23 @@ export default class OrderMiddleware {
             return `${propName} is not correct`;
           return null;
         },
-      }
-    ]
+      },
+    ],
   })
   static async editDeliveryStatus(req: Request, res: Response) {
     const id = req.params.id;
     const data = req.body;
-    const shop: Shop = res.locals.user.shop
-    const checkOrder = await orderModel.getOne(id)
-    if(checkOrder == false){
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'order not found' })
-    }else{
-      if(!(checkOrder.shop.id == shop.id)){
-        return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'only edit your order' })
+    const shop: Shop = res.locals.user.shop;
+    const checkOrder = await orderModel.getOne(id);
+    if (checkOrder == false) {
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'order not found' });
+    } else {
+      if (!(checkOrder.shop.id == shop.id)) {
+        return res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'only edit your order' });
       }
     }
 
@@ -386,7 +395,7 @@ export default class OrderMiddleware {
 
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
-        message1: result1.getMessage(),
+        message: result1.getMessage(),
       });
     } else {
       const result2 = await trackingOrderModel.postNew(
@@ -400,50 +409,58 @@ export default class OrderMiddleware {
         result2.getCode() === HttpStatusCode.CREATED
       ) {
         return res.status(result2.getCode()).send({
-          message2: result2.getMessage(), data: result2.getData()
+          message: result2.getMessage(),
+          data: result2.getData(),
         });
       } else {
         return res.status(HttpStatusCode.BAD_REQUEST).send({
-          message2: result2.getMessage()
+          message: result2.getMessage(),
         });
       }
     }
   }
 
-
   @ControllerService()
   static async cancelOrder(req: Request, res: Response) {
     const id = req.params.id;
     const data = req.body;
-    const user: User = res.locals.user
+    const user: User = res.locals.user;
     let title: TitleStatusEnum;
-    if(user.role.role == RoleEnum.CUSTOMER){
-      const checkOrder = await orderModel.getOne(id)
-    if(checkOrder == false){
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'order not found' })
-    }else{
-      if(!(checkOrder.customer.id == user.customer.id)){
-        return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'only cancel your order' })
-      }else{
-        title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_CUSTOMER
+    if (user.role.role == RoleEnum.CUSTOMER) {
+      const checkOrder = await orderModel.getOne(id);
+      if (checkOrder == false) {
+        return res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'order not found' });
+      } else {
+        if (!(checkOrder.customer.id == user.customer.id)) {
+          return res
+            .status(HttpStatusCode.BAD_REQUEST)
+            .send({ message: 'only cancel your order' });
+        } else {
+          title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_CUSTOMER;
+        }
       }
-    }
-    }else{
-      const checkOrder = await orderModel.getOne(id)
-    if(checkOrder == false){
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'order not found' })
-    }else{
-      if(!(checkOrder.shop.id == user.shop.id)){
-        return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'only cancel your order' })
-      }else{
-        title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_CUSTOMER
+    } else {
+      const checkOrder = await orderModel.getOne(id);
+      if (checkOrder == false) {
+        return res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'order not found' });
+      } else {
+        if (!(checkOrder.shop.id == user.shop.id)) {
+          return res
+            .status(HttpStatusCode.BAD_REQUEST)
+            .send({ message: 'only cancel your order' });
+        } else {
+          title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_SHOP;
+        }
       }
-    }
     }
     const result1 = await orderModel.cancelOrder(id, title);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
-        message1: result1.getMessage(),
+        message: result1.getMessage(),
       });
     } else {
       const result2 = await trackingOrderModel.postNew(
@@ -457,11 +474,12 @@ export default class OrderMiddleware {
         result2.getCode() === HttpStatusCode.CREATED
       ) {
         return res.status(result2.getCode()).send({
-          message2: result2.getMessage(), data: result2.getData()
+          message: result2.getMessage(),
+          data: result2.getData(),
         });
       } else {
         return res.status(HttpStatusCode.BAD_REQUEST).send({
-          message2: result2.getMessage()
+          message: result2.getMessage(),
         });
       }
     }
@@ -483,35 +501,43 @@ export default class OrderMiddleware {
   static async returnOrder(req: Request, res: Response) {
     const id = req.params.id;
     const data = req.body;
-    const user: User = res.locals.user
+    const user: User = res.locals.user;
     let title: TitleStatusEnum;
-    if(user.role.role == RoleEnum.CUSTOMER){
-      const checkOrder = await orderModel.getOne(id)
-    if(checkOrder == false){
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'order not found' })
-    }else{
-      if(!(checkOrder.customer.id == user.customer.id)){
-        return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'only cancel your order' })
-      }else{
-        title = TitleStatusEnum.ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER
+    if (user.role.role == RoleEnum.CUSTOMER) {
+      const checkOrder = await orderModel.getOne(id);
+      if (checkOrder == false) {
+        return res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'order not found' });
+      } else {
+        if (!(checkOrder.customer.id == user.customer.id)) {
+          return res
+            .status(HttpStatusCode.BAD_REQUEST)
+            .send({ message: 'only cancel your order' });
+        } else {
+          title = TitleStatusEnum.ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER;
+        }
       }
-    }
-    }else{
-      const checkOrder = await orderModel.getOne(id)
-    if(checkOrder == false){
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'order not found' })
-    }else{
-      if(!(checkOrder.shop.id == user.shop.id)){
-        return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'only cancel your order' })
-      }else{
-        title = TitleStatusEnum.ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY
+    } else {
+      const checkOrder = await orderModel.getOne(id);
+      if (checkOrder == false) {
+        return res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .send({ message: 'order not found' });
+      } else {
+        if (!(checkOrder.shop.id == user.shop.id)) {
+          return res
+            .status(HttpStatusCode.BAD_REQUEST)
+            .send({ message: 'only cancel your order' });
+        } else {
+          title = TitleStatusEnum.ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY;
+        }
       }
-    }
     }
     const result1 = await orderModel.returnOrder(id, title);
     if (result1.getCode() !== HttpStatusCode.OK) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({
-        message1: result1.getMessage(),
+        message: result1.getMessage(),
       });
     } else {
       const result2 = await trackingOrderModel.postNew(
@@ -525,11 +551,12 @@ export default class OrderMiddleware {
         result2.getCode() === HttpStatusCode.CREATED
       ) {
         return res.status(result2.getCode()).send({
-          message2: result2.getMessage(), data: result2.getData()
+          message: result2.getMessage(),
+          data: result2.getData(),
         });
       } else {
         return res.status(HttpStatusCode.BAD_REQUEST).send({
-          message2: result2.getMessage()
+          message: result2.getMessage(),
         });
       }
     }
