@@ -9,7 +9,8 @@ export default class ShopPConfig {
   static DATABASE_USERNAME = process.env.DATABASE_USERNAME || 'root';
   static DATABASE_PASSWORD = process.env.DATABASE_PASSWORD || '';
   static DATABASE_NAME = process.env.DATABASE_NAME || 'shopp';
-  static JWT_SECRET = process.env.JWT_SECRET || '@QEGTUI';
+  static ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || '@QEGTUI';
+  static REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || '7y6t5r4e';
   static IMAGE_PATH = process.env.IMAGE_PATH || 'public/uploads/';
   static SMTP_USERNAME = process.env.SMTP_USERNAME;
   static SMTP_PASSWORD = process.env.SMTP_PASSWORD;
