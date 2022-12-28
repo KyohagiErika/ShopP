@@ -34,6 +34,18 @@ export enum StatusEnum {
   INACTIVE = 'INACTIVE',
   LOCKED = 'LOCKED',
 }
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   RoleEnum:
+ *    type: string
+ *    enum:
+ *    - ADMIN
+ *    - SHOP
+ *    - CUSTOMER
+ */
 export enum RoleEnum {
   ADMIN = 2,
   SHOP = 1,
@@ -71,8 +83,21 @@ export enum StatusReportEnum {
   PROCESSING = 'PROCESSING',
   PROCESSED = 'PROCESSED',
 }
-
-export enum ReasonEvaluationReport {
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   ReasonEvaluationReportEnum:
+ *    type: string
+ *    enum:
+ *    - CONTAIN_SENSITIVE_INFO
+ *    - DUPLICATE
+ *    - INACCURATE_MISLEADING
+ *    - CONTAIN_PERSONAL_INFO
+ *    - UNAUTHORIZED_ADVERTISING
+ *    - OTHER_REASON
+ */
+export enum ReasonEvaluationReportEnum {
   CONTAIN_SENSITIVE_INFO = 'CONTAIN_SENSITIVE_INFO',
   DUPLICATE = 'DUPLICATE',
   INACCURATE_MISLEADING = 'INACCURATE_MISLEADING',

@@ -1,4 +1,4 @@
-import { ReasonEvaluationReport, RoleEnum } from './../utils/shopp.enum';
+import { ReasonEvaluationReportEnum, RoleEnum } from './../utils/shopp.enum';
 import { EvaluationReport } from './../entities/evaluationReport';
 import { ShopPDataSource } from '../data';
 import { Evaluation } from '../entities/evaluation';
@@ -14,7 +14,6 @@ export default class EvaluationReportModel {
   static async getAllEvaluationsReports() {
     const evaluationReports = await evaluationReportRepository.find({
       relations: {
-        evaluation: true,
         reporter: true,
       },
       order: {
@@ -141,7 +140,7 @@ export default class EvaluationReportModel {
 
   static async newEvaluationReport(
     evaluationId: number,
-    reason: ReasonEvaluationReport,
+    reason: ReasonEvaluationReportEnum,
     description: string,
     reporter: User
   ) {
@@ -152,7 +151,15 @@ export default class EvaluationReportModel {
     });
     if (!evaluation)
       return new Response(HttpStatusCode.BAD_REQUEST, 'Evaluation not found!');
-    const evaluationReport = await evaluationReportRepository.save({
+    const evaluationReport = await evaluationReportRepository.findOne({
+      where: {
+        reporter: { id: reporter.id },
+        evaluation: { id: evaluationId },
+      },
+    });
+    if (evaluationReport)
+      return new Response(HttpStatusCode.BAD_REQUEST, 'Already reported!');
+    const result = await evaluationReportRepository.save({
       reason,
       description,
       roleReporter: reporter.role.role,
@@ -162,13 +169,13 @@ export default class EvaluationReportModel {
     return new Response(
       HttpStatusCode.OK,
       'Create new evaluation report successfully!',
-      evaluationReport
+      result
     );
   }
 
   static async editEvaluationReport(
     evaluationReportId: number,
-    reason: ReasonEvaluationReport,
+    reason: ReasonEvaluationReportEnum,
     description: string,
     reporter: User
   ) {

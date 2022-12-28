@@ -1,7 +1,10 @@
 import EvaluationReportModel from '../models/evaluationReport';
 import { ControllerService } from '../utils/decorators';
 import { Request, Response } from 'express';
-import { HttpStatusCode, ReasonEvaluationReport } from '../utils/shopp.enum';
+import {
+  HttpStatusCode,
+  ReasonEvaluationReportEnum,
+} from '../utils/shopp.enum';
 
 export default class EvaluationReportMiddleware {
   @ControllerService()
@@ -63,10 +66,7 @@ export default class EvaluationReportMiddleware {
    *    type: object
    *    properties:
    *     reason:
-   *      type: string
-   *      description: reason of evaluation report
-   *      require: true
-   *      example: INACCURATE_MISLEADING
+   *      #ref: '#/components/schemas/ReasonEvaluationReportEnum'
    *     description:
    *      type: string
    *      description: description of evaluation report
@@ -79,15 +79,13 @@ export default class EvaluationReportMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           if (value.length == 0) return `${propName} must be filled in`;
-          const reasonList = Object.values(ReasonEvaluationReport);
-          let reasonCheck = false;
-          for (let i = 0; i < reasonList.length; i++) {
-            if (value.toUpperCase() === reasonList[i]) {
-              reasonCheck = true;
-              break;
+          const reasonList = Object.entries(ReasonEvaluationReportEnum).map(
+            ([key, value]) => {
+              return key;
             }
-          }
-          if (!reasonCheck) return `${propName} is invalid`;
+          );
+          if (!reasonList.includes(value.toUpperCase()))
+            return `${propName} is invalid`;
           return null;
         },
       },
@@ -122,16 +120,13 @@ export default class EvaluationReportMiddleware {
         name: 'reason',
         type: String,
         validator: (propName: string, value: string) => {
-          if (value.length == 0) return `${propName} must be filled in`;
-          const reasonList = Object.values(ReasonEvaluationReport);
-          let reasonCheck = false;
-          for (let i = 0; i < reasonList.length; i++) {
-            if (value.toUpperCase() === reasonList[i]) {
-              reasonCheck = true;
-              break;
+          const reasonList = Object.entries(ReasonEvaluationReportEnum).map(
+            ([key, value]) => {
+              return key;
             }
-          }
-          if (!reasonCheck) return `${propName} is invalid`;
+          );
+          if (!reasonList.includes(value.toUpperCase()))
+            return `${propName} is invalid`;
           return null;
         },
       },

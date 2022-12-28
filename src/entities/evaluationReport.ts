@@ -1,5 +1,5 @@
 import {
-  ReasonEvaluationReport,
+  ReasonEvaluationReportEnum,
   StatusReportEnum,
 } from './../utils/shopp.enum';
 import { User } from './user';
@@ -27,22 +27,18 @@ import { RoleEnum } from '../utils/shopp.enum';
  *      description: id of evaluation report
  *      example: 1
  *     reason:
- *      type: string
- *      description: reason of evaluation report
- *      example: INACCURATE_MISLEADING
+ *      #ref: '#/components/schemas/ReasonEvaluationReportEnum'
  *     description:
  *      type: string
  *      description: description of evaluation report
  *      example: He said some things not good about the product but it is not true
  *     roleReporter:
- *      type: string
- *      description: role of reporter
- *      example: CUSTOMER
+ *      #ref: '#/components/schemas/ReasonEvaluationReportEnum'
  *     reportedAt:
  *      type: string
  *      description: day created of evaluation report
  *      format: date-time
- *      example: 2022-10-29
+ *      example: 2021-01-30T08:30:00Z
  *     status:
  *      type: string
  *      description: status of evaluation report
@@ -59,9 +55,9 @@ export class EvaluationReport {
 
   @Column({
     type: 'enum',
-    enum: ReasonEvaluationReport,
+    enum: ReasonEvaluationReportEnum,
   })
-  reason: ReasonEvaluationReport;
+  reason: ReasonEvaluationReportEnum;
 
   @Column()
   description: string;
