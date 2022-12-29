@@ -13,7 +13,7 @@ const messageRepository = ShopPDataSource.getRepository(Message);
 
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:8081', ShopPConfig.CLIENT_SOCKET_ENDPOINT],
+    origin: ['http://localhost:3000', ShopPConfig.CLIENT_SOCKET_ENDPOINT],
     credentials: true,
   },
 });
@@ -23,7 +23,7 @@ io.use(async (socket, next) => {
   const token = socket.handshake.auth.token;
   try {
     // verify jwt token and get user data
-    const jwtPayload = <any>jwt.verify(token, ShopPConfig.JWT_SECRET);
+    const jwtPayload = <any>jwt.verify(token, ShopPConfig.ACCESS_TOKEN_SECRET);
     const user: User | false = await UserModel.getOneById(jwtPayload.userId);
     if (user === false) {
       return next(new Error('Not authorized'));
