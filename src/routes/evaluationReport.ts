@@ -14,8 +14,8 @@ const routes = Router();
  *    - Evaluation Report
  *   security:
  *    - bearerAuth: []
- *   summary: Get all evaluation reports
- *   description: Get all evaluation reports
+ *   summary: Get all evaluation reports (ADMIN)
+ *   description: Get all evaluation reports (ADMIN)
  *   responses:
  *    200:
  *     description: Success
@@ -42,8 +42,8 @@ routes.get(
  *    - Evaluation Report
  *   security:
  *    - bearerAuth: []
- *   summary: Get evaluation reports from an evaluation
- *   description: Get evaluation reports from an evaluation
+ *   summary: Get evaluation reports from an evaluation (ADMIN)
+ *   description: Get evaluation reports from an evaluation (ADMIN)
  *   parameters:
  *    - in: path
  *      name: evaluationId
@@ -78,8 +78,8 @@ routes.get(
  *    - Evaluation Report
  *   security:
  *    - bearerAuth: []
- *   summary: Get a evaluation report by id
- *   description: Get a evaluation report by id
+ *   summary: Get a evaluation report by id (ADMIN)
+ *   description: Get a evaluation report by id (ADMIN)
  *   parameters:
  *    - in: path
  *      name: evaluationReportId
@@ -114,8 +114,8 @@ routes.get(
  *    - Evaluation Report
  *   security:
  *    - bearerAuth: []
- *   summary: Get a evaluation report by id
- *   description: Get a evaluation report by id
+ *   summary: Get a evaluation report of reporter
+ *   description: Get a evaluation report by reporter
  *   responses:
  *    200:
  *     description: Success
@@ -131,7 +131,7 @@ routes.get(
 routes.get(
   '/list-of-user',
   [AuthMiddleware.checkJwt],
-  EvaluationReportMiddleware.getEvaluationsReportsofReporter
+  EvaluationReportMiddleware.getEvaluationsReportsOfReporter
 );
 
 /**

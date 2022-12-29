@@ -12,8 +12,8 @@ const routes = Router();
  *  get:
  *   tags:
  *    - Payment
- *   summary: List all payments (Customer)
- *   description: List all payments (Customer)
+ *   summary: List all payments
+ *   description: List all payments
  *   responses:
  *    200:
  *     description: Success
@@ -34,8 +34,8 @@ routes.get('/list-all', PaymentMiddleware.listAll);
  *  get:
  *   tags:
  *    - Payment
- *   summary: Get one payment (Customer)
- *   description: Get one payment (Customer)
+ *   summary: Get one payment
+ *   description: Get one payment
  *   parameters:
  *    - in: path
  *      name: id
@@ -67,8 +67,8 @@ routes.get('/:id([0-9]+)', PaymentMiddleware.getOneById);
  *    - Payment
  *   security:
  *    - bearerAuth: []
- *   summary: Create a new payment (admin)
- *   description: Create a new payment (admin)
+ *   summary: Create a new payment (ADMIN)
+ *   description: Create a new payment (ADMIN)
  *   requestBody:
  *    content:
  *     application/json:

@@ -14,8 +14,8 @@ const routes = Router();
  *    - ChatRoom
  *   security:
  *    - bearerAuth: []
- *   summary: get Shop ChatRooms
- *   description: get Shop ChatRooms
+ *   summary: get Shop ChatRooms (SHOP)
+ *   description: get Shop ChatRooms (SHOP)
  *   responses:
  *    200:
  *     description: Success
@@ -42,8 +42,8 @@ routes.get(
  *    - ChatRoom
  *   security:
  *    - bearerAuth: []
- *   summary: get Customer ChatRooms
- *   description: get Customer ChatRooms
+ *   summary: get Customer ChatRooms (CUSTOMER)
+ *   description: get Customer ChatRooms (CUSTOMER)
  *   responses:
  *    200:
  *     description: Success
@@ -70,8 +70,8 @@ routes.get(
  *    - ChatRoom
  *   security:
  *    - bearerAuth: []
- *   summary: find Shop ChatRoom
- *   description: find Shop ChatRoom
+ *   summary: find Shop ChatRoom (SHOP)
+ *   description: find Shop ChatRoom (SHOP)
  *   parameters:
  *    - in: path
  *      name: customerId
@@ -107,8 +107,8 @@ routes.get(
  *    - ChatRoom
  *   security:
  *    - bearerAuth: []
- *   summary: find Customer ChatRoom
- *   description: find Customer ChatRoom
+ *   summary: find Customer ChatRoom (CUSTOMER)
+ *   description: find Customer ChatRoom (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: shopId
@@ -144,8 +144,8 @@ routes.get(
  *    - ChatRoom
  *   security:
  *    - bearerAuth: []
- *   summary: create Shop ChatRoom
- *   description: find Shop ChatRoom
+ *   summary: create Shop ChatRoom (SHOP)
+ *   description: create Shop ChatRoom (SHOP)
  *   parameters:
  *    - in: path
  *      name: customerId
@@ -177,8 +177,8 @@ routes.post(
  *    - ChatRoom
  *   security:
  *    - bearerAuth: []
- *   summary: create Customer ChatRoom
- *   description: find Customer ChatRoom
+ *   summary: create Customer ChatRoom (CUSTOMER)
+ *   description: create Customer ChatRoom (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: shopId

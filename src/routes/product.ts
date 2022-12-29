@@ -266,8 +266,8 @@ routes.post('/filter', ProductMiddleware.filter);
  *    - Product
  *   security:
  *    - bearerAuth: []
- *   summary: Create a new product
- *   description: Create a new product
+ *   summary: Create a new product (SHOP)
+ *   description: Create a new product (SHOP)
  *   requestBody:
  *    content:
  *     multipart/form-data:

@@ -87,8 +87,8 @@ routes.get(
  *    - Evaluation
  *   security:
  *    - bearerAuth: []
- *   summary: Create new evaluation
- *   description: Create new evaluation
+ *   summary: Create new evaluation (CUSTOMER)
+ *   description: Create new evaluation (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: orderProductId
@@ -133,8 +133,8 @@ routes.post(
  *    - Evaluation
  *   security:
  *    - bearerAuth: []
- *   summary: Edit evaluation
- *   description: Edit evaluation
+ *   summary: Edit evaluation (CUSTOMER)
+ *   description: Edit evaluation (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: evaluationId
@@ -178,8 +178,8 @@ routes.post(
  *    - Evaluation
  *   security:
  *    - bearerAuth: []
- *   summary: Delete evaluation
- *   description: Delete evaluation
+ *   summary: Delete evaluation (CUSTOMER)
+ *   description: Delete evaluation (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: evaluationId
@@ -210,8 +210,8 @@ routes.get(
  *    - Evaluation
  *   security:
  *    - bearerAuth: []
- *   summary: Alter number of likes of evaluations
- *   description: Alter number of likes of evaluations
+ *   summary: Alter number of likes of evaluation (CUSTOMER)
+ *   description: Alter number of likes of evaluation (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: evaluationId

@@ -33,16 +33,14 @@ import { RoleEnum } from '../utils/shopp.enum';
  *      description: description of evaluation report
  *      example: He said some things not good about the product but it is not true
  *     roleReporter:
- *      #ref: '#/components/schemas/ReasonEvaluationReportEnum'
+ *      #ref: '#/components/schemas/RoleEnum'
  *     reportedAt:
  *      type: string
- *      description: day created of evaluation report
  *      format: date-time
+ *      description: day created of evaluation report
  *      example: 2021-01-30T08:30:00Z
  *     status:
- *      type: string
- *      description: status of evaluation report
- *      example: PROCESSING
+ *      #ref: '#/components/schemas/StatusReportEnum'
  *   EvaluationReportListResponse:
  *    type: array
  *    items:

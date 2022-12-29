@@ -47,8 +47,8 @@ export default class EvaluationReportMiddleware {
   }
 
   @ControllerService()
-  static async getEvaluationsReportsofReporter(req: Request, res: Response) {
-    const result = await EvaluationReportModel.getEvaluationsReportsofReporter(
+  static async getEvaluationsReportsOfReporter(req: Request, res: Response) {
+    const result = await EvaluationReportModel.getEvaluationsReportsOfReporter(
       res.locals.user
     );
     if (result.getCode() == HttpStatusCode.OK)

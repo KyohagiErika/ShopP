@@ -14,8 +14,8 @@ const routes = Router();
  *    - Notification
  *   security:
  *    - bearerAuth: []
- *   summary: get Shop Notifications
- *   description: get Shop Notifications
+ *   summary: get Shop Notifications (SHOP)
+ *   description: get Shop Notifications (SHOP)
  *   responses:
  *    200:
  *     description: Success
@@ -42,8 +42,8 @@ routes.get(
  *    - Notification
  *   security:
  *    - bearerAuth: []
- *   summary: get Customer Notifications
- *   description: get Customer Notifications
+ *   summary: get Customer Notifications (CUSTOMER)
+ *   description: get Customer Notifications (CUSTOMER)
  *   responses:
  *    200:
  *     description: Success

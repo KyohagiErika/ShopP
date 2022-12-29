@@ -64,8 +64,8 @@ routes.get('/:id([0-9]+)', CategoryMiddleware.getOneById);
  *    - Category
  *   security:
  *    - bearerAuth: []
- *   summary: Create a new category (Admin)
- *   description: Create a new category (Admin)
+ *   summary: Create a new category (ADMIN)
+ *   description: Create a new category (ADMIN)
  *   requestBody:
  *    content:
  *     multipart/form-data:

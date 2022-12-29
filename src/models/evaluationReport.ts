@@ -61,7 +61,7 @@ export default class EvaluationReportModel {
     );
   }
 
-  static async getEvaluationsReportsofReporter(user: User) {
+  static async getEvaluationsReportsOfReporter(user: User) {
     let roleReporter =
       user.role.role == RoleEnum.CUSTOMER
         ? 0
