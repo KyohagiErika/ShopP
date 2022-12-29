@@ -12,8 +12,8 @@ const routes = Router();
  *  get:
  *   tags:
  *    - Message
- *   summary: get Shop Messages
- *   description: get Shop Messages
+ *   summary: get Shop Messages (SHOP)
+ *   description: get Shop Messages (SHOP)
  *   parameters:
  *    - in: path
  *      name: chatRoomId
@@ -49,8 +49,8 @@ routes.get(
  *    - Message
  *   security:
  *    - bearerAuth: []
- *   summary: get Customer Messages
- *   description: get Customer Messages
+ *   summary: get Customer Messages (CUSTOMER)
+ *   description: get Customer Messages (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: chatRoomId

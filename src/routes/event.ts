@@ -14,8 +14,8 @@ const routes = Router();
  *    - Event
  *   security:
  *    - bearerAuth: []
- *   summary: List admin events
- *   description: List admin events
+ *   summary: List admin events (CUSTOMER)
+ *   description: List admin events (CUSTOMER)
  *   responses:
  *    200:
  *     description: Success
@@ -42,8 +42,8 @@ routes.get(
  *    - Event
  *   security:
  *    - bearerAuth: []
- *   summary: List shop events
- *   description: List shop events
+ *   summary: List shop events (CUSTOMER)
+ *   description: List shop events (CUSTOMER)
  *   responses:
  *    200:
  *     description: Success
@@ -70,8 +70,8 @@ routes.get(
  *    - Event
  *   security:
  *    - bearerAuth: []
- *   summary: Create new event
- *   description: Create new event
+ *   summary: Create new event (SHOP, ADMIN)
+ *   description: Create new event (SHOP, ADMIN)
  *   requestBody:
  *    content:
  *     multipart/form-data:
@@ -107,8 +107,8 @@ routes.post(
  *    - Event
  *   security:
  *    - bearerAuth: []
- *   summary: Edit event
- *   description: Edit event
+ *   summary: Edit event (SHOP, ADMIN)
+ *   description: Edit event (SHOP, ADMIN)
  *   parameters:
  *    - in: path
  *      name: id
@@ -152,8 +152,8 @@ routes.post(
  *    - Event
  *   security:
  *    - bearerAuth: []
- *   summary: Delete event
- *   description: Delete event
+ *   summary: Delete event (SHOP, ADMIN)
+ *   description: Delete event (SHOP, ADMIN)
  *   parameters:
  *    - in: path
  *      name: id
@@ -220,8 +220,8 @@ routes.get(
  *    - Event
  *   security:
  *    - bearerAuth: []
- *   summary: Join event
- *   description: Join event
+ *   summary: Join event (SHOP)
+ *   description: Join event (SHOP)
  *   parameters:
  *    - in: path
  *      name: eventId
@@ -257,8 +257,8 @@ routes.post(
  *    - Event
  *   security:
  *    - bearerAuth: []
- *   summary: Edit discount of products in event
- *   description: Edit discount of products in event
+ *   summary: Edit discount of products in event (SHOP)
+ *   description: Edit discount of products in event (SHOP)
  *   parameters:
  *    - in: path
  *      name: eventId
@@ -294,8 +294,8 @@ routes.post(
  *    - Event
  *   security:
  *    - bearerAuth: []
- *   summary: Delete products from event
- *   description: Delete products from event
+ *   summary: Delete products from event (SHOP)
+ *   description: Delete products from event (SHOP)
  *   parameters:
  *    - in: path
  *      name: eventId
@@ -336,8 +336,8 @@ routes.post(
  *    - Event
  *   security:
  *    - bearerAuth: []
- *   summary: Show all products of event
- *   description: Show all products of event
+ *   summary: Show all products of event (CUSTOMER)
+ *   description: Show all products of event (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: eventId

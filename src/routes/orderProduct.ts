@@ -7,14 +7,14 @@ import { RoleEnum } from '../utils/shopp.enum';
 const routes = Router();
 /**
  * @swagger
- * /order-product/view-order-product/{id}:
+ * /order-product/view/shop/{id}:
  *  get:
  *   tags:
  *    - Order Product
  *   security:
  *    - bearerAuth: []
- *   summary: Get order product by id
- *   description: Get order product by id
+ *   summary: Get order product by orderProductId (SHOP)
+ *   description: Get order product by orderProductId (SHOP)
  *   parameters:
  *    - in: path
  *      name: id
@@ -36,9 +36,45 @@ const routes = Router();
  *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
-  '/view-order-product/:id',
+  '/view/shop/:id',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
+  OrderProductMiddleware.viewShopOrderProduct
+);
+
+/**
+ * @swagger
+ * /order-product/view/customer/{id}:
+ *  get:
+ *   tags:
+ *    - Order Product
+ *   security:
+ *    - bearerAuth: []
+ *   summary: Get order product by orderProductId (CUSTOMER)
+ *   description: Get order product by orderProductId (CUSTOMER)
+ *   parameters:
+ *    - in: path
+ *      name: id
+ *      schema:
+ *       type: string
+ *       format: uuid
+ *      required: true
+ *      description: id of the order product
+ *   responses:
+ *    200:
+ *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/OrderProductResponse'
+ *    400:
+ *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
+ */
+routes.get(
+  '/view/customer/:id',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  OrderProductMiddleware.viewOrderProduct
+  OrderProductMiddleware.viewCustomerOrderProduct
 );
 
 export default routes;

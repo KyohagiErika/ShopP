@@ -1,5 +1,6 @@
 import { Customer } from './customer';
 import { EvaluationImage } from './evaluationImage';
+import { EvaluationReport } from './evaluationReport';
 import { OrderProduct } from './orderProduct';
 import {
   Entity,
@@ -77,8 +78,20 @@ export class Evaluation {
 
   @OneToMany(
     () => EvaluationImage,
-    evaluationImage => evaluationImage.evaluation
+    evaluationImage => evaluationImage.evaluation,
+    {
+      cascade: ['remove'],
+    }
   )
   @JoinColumn()
   evaluationImages: EvaluationImage[];
+
+  @OneToMany(
+    () => EvaluationReport,
+    evaluationReport => evaluationReport.evaluation,
+    {
+      cascade: ['remove'],
+    }
+  )
+  evaluationReports: EvaluationReport[];
 }

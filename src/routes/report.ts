@@ -14,8 +14,8 @@ const routes = Router();
  *    - Report
  *   security:
  *    - bearerAuth: []
- *   summary: Get all reports in process (admin)
- *   description: Get all reports in process (admin)
+ *   summary: Get all reports in process (ADMIN)
+ *   description: Get all reports in process (ADMIN)
  *   responses:
  *    200:
  *     description: Success
@@ -42,8 +42,8 @@ routes.get(
  *    - Report
  *   security:
  *    - bearerAuth: []
- *   summary: Get all reports processed (admin)
- *   description: Get all reports processed (admin)
+ *   summary: Get all reports processed (ADMIN)
+ *   description: Get all reports processed (ADMIN)
  *   responses:
  *    200:
  *     description: Success
@@ -70,8 +70,8 @@ routes.get(
  *    - Report
  *   security:
  *    - bearerAuth: []
- *   summary: Get one report (admin)
- *   description: Get one report (admin)
+ *   summary: Get one report (ADMIN)
+ *   description: Get one report (ADMIN)
  *   parameters:
  *    - in: path
  *      name: id
@@ -106,8 +106,8 @@ routes.get(
  *    - Report
  *   security:
  *    - bearerAuth: []
- *   summary: Create a new report to shop (customer)
- *   description: Create a report to shop (customer)
+ *   summary: Create a new report to shop (CUSTOMER)
+ *   description: Create a report to shop (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: shopId
@@ -142,8 +142,8 @@ routes.post(
  *    - Report
  *   security:
  *    - bearerAuth: []
- *   summary: Create a new report to customer (shop)
- *   description: Create a report to customer (shop)
+ *   summary: Create a new report to customer (SHOP)
+ *   description: Create a report to customer (SHOP)
  *   parameters:
  *    - in: path
  *      name: customerId
@@ -178,8 +178,8 @@ routes.post(
  *    - Report
  *   security:
  *    - bearerAuth: []
- *   summary: Edit report status (admin)
- *   description: Edit report status (admin)
+ *   summary: Edit report status (ADMIN)
+ *   description: Edit report status (ADMIN)
  *   parameters:
  *    - in: path
  *      name: id

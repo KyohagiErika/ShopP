@@ -12,8 +12,8 @@ const routes = Router();
  *  get:
  *   tags:
  *    - Shopping Unit
- *   summary: List all shopping unit (Customer)
- *   description: List all shopping unit (Customer)
+ *   summary: List all shopping unit
+ *   description: List all shopping unit
  *   responses:
  *    200:
  *     description: Success
@@ -34,8 +34,8 @@ routes.get('/list-all', ShoppingUnitMiddleware.listAll);
  *  get:
  *   tags:
  *    - Shopping Unit
- *   summary: Get one shopping unit (Customer)
- *   description: Get one shopping unit (Customer)
+ *   summary: Get one shopping unit
+ *   description: Get one shopping unit
  *   parameters:
  *    - in: path
  *      name: id
@@ -67,8 +67,8 @@ routes.get('/:id([0-9]+)', ShoppingUnitMiddleware.getOneById);
  *    - Shopping Unit
  *   security:
  *    - bearerAuth: []
- *   summary: Create a new shopping unit (admin)
- *   description: Create a new shopping unit (admin)
+ *   summary: Create a new shopping unit (ADMIN)
+ *   description: Create a new shopping unit (ADMIN)
  *   requestBody:
  *    content:
  *     application/json:

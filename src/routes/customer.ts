@@ -15,8 +15,8 @@ const routes = Router();
  *    - Customer
  *   security:
  *    - bearerAuth: []
- *   summary: Get all customers (Admin)
- *   description: Get all customers (Admin)
+ *   summary: Get all customers (ADMIN)
+ *   description: Get all customers (ADMIN)
  *   responses:
  *    200:
  *     description: Success
