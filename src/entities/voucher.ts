@@ -29,9 +29,7 @@ import { VoucherCustomerResponse } from '../interfaces/voucher';
  *      description: title of voucher
  *      example: Tat ca hinh thuc thanh toan
  *     type:
- *      type: string
- *      description: type of voucher
- *      example: Freeship
+ *      $ref: '#/components/schemas/VoucherTypeEnum'
  *     minBillPrice:
  *      type: integer
  *      description: minimum price of Bill that can apply

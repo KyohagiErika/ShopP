@@ -14,6 +14,7 @@ import { OrderProduct } from './orderProduct';
 import { Payment } from './payment';
 import { Shop } from './shop';
 import { ShoppingUnit } from './shoppingUnit';
+import { TrackingOrder } from './trackingOrder';
 import { Voucher } from './voucher';
 
 /**
@@ -70,12 +71,6 @@ import { Voucher } from './voucher';
  *    type: array
  *    items:
  *     $ref: '#/components/schemas/CustomerOrderResponse'
- */
-
-/**
- * @swagger
- * components:
- *  schemas:
  *   ShopOrderResponse:
  *    type: object
  *    properties:
@@ -184,4 +179,7 @@ export class Order {
     cascade: ['insert'],
   })
   orderProducts: OrderProduct[];
+
+  @OneToMany(() => TrackingOrder, trackingOrder => trackingOrder.orderNumber)
+  trackingOrders: TrackingOrder[];
 }

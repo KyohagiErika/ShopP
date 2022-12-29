@@ -39,19 +39,13 @@ import { Notification } from './notification';
  *      description: phone of the user
  *      example: '0987654321'
  *     role:
- *      type: object
- *      description: role of the user
+ *      $ref: '#/components/schemas/RoleEnum'
  *     shop:
  *      type: object
  *      description: shop information of the user
  *     customer:
  *      type: object
  *      description: customer information of the user
- */
-/**
- * @swagger
- * components:
- *  schemas:
  *   UserListResponse:
  *    type: array
  *    items:

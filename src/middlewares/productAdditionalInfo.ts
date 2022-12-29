@@ -37,14 +37,7 @@ export default class ProductAddInfoMiddleware {
     }
   }
 
-  @ControllerService({
-    params: [
-      {
-        name: 'id',
-        type: String,
-      },
-    ],
-  })
+  @ControllerService()
   static async getOneByProductId(req: Request, res: Response) {
     const id = req.params.productId;
     const result = await ProductAdditionInfoModel.getOneByProductId(id);

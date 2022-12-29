@@ -27,12 +27,13 @@ const deleteFile = (pathFile: string) => {
 const instanceOfOrderRequest = (data: OrderRequest) => {
   return (
     'estimateDeliveryTime' in data &&
-    'totalBill' in data &&
     'transportFee' in data &&
     'shoppingUnitId' in data &&
     'voucherIds' in data &&
     'shopId' in data &&
     'orderProducts' in data &&
+    Number.isInteger(data.transportFee) &&
+    Number.isInteger(data.shoppingUnitId) &&
     data.orderProducts.every(instanceOfOrderProductRequest)
   );
 };
@@ -42,7 +43,9 @@ const instanceOfOrderProductRequest = (data: OrderProductRequest) => {
     'price' in data &&
     'additionalInfo' in data &&
     'quantity' in data &&
-    'productId' in data
+    'productId' in data &&
+    Number.isInteger(data.price) &&
+    Number.isInteger(data.quantity)
   );
 };
 
@@ -80,6 +83,17 @@ const enumToArray = (enumType: any) => {
   }));
 };
 
+const enumObject = (enumType: any) => {
+  const keys = Object.keys(enumType).filter(key => !Number.isInteger(+key));
+  return keys;
+};
+
+const getValueByKeyEnum = (enumType: any, value: string) => {
+  return Object.entries(enumType).find(
+    ([key, val]) => key === value
+  )?.[1] as number;
+};
+
 export {
   generateOtp,
   deleteFile,
@@ -87,4 +101,6 @@ export {
   enumToArray,
   instanceOfPriceProductFilterRequest,
   instanceOfStarProductFilterRequest,
+  enumObject,
+  getValueByKeyEnum,
 };

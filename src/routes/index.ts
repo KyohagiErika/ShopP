@@ -24,6 +24,7 @@ import swagger from './swagger';
 import notification from './notification';
 import evaluationReport from './evaluationReport';
 import UploadModel from '../models/upload';
+import trackingOrder from './trackingOrder';
 
 const routes = Router();
 /**
@@ -109,6 +110,7 @@ routes.use('/message', message);
 routes.use('/chat-room', chatRoom);
 routes.use('/enum', enumeration);
 routes.use('/evaluation', evaluation);
+routes.use('/tracking-order', trackingOrder);
 routes.use('/notification', notification);
 routes.use('/evaluation-report', evaluationReport);
 

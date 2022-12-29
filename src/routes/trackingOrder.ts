@@ -1,81 +1,82 @@
 import { Router } from 'express';
 import AuthMiddleware from '../middlewares/auth';
 import { checkRole } from '../middlewares/checkRole';
-import MessageMiddleware from '../middlewares/message';
+import TrackingOrderMiddleware from '../middlewares/trackingOrder';
 import { RoleEnum } from '../utils/shopp.enum';
 
 const routes = Router();
-
 /**
  * @swagger
- * /message/shop/{chatRoomId}:
+ * /tracking-order/view/{orderId}:
  *  get:
  *   tags:
- *    - Message
- *   summary: get Shop Messages
- *   description: get Shop Messages
+ *    - Tracking Order
+ *   security:
+ *    - bearerAuth: []
+ *   summary: Get all tracking of order
+ *   description: Get all tracking of order
  *   parameters:
  *    - in: path
- *      name: chatRoomId
+ *      name: orderId
  *      schema:
- *       type: integer
- *       format: int32
+ *       type: string
+ *       format: uuid
  *      required: true
- *      description: id of the chatRoom
- *      example: 1
+ *      description: id of the order
+ *      example: '27580e3b-6953-43cc-a482-eaa62b997883'
  *   responses:
  *    200:
  *     description: Success
  *     content:
  *      application/json:
  *       schema:
- *        $ref: '#/components/schemas/MessageListResponse'
+ *         $ref: '#/components/schemas/TrackingListResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
-  '/shop/:chatRoomId([0-9]+)',
-  [AuthMiddleware.checkJwt, checkRole(RoleEnum.SHOP)],
-  MessageMiddleware.getShopMessages
+  '/view/:orderId',
+  [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
+  TrackingOrderMiddleware.viewTrackingOrder
 );
 
 /**
  * @swagger
- * /message/customer/{chatRoomId}:
+ * /tracking-order/get-one/{id}:
  *  get:
  *   tags:
- *    - Message
+ *    - Tracking Order
  *   security:
  *    - bearerAuth: []
- *   summary: get Customer Messages
- *   description: get Customer Messages
+ *   summary: Get one tracking of order
+ *   description: Get one tracking of order
  *   parameters:
  *    - in: path
- *      name: chatRoomId
+ *      name: id
  *      schema:
  *       type: integer
  *       format: int32
  *      required: true
- *      description: id of the chatRoom
- *      example: 1
+ *      description: id of the tracking order
+ *      example: '31'
  *   responses:
  *    200:
  *     description: Success
  *     content:
  *      application/json:
  *       schema:
- *        $ref: '#/components/schemas/MessageListResponse'
+ *         $ref: '#/components/schemas/TrackingResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
-  '/customer/:chatRoomId([0-9]+)',
+  '/get-one/:id([0-9]+)',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
-  MessageMiddleware.getCustomerMessages
+  TrackingOrderMiddleware.getOneById
 );
 
 export default routes;

@@ -81,9 +81,15 @@ class AuthMiddleware {
       flag
     );
     if (result.getCode() === HttpStatusCode.OK) {
+      res.cookie('jwt', result.getData().refreshToken, {
+        httpOnly: true,
+        sameSite: 'none',
+        //secure: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+      });
       res
         .status(result.getCode())
-        .send({ message: result.getMessage(), token: result.getData() });
+        .send({ message: result.getMessage(), token: result.getData().token });
     } else {
       res.status(result.getCode()).send({ message: result.getMessage() });
     }
@@ -471,35 +477,74 @@ class AuthMiddleware {
     if (token == undefined)
       return res
         .status(HttpStatusCode.UNAUTHORIZATION)
-        .send({ message: 'Please Login to ShopP' });
+        .send({ message: 'Authorized Required' });
     let jwtPayload;
     token = token?.replace('Bearer ', '');
     //Try to validate the token and get data
     try {
-      jwtPayload = <any>jwt.verify(token, config.JWT_SECRET);
+      jwtPayload = <any>jwt.verify(token, config.ACCESS_TOKEN_SECRET);
       const user: User | false = await UserModel.getOneById(jwtPayload.userId);
       if (user === false) {
-        return res
-          .status(HttpStatusCode.UNAUTHORIZATION)
-          .send({ message: 'Unauthorized: Authentication required' });
+        return res.status(HttpStatusCode.UNAUTHORIZATION).send({
+          message: 'Unauthorized: Access is denied due to invalid credentials',
+        });
       } else res.locals.user = user;
     } catch (error) {
       //If token is not valid, respond with 401 (unauthorized)
       return res
         .status(HttpStatusCode.UNAUTHORIZATION)
-        .send({ message: 'Unauthorized: Authentication required!' });
+        .send({ message: 'Not Authorized' });
     }
-
-    //The token is valid for 1 hour
-    //We want to send a new token on every request
-    const { userId, email } = jwtPayload;
-    const newToken = jwt.sign({ userId, email }, config.JWT_SECRET, {
-      expiresIn: '1h',
-    });
-    res.setHeader('Authorization', newToken);
-
     //Call the next middleware or controller
     return next();
+  }
+
+  static async refreshToken(req: Request, res: Response) {
+    //Get the jwt token from the cookies
+    if (req.cookies?.jwt) {
+      const refreshToken = req.cookies.jwt;
+      jwt.verify(
+        refreshToken,
+        config.REFRESH_TOKEN_SECRET,
+        async (err: any, jwtPayload: any) => {
+          if (err) {
+            // Wrong Refresh Token
+            return res
+              .status(HttpStatusCode.UNAUTHORIZATION)
+              .json({ message: 'Unauthorized Request' });
+          } else {
+            const user: User | false = await UserModel.getOneById(
+              jwtPayload.userId
+            );
+            if (user === false) {
+              return res.status(HttpStatusCode.UNAUTHORIZATION).send({
+                message:
+                  'Unauthorized: Access is denied due to invalid credentials',
+              });
+            }
+            // Correct token, send a new access token
+            const token = jwt.sign(
+              {
+                userId: user.id,
+                email: user.email,
+              },
+              config.ACCESS_TOKEN_SECRET,
+              {
+                expiresIn: '1h',
+              }
+            );
+            return res
+              .status(HttpStatusCode.OK)
+              .send({ message: 'Success', token: token });
+          }
+        }
+      );
+      return;
+    } else {
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .json({ message: 'Invalid Request' });
+    }
   }
 }
 export default AuthMiddleware;

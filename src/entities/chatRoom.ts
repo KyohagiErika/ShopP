@@ -10,6 +10,44 @@ import { Customer } from './customer';
 import { Message } from './message';
 import { Shop } from './shop';
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   ChatRoomResponse:
+ *    type: object
+ *    properties:
+ *     id:
+ *      type: integer
+ *      description: id of the chatroom
+ *      example: '1'
+ *   CustomerChatRoomResponse:
+ *    type: object
+ *    properties:
+ *     id:
+ *      type: integer
+ *      description: id of the chatroom
+ *      example: '1'
+ *     shop:
+ *      $ref: '#/components/schemas/ShopResponse'
+ *   CustomerChatRoomListResponse:
+ *    type: array
+ *    items:
+ *     $ref: '#/components/schemas/CustomerChatRoomResponse'
+ *   ShopChatRoomResponse:
+ *    type: object
+ *    properties:
+ *     id:
+ *      type: integer
+ *      description: id of the chatroom
+ *      example: '1'
+ *     customer:
+ *      $ref: '#/components/schemas/CustomerResponse'
+ *   ShopChatRoomListResponse:
+ *    type: array
+ *    items:
+ *     $ref: '#/components/schemas/ShopChatRoomResponse'
+ */
 @Entity()
 export class ChatRoom {
   @PrimaryGeneratedColumn()

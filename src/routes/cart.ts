@@ -25,6 +25,8 @@ const routes = Router();
  *        $ref: '#/components/schemas/CartResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.get(
   '/',
@@ -56,6 +58,8 @@ routes.get(
  *        $ref: '#/components/schemas/CartResponse'
  *    400:
  *     $ref: '#/components/responses/400BadRequest'
+ *    401:
+ *     $ref: '#/components/responses/401Unauthorized'
  */
 routes.post(
   '/update',
