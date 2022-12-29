@@ -13,8 +13,8 @@ const routes = Router();
  *    - Tracking Order
  *   security:
  *    - bearerAuth: []
- *   summary: Get all tracking of order
- *   description: Get all tracking of order
+ *   summary: Get all tracking of order (CUSTOMER)
+ *   description: Get all tracking of order (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: orderId
@@ -50,8 +50,8 @@ routes.get(
  *    - Tracking Order
  *   security:
  *    - bearerAuth: []
- *   summary: Get one tracking of order
- *   description: Get one tracking of order
+ *   summary: Get one tracking of order (CUSTOMER)
+ *   description: Get one tracking of order (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: id

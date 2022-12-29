@@ -14,8 +14,8 @@ const routes = Router();
  *    - Account
  *   security:
  *    - bearerAuth: []
- *   summary: Get all users (Admin)
- *   description: Get all users (Admin)
+ *   summary: Get all users (ADMIN)
+ *   description: Get all users (ADMIN)
  *   responses:
  *    200:
  *     description: Success
@@ -161,8 +161,8 @@ routes.get('/delete', AuthMiddleware.checkJwt, UserMiddleware.delete);
  *      required: true
  *      description: id of the user
  *      example: 2
- *   summary: Ban user(Admin)
- *   description: Ban user(Admin)
+ *   summary: Ban user(ADMIN)
+ *   description: Ban user(ADMIN)
  *   responses:
  *    200:
  *     $ref: '#/components/responses/200OK'

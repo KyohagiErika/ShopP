@@ -94,8 +94,8 @@ routes.get(
  *    - Product Additional Info
  *   security:
  *    - bearerAuth: []
- *   summary: Create a new Product Additional Info (Shop)
- *   description: Create a new Product Additional Info (Shop)
+ *   summary: Create a new Product Additional Info (SHOP)
+ *   description: Create a new Product Additional Info (SHOP)
  *   parameters:
  *    - in: path
  *      name: productId
@@ -131,8 +131,8 @@ routes.post(
  *    - Product Additional Info
  *   security:
  *    - bearerAuth: []
- *   summary: Edit Product Additional Info (Shop)
- *   description: Edit Product Additional Info (Shop)
+ *   summary: Edit Product Additional Info (SHOP)
+ *   description: Edit Product Additional Info (SHOP)
  *   parameters:
  *    - in: path
  *      name: id

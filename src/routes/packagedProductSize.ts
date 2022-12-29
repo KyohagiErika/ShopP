@@ -94,8 +94,8 @@ routes.get(
  *    - Packaged product size
  *   security:
  *    - bearerAuth: []
- *   summary: Create a new Packaged product size (Shop)
- *   description: Create a new Packaged product size (Shop)
+ *   summary: Create a new Packaged product size (SHOP)
+ *   description: Create a new Packaged product size (SHOP)
  *   parameters:
  *    - in: path
  *      name: productId
@@ -129,8 +129,8 @@ routes.post(
  *    - Packaged product size
  *   security:
  *    - bearerAuth: []
- *   summary: Edit Packaged product size (Shop)
- *   description: Edit Packaged product size (Shop)
+ *   summary: Edit Packaged product size (SHOP)
+ *   description: Edit Packaged product size (SHOP)
  *   parameters:
  *    - in: path
  *      name: id

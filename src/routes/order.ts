@@ -237,8 +237,8 @@ routes.get(
  *    - Order
  *   security:
  *    - bearerAuth: []
- *   summary: Post new order (Shop)
- *   description: Post new order (Shop)
+ *   summary: Post new order (CUSTOMER)
+ *   description: Post new order (CUSTOMER)
  *   requestBody:
  *    content:
  *     application/json:
@@ -270,8 +270,8 @@ routes.post(
  *    - Order
  *   security:
  *    - bearerAuth: []
- *   summary: Cancel Order (Customer)
- *   description: Cancel Order (Customer)
+ *   summary: Cancel Order (CUSTOMER)
+ *   description: Cancel Order (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: id
@@ -308,8 +308,8 @@ routes.post(
  *    - Order
  *   security:
  *    - bearerAuth: []
- *   summary: Edit Order Status (Shop)
- *   description: Edit Order Status (Shop)
+ *   summary: Edit Order Status (SHOP)
+ *   description: Edit Order Status (SHOP)
  *   parameters:
  *    - in: path
  *      name: id
@@ -346,8 +346,8 @@ routes.post(
  *    - Order
  *   security:
  *    - bearerAuth: []
- *   summary: Return Order
- *   description: Return Order
+ *   summary: Return Order (CUSTOMER)
+ *   description: Return Order (CUSTOMER)
  *   parameters:
  *    - in: path
  *      name: id
