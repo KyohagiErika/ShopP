@@ -23,6 +23,7 @@ export default class UserModel {
         id: true,
         email: true,
         phone: true,
+        createdAt: true,
       },
       where: {
         status: StatusEnum.ACTIVE,
@@ -46,6 +47,7 @@ export default class UserModel {
         id: true,
         email: true,
         phone: true,
+        createdAt: true,
       },
       where: {
         id: userId,
@@ -68,6 +70,7 @@ export default class UserModel {
         id: true,
         email: true,
         phone: true,
+        createdAt: true,
       },
       where: {
         email: userEmail,

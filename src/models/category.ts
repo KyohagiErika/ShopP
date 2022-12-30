@@ -8,7 +8,7 @@ const categoryRepository = ShopPDataSource.getRepository(Category);
 
 export default class CategoryModel {
   static async listAll() {
-    const category = await categoryRepository.find({
+    return await categoryRepository.find({
       relations: {
         image: true,
       },
@@ -17,7 +17,6 @@ export default class CategoryModel {
         name: true,
       },
     });
-    return category && category.length > 0 ? category : false;
   }
 
   static async getOneById(id: number) {

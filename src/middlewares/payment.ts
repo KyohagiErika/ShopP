@@ -7,13 +7,7 @@ export default class PaymentMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
     const result = await PaymentModel.listAll();
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get payment failed!' });
-    }
+    res.status(HttpStatusCode.OK).send({ data: result });
   }
 
   @ControllerService()

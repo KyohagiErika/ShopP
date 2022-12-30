@@ -13,7 +13,7 @@ const messageRepository = ShopPDataSource.getRepository(Message);
 
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:8081', ShopPConfig.CLIENT_SOCKET_ENDPOINT],
+    origin: ['http://localhost:3000', ShopPConfig.CLIENT_SOCKET_ENDPOINT],
     credentials: true,
   },
 });

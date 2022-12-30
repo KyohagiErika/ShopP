@@ -7,13 +7,12 @@ const PaymentRepository = ShopPDataSource.getRepository(Payment);
 
 export default class PaymentModel {
   static async listAll() {
-    const payment = await PaymentRepository.find({
+    return await PaymentRepository.find({
       select: {
         id: true,
         name: true,
       },
     });
-    return payment && payment.length > 0 ? payment : false;
   }
 
   static async getOneById(id: number) {

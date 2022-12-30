@@ -8,13 +8,12 @@ const ShoppingUnitRepository = ShopPDataSource.getRepository(ShoppingUnit);
 
 export default class ShoppingUnitModel {
   static async listAll() {
-    const shoppingUnit = await ShoppingUnitRepository.find({
+    return await ShoppingUnitRepository.find({
       select: {
         id: true,
         name: true,
       },
     });
-    return shoppingUnit && shoppingUnit.length > 0 ? shoppingUnit : false;
   }
 
   static async getOneById(id: number) {

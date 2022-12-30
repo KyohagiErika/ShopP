@@ -21,8 +21,6 @@ const routes = Router();
  *      application/json:
  *       schema:
  *        $ref: '#/components/schemas/ShoppingUnitListResponse'
- *    400:
- *     $ref: '#/components/responses/400BadRequest'
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */

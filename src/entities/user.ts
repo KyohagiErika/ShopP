@@ -40,6 +40,11 @@ import { Notification } from './notification';
  *      example: '0987654321'
  *     role:
  *      $ref: '#/components/schemas/RoleEnum'
+ *     createdAt:
+ *      type: string
+ *      format: date-time
+ *      description: date time when user joined
+ *      example: '2020-12-12T12:12:12.000Z'
  *     shop:
  *      type: object
  *      description: shop information of the user
