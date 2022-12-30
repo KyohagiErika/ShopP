@@ -9,13 +9,7 @@ export default class CategoryMiddleware {
   @ControllerService()
   static async listAll(req: Request, res: Response) {
     const result = await CategoryModel.listAll();
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get Category failed!' });
-    }
+    res.status(HttpStatusCode.OK).send({ data: result });
   }
 
   @ControllerService()

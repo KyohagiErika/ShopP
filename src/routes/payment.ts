@@ -77,8 +77,6 @@ routes.get('/:id([0-9]+)', PaymentMiddleware.getOneById);
  *   responses:
  *    200:
  *     $ref: '#/components/responses/200OK'
- *    400:
- *     $ref: '#/components/responses/400BadRequest'
  *    401:
  *     $ref: '#/components/responses/401Unauthorized'
  */

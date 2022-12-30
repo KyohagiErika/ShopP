@@ -199,6 +199,10 @@ export default class ProductMiddleware {
    *       format: int32
    *       description: categoryId of product
    *       example: '1'
+   *     shopId:
+   *      type: string
+   *      description: shopId of product
+   *      example: 'f191d8ad-3d10-4681-9b14-95d8de1e61e1'
    *     price:
    *      type: object
    *      properties:
@@ -293,6 +297,16 @@ export default class ProductMiddleware {
           return null;
         },
       },
+      {
+        name: 'shopId',
+        required: false,
+        validator(propertyName, value) {
+          if (value !== undefined && (value == null || value == '')) {
+            return `${propertyName} must be String`;
+          }
+          return null;
+        },
+      },
     ],
   })
   static async filter(req: Request, res: Response) {
@@ -301,12 +315,14 @@ export default class ProductMiddleware {
     const categoryIds = req.body?.categoryIds ? req.body.categoryIds : null;
     const price = req.body?.price ? req.body.price : null;
     const star = req.body?.star ? req.body.star : null;
+    const shopId = req.body?.shopId ? req.body.shopId : null;
     const result = await ProductModel.filter(
       take,
       skip,
       categoryIds,
       price,
-      star
+      star,
+      shopId
     );
     return res
       .status(HttpStatusCode.OK)

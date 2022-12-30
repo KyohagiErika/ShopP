@@ -22,8 +22,6 @@ const routes = Router();
  *      application/json:
  *       schema:
  *        $ref: '#/components/schemas/CategoryListResponse'
- *    400:
- *     $ref: '#/components/responses/400BadRequest'
  */
 routes.get('/list-all', CategoryMiddleware.listAll);
 

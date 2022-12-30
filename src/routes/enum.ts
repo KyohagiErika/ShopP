@@ -6,9 +6,11 @@ import {
   HttpStatusCode,
   OtpEnum,
   ProductEnum,
+  ReasonEvaluationReportEnum,
   RoleEnum,
   StatusEnum,
   StatusReportEnum,
+  TitleStatusEnum,
   TypeTransferEnum,
   VoucherTypeEnum,
 } from '../utils/shopp.enum';
@@ -197,6 +199,26 @@ routes.get('/status-report', (req: Request, res: Response) => {
 
 /**
  * @swagger
+ * /enum/reason-evaluation-report:
+ *  get:
+ *   tags:
+ *    - Enum
+ *   summary: Get Reason Evaluation Report Enum
+ *   description: Get Reason Evaluation Report Enum
+ *   responses:
+ *    200:
+ *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/EnumList'
+ */
+routes.get('/reason-evaluation-report', (req: Request, res: Response) => {
+  res.status(HttpStatusCode.OK).send(enumToArray(ReasonEvaluationReportEnum));
+});
+
+/**
+ * @swagger
  * /enum/delivery-status:
  *  get:
  *   tags:
@@ -213,6 +235,26 @@ routes.get('/status-report', (req: Request, res: Response) => {
  */
 routes.get('/delivery-status', (req: Request, res: Response) => {
   res.status(HttpStatusCode.OK).send(enumToArray(DeliveryStatusEnum));
+});
+
+/**
+ * @swagger
+ * /enum/tracking-status:
+ *  get:
+ *   tags:
+ *    - Enum
+ *   summary: Get Title Status Enum
+ *   description: Get Title Status Enum
+ *   responses:
+ *    200:
+ *     description: Success
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/EnumList'
+ */
+routes.get('/tracking-status', (req: Request, res: Response) => {
+  res.status(HttpStatusCode.OK).send(enumToArray(TitleStatusEnum));
 });
 
 export default routes;
