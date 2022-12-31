@@ -50,6 +50,6 @@ export default class TransportFeeMiddleware {
     const result = await TransportFeeModel.validAddress(shopId);
     return res
       .status(result.getCode())
-      .send({ message: result.getMessage(), data: result.getData() });
+      .send({ message: result.getMessage() });
   }
 }
