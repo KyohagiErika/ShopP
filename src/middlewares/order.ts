@@ -1,4 +1,3 @@
-import { parse } from 'dotenv';
 import { Request, Response } from 'express';
 import { Customer } from '../entities/customer';
 import { Shop } from '../entities/shop';

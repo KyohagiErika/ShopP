@@ -31,7 +31,6 @@ export default class ShopModel {
       relations: {
         avatar: true,
       },
-
       where: {
         id: id,
         user: { status: StatusEnum.ACTIVE },
