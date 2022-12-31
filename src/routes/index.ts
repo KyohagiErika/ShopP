@@ -25,6 +25,7 @@ import notification from './notification';
 import evaluationReport from './evaluationReport';
 import UploadModel from '../models/upload';
 import trackingOrder from './trackingOrder';
+import transportFee from './transportFee';
 
 const routes = Router();
 /**
@@ -113,6 +114,7 @@ routes.use('/evaluation', evaluation);
 routes.use('/tracking-order', trackingOrder);
 routes.use('/notification', notification);
 routes.use('/evaluation-report', evaluationReport);
+routes.use('/transport-fee', transportFee);
 
 /**
  * @swagger
