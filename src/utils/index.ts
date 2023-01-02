@@ -34,6 +34,7 @@ const instanceOfOrderRequest = (data: OrderRequest) => {
     'orderProducts' in data &&
     Number.isInteger(data.transportFee) &&
     Number.isInteger(data.shoppingUnitId) &&
+    data.orderProducts.length > 0 &&
     data.orderProducts.every(instanceOfOrderProductRequest)
   );
 };

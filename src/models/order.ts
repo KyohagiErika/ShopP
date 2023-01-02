@@ -15,6 +15,7 @@ import {
   RoleEnum,
   StatusEnum,
   TitleStatusEnum,
+  VoucherTypeEnum,
 } from '../utils/shopp.enum';
 import { OrderRequest } from '../interfaces/order';
 import { In, Like } from 'typeorm';
@@ -236,6 +237,8 @@ export default class orderModel {
     }
 
     //For loop ORDER
+    let allTotalBill = 0;
+    let allTotalTransportFee = 0;
     const orderArr: Order[] = [];
     for (let i = 0; i < orders.length; i++) {
       let totalBill = 0;
@@ -319,31 +322,121 @@ export default class orderModel {
           totalBill += product.amount * orderProduct[j].quantity;
         }
       }
+      allTotalBill += totalBill;
+      allTotalTransportFee += findOrder.transportFee;
+
       (findOrder.orderProducts = orderProductArr),
         (findOrder.totalBill = totalBill),
-        (findOrder.totalPayment = totalBill + +orders[i].transportFee);
-      //minus discount from voucher
-      if (appVoucher != null) {
-        //calculate app voucher
-        findOrder.appVoucher = 0; //
+        (findOrder.totalPayment =
+          findOrder.totalBill + +orders[i].transportFee);
 
-        findOrder.totalPayment -= findOrder.appVoucher;
-      }
+      //minus discount from shop voucher
       if (shopVoucher != null) {
         //calculate shop voucher discount
-        findOrder.shopVoucher = 0; //
-
-        findOrder.totalPayment -= findOrder.shopVoucher;
-      }
-      if (freeShipVoucher != null) {
-        //calculate free-ship voucher
-        findOrder.freeShipVoucher = 0; //
-
-        findOrder.totalPayment -= findOrder.freeShipVoucher;
+        if (totalBill < shopVoucher.minBillPrice)
+          return new Response(
+            HttpStatusCode.BAD_REQUEST,
+            'Can not use this shop voucher!'
+          );
+        if (shopVoucher.type == VoucherTypeEnum.MONEY) {
+          if (shopVoucher.priceDiscount >= totalBill) {
+            findOrder.totalPayment -= totalBill;
+            findOrder.shopVoucher = totalBill;
+          } else {
+            findOrder.totalPayment -= shopVoucher.priceDiscount;
+            findOrder.shopVoucher = shopVoucher.priceDiscount;
+          }
+        } else {
+          //VoucherTypeEnum.PERCENT
+          let percentDiscount = Math.round(
+            shopVoucher.priceDiscount * 0.01 * totalBill
+          );
+          if (percentDiscount >= shopVoucher.maxPriceDiscount)
+            percentDiscount = shopVoucher.maxPriceDiscount;
+          if (percentDiscount >= totalBill) {
+            findOrder.totalPayment -= totalBill;
+            findOrder.shopVoucher = totalBill;
+          } else {
+            findOrder.totalPayment -= percentDiscount;
+            findOrder.shopVoucher = percentDiscount;
+          }
+        }
       }
       orderArr.push(findOrder);
     }
 
+    if (appVoucher != null) {
+      //calculate app voucher discount
+      if (allTotalBill < appVoucher.minBillPrice)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Can not use this app voucher!'
+        );
+      if (appVoucher.type == VoucherTypeEnum.MONEY) {
+        if (appVoucher.priceDiscount >= allTotalBill) {
+          for (let i = 0; i < orderArr.length; i++) {
+            orderArr[i].appVoucher = Math.round(
+              (allTotalBill * orderArr[i].totalBill) / allTotalBill
+            );
+            orderArr[i].totalPayment -= orderArr[i].appVoucher;
+          }
+        } else {
+          for (let i = 0; i < orderArr.length; i++) {
+            orderArr[i].appVoucher = Math.round(
+              (appVoucher.priceDiscount * orderArr[i].totalBill) / allTotalBill
+            );
+            orderArr[i].totalPayment -= orderArr[i].appVoucher;
+          }
+        }
+      } else {
+        //VoucherTypeEnum.PERCENT
+        let percentDiscount = Math.round(
+          appVoucher.priceDiscount * 0.01 * allTotalBill
+        );
+        if (percentDiscount >= appVoucher.maxPriceDiscount)
+          percentDiscount = appVoucher.maxPriceDiscount;
+        if (percentDiscount >= allTotalBill) {
+          for (let i = 0; i < orderArr.length; i++) {
+            orderArr[i].appVoucher = Math.round(
+              (allTotalBill * orderArr[i].totalBill) / allTotalBill
+            );
+            orderArr[i].totalPayment -= orderArr[i].appVoucher;
+          }
+        } else {
+          for (let i = 0; i < orderArr.length; i++) {
+            orderArr[i].appVoucher = Math.round(
+              (percentDiscount * orderArr[i].totalBill) / allTotalBill
+            );
+            orderArr[i].totalPayment -= orderArr[i].appVoucher;
+          }
+        }
+      }
+    }
+    if (freeShipVoucher != null) {
+      //calculate free-ship voucher discount
+      if (allTotalTransportFee < freeShipVoucher.minBillPrice)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'Can not use this free-ship voucher!'
+        );
+      if (freeShipVoucher.priceDiscount >= allTotalTransportFee) {
+        for (let i = 0; i < orderArr.length; i++) {
+          orderArr[i].freeShipVoucher = Math.round(
+            (allTotalTransportFee * orderArr[i].transportFee) /
+              allTotalTransportFee
+          );
+          orderArr[i].totalPayment -= orderArr[i].freeShipVoucher;
+        }
+      } else {
+        for (let i = 0; i < orderArr.length; i++) {
+          orderArr[i].freeShipVoucher = Math.round(
+            (freeShipVoucher.priceDiscount * orderArr[i].transportFee) /
+              allTotalTransportFee
+          );
+          orderArr[i].totalPayment -= orderArr[i].freeShipVoucher;
+        }
+      }
+    }
     //save order
     const order: Order[] = await orderRepository.save(orderArr);
 
