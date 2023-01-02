@@ -28,15 +28,10 @@ export default class OrderMiddleware {
         .send({ message: 'Can not find customer !' });
     }
     const result = await orderModel.viewOrderForCustomer(customer);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get order list failed !' });
-    }
+    res.status(HttpStatusCode.OK).send({ data: result });
   }
 
+  @ControllerService()
   static async viewOrderDeliverForCus(req: Request, res: Response) {
     const customer: Customer = res.locals.user.customer;
     if (customer == null) {
@@ -45,15 +40,10 @@ export default class OrderMiddleware {
         .send({ message: 'Can not find customer !' });
     }
     const result = await orderModel.viewOrderDeliverForCus(customer);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get order list failed !' });
-    }
+    res.status(HttpStatusCode.OK).send({ data: result });
   }
 
+  @ControllerService()
   static async viewHistoryForCus(req: Request, res: Response) {
     const customer: Customer = res.locals.user.customer;
     if (customer == null) {
@@ -62,15 +52,10 @@ export default class OrderMiddleware {
         .send({ message: 'Can not find customer !' });
     }
     const result = await orderModel.viewHistoryForCus(customer);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get order list failed !' });
-    }
+    res.status(HttpStatusCode.OK).send({ data: result });
   }
 
+  @ControllerService()
   static async viewCancelOrderForCus(req: Request, res: Response) {
     const customer: Customer = res.locals.user.customer;
     if (customer == null) {
@@ -79,15 +64,10 @@ export default class OrderMiddleware {
         .send({ message: 'Can not find customer !' });
     }
     const result = await orderModel.viewCancelOrderForCus(customer);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get order list failed !' });
-    }
+    res.status(HttpStatusCode.OK).send({ data: result });
   }
 
+  @ControllerService()
   static async viewOrderForShop(req: Request, res: Response) {
     const shop: Shop = res.locals.user.shop;
     if (shop == null) {
@@ -96,15 +76,10 @@ export default class OrderMiddleware {
         .send({ message: 'Can not find shop !' });
     }
     const result = await orderModel.viewOrderForShop(shop);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get order list failed !' });
-    }
+    res.status(HttpStatusCode.OK).send({ data: result });
   }
 
+  @ControllerService()
   static async viewConfirmOrderForShop(req: Request, res: Response) {
     const shop: Shop = res.locals.user.shop;
     if (shop == null) {
@@ -113,15 +88,10 @@ export default class OrderMiddleware {
         .send({ message: 'Can not find shop !' });
     }
     const result = await orderModel.viewConfirmOrderForShop(shop);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get order list failed !' });
-    }
+    res.status(HttpStatusCode.OK).send({ data: result });
   }
 
+  @ControllerService()
   static async viewOrderDeliverForShop(req: Request, res: Response) {
     const shop: Shop = res.locals.user.shop;
     if (shop == null) {
@@ -130,15 +100,10 @@ export default class OrderMiddleware {
         .send({ message: 'Can not find shop !' });
     }
     const result = await orderModel.viewOrderDeliverForShop(shop);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get order list failed !' });
-    }
+    res.status(HttpStatusCode.OK).send({ data: result });
   }
 
+  @ControllerService()
   static async viewHistoryForShop(req: Request, res: Response) {
     const shop: Shop = res.locals.user.shop;
     if (shop == null) {
@@ -147,13 +112,7 @@ export default class OrderMiddleware {
         .send({ message: 'Can not find shop !' });
     }
     const result = await orderModel.viewHistoryForShop(shop);
-    if (result) {
-      res.status(HttpStatusCode.OK).send({ data: result });
-    } else {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'Get order list failed !' });
-    }
+    res.status(HttpStatusCode.OK).send({ data: result });
   }
 
   /**
@@ -172,6 +131,16 @@ export default class OrderMiddleware {
    *      format: int64
    *      description: paymentId of payment
    *      example: '2'
+   *     appVoucherId:
+   *      type: string
+   *      format: uuid
+   *      description: id of app voucher
+   *      example: 'f191d8ad-3d10-4681-9b14-95d8de1e61e1'
+   *     freeShipVoucherId:
+   *      type: string
+   *      format: uuid
+   *      description: id of freeship voucher
+   *      example: 'f191d8ad-3d10-4681-9b14-95d8de1e61e1'
    *     orders:
    *      type: array
    *      items:
@@ -193,11 +162,11 @@ export default class OrderMiddleware {
    *      format: int64
    *      description: shopping unit id
    *      example: '1'
-   *     voucherIds:
-   *      type: array
-   *      items:
-   *       type: string
-   *      example: ['f191d8ad-3d10-4681-9b14-95d8de1e61e1', 'f191d8ad-3d10-4681-9b14-95d8de1e61e1']
+   *     shopVoucherId:
+   *      type: string
+   *      format: uuid
+   *      description: id of shop voucher
+   *      example: 'f191d8ad-3d10-4681-9b14-95d8de1e61e1'
    *     shopId:
    *      type: string
    *      format: uuid
@@ -215,11 +184,6 @@ export default class OrderMiddleware {
    *      format: uuid
    *      description: product id
    *      example: 'f191d8ad-3d10-4681-9b14-95d8de1e61e1'
-   *     price:
-   *      type: number
-   *      format: int64
-   *      description: price of product
-   *      example: '100000'
    *     quantity:
    *      type: number
    *      format: int64
@@ -240,6 +204,14 @@ export default class OrderMiddleware {
       {
         name: 'paymentId',
         type: Number,
+      },
+      {
+        name: 'appVoucherId',
+        type: String,
+      },
+      {
+        name: 'freeShipVoucherId',
+        type: String,
       },
       {
         name: 'orders',
@@ -270,11 +242,23 @@ export default class OrderMiddleware {
         .send({ message: 'Invalid order data !' });
     }
 
+    const appVoucherId =
+      req.body.appVoucherId != null && req.body?.appVoucherId != ''
+        ? req.body.appVoucherId
+        : null;
+
+    const freeShipVoucherId =
+      req.body.freeShipVoucherId != null && req.body?.freeShipVoucherId != ''
+        ? req.body.appVoucherId
+        : null;
+
     const result = await orderModel.postNew(
       data.address.toString(),
       data.paymentId,
       orders,
-      customer
+      customer,
+      appVoucherId,
+      freeShipVoucherId
     );
     if (result.getCode() === HttpStatusCode.OK) {
       // //send notification

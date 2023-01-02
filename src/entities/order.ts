@@ -63,8 +63,21 @@ import { Voucher } from './voucher';
  *      $ref: '#/components/schemas/PaymentResponse'
  *     shoppingUnit:
  *      $ref: '#/components/schemas/ShoppingUnitResponse'
- *     voucher:
- *      $ref: '#/components/schemas/VoucherListResponse'
+ *     appVoucher:
+ *      type: number
+ *      format: int64
+ *      description: app voucher of the order
+ *      example: 30000
+ *     shopVoucher:
+ *      type: number
+ *      format: int64
+ *      description: shop voucher of the order
+ *      example: 10000
+ *     freeShipVoucher:
+ *      type: number
+ *      format: int64
+ *      description: free-ship voucher of the order
+ *      example: 0
  *     shop:
  *      $ref: '#/components/schemas/ShopResponse'
  *   CustomerOrderListResponse:
@@ -113,8 +126,21 @@ import { Voucher } from './voucher';
  *      $ref: '#/components/schemas/PaymentResponse'
  *     shoppingUnit:
  *      $ref: '#/components/schemas/ShoppingUnitResponse'
- *     voucher:
- *      $ref: '#/components/schemas/VoucherListResponse'
+ *     appVoucher:
+ *      type: number
+ *      format: int64
+ *      description: app voucher of the order
+ *      example: 30000
+ *     shopVoucher:
+ *      type: number
+ *      format: int64
+ *      description: shop voucher of the order
+ *      example: 10000
+ *     freeShipVoucher:
+ *      type: number
+ *      format: int64
+ *      description: free-ship voucher of the order
+ *      example: 0
  *     customer:
  *      $ref: '#/components/schemas/CustomerResponse'
  *   ShopOrderListResponse:
@@ -165,9 +191,20 @@ export class Order {
   @ManyToOne(() => ShoppingUnit, shoppingUnit => shoppingUnit.id)
   shoppingUnit: ShoppingUnit;
 
-  @ManyToMany(() => Voucher, voucher => voucher.id)
-  @JoinTable()
-  voucher: Voucher[];
+  @Column({
+    default: 0,
+  })
+  appVoucher: number;
+
+  @Column({
+    default: 0,
+  })
+  shopVoucher: number;
+
+  @Column({
+    default: 0,
+  })
+  freeShipVoucher: number;
 
   @ManyToOne(() => Shop, shop => shop.id)
   shop: Shop;

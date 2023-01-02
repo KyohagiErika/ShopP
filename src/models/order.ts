@@ -11,6 +11,8 @@ import Response from '../utils/response';
 import {
   DeliveryStatusEnum,
   HttpStatusCode,
+  ProductEnum,
+  RoleEnum,
   StatusEnum,
   TitleStatusEnum,
 } from '../utils/shopp.enum';
@@ -32,7 +34,6 @@ export default class orderModel {
       relations: {
         payment: true,
         shoppingUnit: true,
-        voucher: true,
         customer: true,
         shop: true,
       },
@@ -45,11 +46,10 @@ export default class orderModel {
   }
 
   static async viewOrderForCustomer(customer: Customer) {
-    const order = await orderRepository.find({
+    return await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
-        voucher: true,
         shop: true,
       },
       where: [
@@ -70,15 +70,13 @@ export default class orderModel {
         },
       ],
     });
-    return order ? order : false;
   }
 
   static async viewOrderForShop(shop: Shop) {
-    const order = await orderRepository.find({
+    return await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
-        voucher: true,
         customer: true,
       },
       where: {
@@ -87,15 +85,13 @@ export default class orderModel {
         deliveryStatus: Like(DeliveryStatusEnum.CHECKING),
       },
     });
-    return order ? order : false;
   }
 
   static async viewConfirmOrderForShop(shop: Shop) {
-    const order = await orderRepository.find({
+    return await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
-        voucher: true,
         customer: true,
       },
       where: [
@@ -111,33 +107,28 @@ export default class orderModel {
         },
       ],
     });
-    return order ? order : false;
   }
 
   static async viewOrderDeliverForCus(customer: Customer) {
-    const order = await orderRepository.find({
+    return await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
-        voucher: true,
         shop: true,
       },
-
       where: {
         customer: { id: customer.id },
         status: StatusEnum.ACTIVE,
         deliveryStatus: Like(DeliveryStatusEnum.DELIVERING),
       },
     });
-    return order ? order : false;
   }
 
   static async viewOrderDeliverForShop(shop: Shop) {
-    const order = await orderRepository.find({
+    return await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
-        voucher: true,
         customer: true,
       },
       where: {
@@ -146,15 +137,13 @@ export default class orderModel {
         deliveryStatus: Like(DeliveryStatusEnum.DELIVERING),
       },
     });
-    return order ? order : false;
   }
 
   static async viewHistoryForCus(customer: Customer) {
-    const order = await orderRepository.find({
+    return await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
-        voucher: true,
         shop: true,
       },
       where: {
@@ -163,15 +152,13 @@ export default class orderModel {
         deliveryStatus: Like(DeliveryStatusEnum.DELIVERED),
       },
     });
-    return order ? order : false;
   }
 
   static async viewHistoryForShop(shop: Shop) {
-    const order = await orderRepository.find({
+    return await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
-        voucher: true,
         customer: true,
       },
       where: {
@@ -180,32 +167,30 @@ export default class orderModel {
         deliveryStatus: Like(DeliveryStatusEnum.DELIVERED),
       },
     });
-    return order ? order : false;
   }
 
   static async viewCancelOrderForCus(customer: Customer) {
-    const order = await orderRepository.find({
+    return await orderRepository.find({
       relations: {
         payment: true,
         shoppingUnit: true,
-        voucher: true,
         shop: true,
       },
-
       where: {
         customer: { id: customer.id },
         status: StatusEnum.INACTIVE,
         deliveryStatus: Like(DeliveryStatusEnum.CANCELLED),
       },
     });
-    return order ? order : false;
   }
 
   static async postNew(
     address: string,
     paymentId: number,
     orders: OrderRequest[],
-    customer: Customer
+    customer: Customer,
+    appVoucherId: string | null,
+    freeShipVoucherId: string | null
   ) {
     //check payment
     const payment = await paymentRepository.findOne({
@@ -215,6 +200,39 @@ export default class orderModel {
     });
     if (payment == null) {
       return new Response(HttpStatusCode.BAD_REQUEST, 'Payment not exist.');
+    }
+
+    //check app voucher
+    let appVoucher: Voucher | null = null;
+    if (appVoucherId != null) {
+      appVoucher = await voucherRepository.findOne({
+        where: {
+          id: appVoucherId,
+          roleCreator: RoleEnum.ADMIN,
+          //check valid time
+        },
+      });
+      if (appVoucher == null)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'App Voucher not exist.'
+        );
+    }
+
+    let freeShipVoucher: Voucher | null = null;
+    if (freeShipVoucherId != null) {
+      freeShipVoucher = await voucherRepository.findOne({
+        where: {
+          id: freeShipVoucherId,
+          roleCreator: RoleEnum.ADMIN,
+          //check valid time
+        },
+      });
+      if (freeShipVoucher == null)
+        return new Response(
+          HttpStatusCode.BAD_REQUEST,
+          'FreeShip Voucher not exist.'
+        );
     }
 
     //For loop ORDER
@@ -233,6 +251,7 @@ export default class orderModel {
           'Shopping unit not exist.'
         );
       }
+
       //check valid shop
       const shop = await shopRepository.findOne({
         where: {
@@ -244,26 +263,28 @@ export default class orderModel {
       }
       let findOrder = new Order();
 
-      //check voucher
-      let voucher: Voucher[] = [];
+      //check shop voucher
+      console.log(orders[i].shopVoucherId);
+      let shopVoucher: Voucher | null = null;
       if (
-        orders[i].voucherIds !== undefined &&
-        orders[i].voucherIds.length !== 0
+        orders[i].shopVoucherId !== undefined &&
+        orders[i].shopVoucherId !== ''
       ) {
-        const now = new Date();
-        voucher = await voucherRepository.find({
+        shopVoucher = await voucherRepository.findOne({
           where: {
-            id: In(orders[i].voucherIds),
-            //mfgDate: LessThan(now),
-            //expDate: MoreThan(now),
+            id: orders[i].shopVoucherId,
+            roleCreator: RoleEnum.SHOP,
+            //check valid time
           },
         });
-        console.log(voucher.length);
-        console.log(orders[i].voucherIds.length);
-        if (voucher.length !== orders[i].voucherIds.length) {
-          return new Response(HttpStatusCode.BAD_REQUEST, 'Invalid voucher.');
+        if (shopVoucher == null) {
+          return new Response(
+            HttpStatusCode.BAD_REQUEST,
+            'Invalid shop voucher.'
+          );
         }
       }
+
       (findOrder.deliveryStatus = DeliveryStatusEnum.CHECKING),
         (findOrder.address = address),
         (findOrder.estimateDeliveryTime = orders[i].estimateDeliveryTime),
@@ -273,7 +294,6 @@ export default class orderModel {
         (findOrder.shoppingUnit = shoppingUnit),
         (findOrder.shop = shop),
         (findOrder.customer = customer);
-      findOrder.voucher = voucher;
 
       let orderProductArr: OrderProduct[] = [];
       const orderProduct = orders[i].orderProducts;
@@ -281,37 +301,46 @@ export default class orderModel {
       for (let j = 0; j < orderProduct.length; j++) {
         let orderProductEntity = new OrderProduct();
         const product = await productRepository.findOne({
-          select: [
-            'id',
-            'name',
-            'detail',
-            'amount',
-            'quantity',
-            'sold',
-            'star',
-            'status',
-          ],
           where: {
             id: orderProduct[j].productId,
+            shop: { id: shop.id },
+            status: In([ProductEnum.AVAILABLE, ProductEnum.OUT_OF_ORDER]),
           },
         });
         if (product == null) {
           return new Response(HttpStatusCode.BAD_REQUEST, 'Product not exist.');
         } else {
           (orderProductEntity.additionalInfo = orderProduct[j].additionalInfo),
-            (orderProductEntity.price = orderProduct[j].price),
+            (orderProductEntity.price = product.amount),
             (orderProductEntity.quantity = orderProduct[j].quantity),
             (orderProductEntity.product = product),
-            (totalBill -= orderProduct[j].price * orderProduct[j].quantity);
-          orderProductArr.push(orderProductEntity);
+            orderProductArr.push(orderProductEntity);
           //Calculate total bill
-          totalBill += orderProduct[j].price * orderProduct[j].quantity;
+          totalBill += product.amount * orderProduct[j].quantity;
         }
       }
+      (findOrder.orderProducts = orderProductArr),
+        (findOrder.totalBill = totalBill),
+        (findOrder.totalPayment = totalBill + +orders[i].transportFee);
+      //minus discount from voucher
+      if (appVoucher != null) {
+        //calculate app voucher
+        findOrder.appVoucher = 0; //
 
-      (findOrder.totalBill = totalBill),
-        (findOrder.totalPayment = totalBill + +orders[i].transportFee),
-        (findOrder.orderProducts = orderProductArr);
+        findOrder.totalPayment -= findOrder.appVoucher;
+      }
+      if (shopVoucher != null) {
+        //calculate shop voucher discount
+        findOrder.shopVoucher = 0; //
+
+        findOrder.totalPayment -= findOrder.shopVoucher;
+      }
+      if (freeShipVoucher != null) {
+        //calculate free-ship voucher
+        findOrder.freeShipVoucher = 0; //
+
+        findOrder.totalPayment -= findOrder.freeShipVoucher;
+      }
       orderArr.push(findOrder);
     }
 

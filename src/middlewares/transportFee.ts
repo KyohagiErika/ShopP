@@ -48,8 +48,6 @@ export default class TransportFeeMiddleware {
   static async validAddress(req: Request, res: Response) {
     const shopId = req.params.address;
     const result = await TransportFeeModel.validAddress(shopId);
-    return res
-      .status(result.getCode())
-      .send({ message: result.getMessage() });
+    return res.status(result.getCode()).send({ message: result.getMessage() });
   }
 }
