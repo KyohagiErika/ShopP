@@ -326,9 +326,7 @@ export default class orderModel {
       allTotalTransportFee += findOrder.transportFee;
 
       (findOrder.orderProducts = orderProductArr),
-        (findOrder.totalBill = totalBill),
-        (findOrder.totalPayment =
-          findOrder.totalBill + +orders[i].transportFee);
+        (findOrder.totalBill = totalBill);
 
       //minus discount from shop voucher
       if (shopVoucher != null) {
@@ -340,10 +338,8 @@ export default class orderModel {
           );
         if (shopVoucher.type == VoucherTypeEnum.MONEY) {
           if (shopVoucher.priceDiscount >= totalBill) {
-            findOrder.totalPayment -= totalBill;
             findOrder.shopVoucher = totalBill;
           } else {
-            findOrder.totalPayment -= shopVoucher.priceDiscount;
             findOrder.shopVoucher = shopVoucher.priceDiscount;
           }
         } else {
@@ -354,10 +350,8 @@ export default class orderModel {
           if (percentDiscount >= shopVoucher.maxPriceDiscount)
             percentDiscount = shopVoucher.maxPriceDiscount;
           if (percentDiscount >= totalBill) {
-            findOrder.totalPayment -= totalBill;
             findOrder.shopVoucher = totalBill;
           } else {
-            findOrder.totalPayment -= percentDiscount;
             findOrder.shopVoucher = percentDiscount;
           }
         }
@@ -378,14 +372,12 @@ export default class orderModel {
             orderArr[i].appVoucher = Math.round(
               (allTotalBill * orderArr[i].totalBill) / allTotalBill
             );
-            orderArr[i].totalPayment -= orderArr[i].appVoucher;
           }
         } else {
           for (let i = 0; i < orderArr.length; i++) {
             orderArr[i].appVoucher = Math.round(
               (appVoucher.priceDiscount * orderArr[i].totalBill) / allTotalBill
             );
-            orderArr[i].totalPayment -= orderArr[i].appVoucher;
           }
         }
       } else {
@@ -400,14 +392,12 @@ export default class orderModel {
             orderArr[i].appVoucher = Math.round(
               (allTotalBill * orderArr[i].totalBill) / allTotalBill
             );
-            orderArr[i].totalPayment -= orderArr[i].appVoucher;
           }
         } else {
           for (let i = 0; i < orderArr.length; i++) {
             orderArr[i].appVoucher = Math.round(
               (percentDiscount * orderArr[i].totalBill) / allTotalBill
             );
-            orderArr[i].totalPayment -= orderArr[i].appVoucher;
           }
         }
       }
@@ -425,7 +415,6 @@ export default class orderModel {
             (allTotalTransportFee * orderArr[i].transportFee) /
               allTotalTransportFee
           );
-          orderArr[i].totalPayment -= orderArr[i].freeShipVoucher;
         }
       } else {
         for (let i = 0; i < orderArr.length; i++) {
@@ -433,7 +422,6 @@ export default class orderModel {
             (freeShipVoucher.priceDiscount * orderArr[i].transportFee) /
               allTotalTransportFee
           );
-          orderArr[i].totalPayment -= orderArr[i].freeShipVoucher;
         }
       }
     }
