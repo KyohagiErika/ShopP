@@ -4,7 +4,7 @@ export interface OrderRequest {
   estimateDeliveryTime: string;
   transportFee: number;
   shoppingUnitId: number;
-  voucherIds: string[];
+  shopVoucherId: string;
   shopId: string;
   orderProducts: OrderProductRequest[];
 }

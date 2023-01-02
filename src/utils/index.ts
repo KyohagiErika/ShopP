@@ -29,7 +29,7 @@ const instanceOfOrderRequest = (data: OrderRequest) => {
     'estimateDeliveryTime' in data &&
     'transportFee' in data &&
     'shoppingUnitId' in data &&
-    'voucherIds' in data &&
+    'shopVoucherId' in data &&
     'shopId' in data &&
     'orderProducts' in data &&
     Number.isInteger(data.transportFee) &&
@@ -40,11 +40,9 @@ const instanceOfOrderRequest = (data: OrderRequest) => {
 
 const instanceOfOrderProductRequest = (data: OrderProductRequest) => {
   return (
-    'price' in data &&
-    'additionalInfo' in data &&
     'quantity' in data &&
+    'additionalInfo' in data &&
     'productId' in data &&
-    Number.isInteger(data.price) &&
     Number.isInteger(data.quantity)
   );
 };

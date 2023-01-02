@@ -105,9 +105,6 @@ export class Voucher {
   @JoinTable()
   customer: Customer[];
 
-  @ManyToMany(() => Order, order => order.id)
-  order: Order[];
-
   static mapVoucher(voucherEntity: Voucher): VoucherCustomerResponse {
     return {
       id: voucherEntity.id,

@@ -134,9 +134,7 @@ export default class VoucherMiddleware {
    *      description: title of voucher
    *      example: Tat ca hinh thuc thanh toan
    *     type:
-   *      type: string
-   *      description: type of voucher
-   *      example: Freeship
+   *      $ref: '#/components/schemas/VoucherTypeEnum'
    *     amount:
    *      type: integer
    *      description: amount of voucher
