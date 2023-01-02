@@ -217,7 +217,7 @@ export default class OrderMiddleware {
         name: 'orders',
         type: Array,
         validator(propertyName, value) {
-          if (!value.every(instanceOfOrderRequest)) {
+          if (value.length > 0 && !value.every(instanceOfOrderRequest)) {
             return `${propertyName} must be valid order request`;
           }
           return null;

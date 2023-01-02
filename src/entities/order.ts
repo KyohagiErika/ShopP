@@ -117,11 +117,6 @@ import { Voucher } from './voucher';
  *      format: int64
  *      description: transport fee of the order
  *      example: 20000
- *     totalPayment:
- *      type: number
- *      format: int64
- *      description: total payment of the order
- *      example: 320000
  *     payment:
  *      $ref: '#/components/schemas/PaymentResponse'
  *     shoppingUnit:
@@ -174,9 +169,6 @@ export class Order {
 
   @Column()
   transportFee: number;
-
-  @Column()
-  totalPayment: number;
 
   @Column({
     type: 'enum',
