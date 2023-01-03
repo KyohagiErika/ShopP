@@ -111,13 +111,16 @@ export default class VoucherModel {
     expDate: Date
   ) {
     const voucherRepository = ShopPDataSource.getRepository(Voucher);
-    if(user.role.role == RoleEnum.CUSTOMER)
+    if (user.role.role == RoleEnum.CUSTOMER)
       return new Response(
         HttpStatusCode.BAD_REQUEST,
         'Customer can not create voucher!'
       );
-    if(user.role.role != RoleEnum.ADMIN && type == VoucherTypeEnum.FREESHIP)
-      return new Response(HttpStatusCode.BAD_REQUEST, 'Shop can not create Freeship voucher!');
+    if (user.role.role != RoleEnum.ADMIN && type == VoucherTypeEnum.FREESHIP)
+      return new Response(
+        HttpStatusCode.BAD_REQUEST,
+        'Shop can not create Freeship voucher!'
+      );
     const voucher = await voucherRepository.save({
       title,
       type,
