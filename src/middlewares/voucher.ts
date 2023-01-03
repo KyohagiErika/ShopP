@@ -54,11 +54,12 @@ export default class VoucherMiddleware {
         name: 'type',
         type: String,
         validator: (propName: string, value: string) => {
-          if (
-            value.toUpperCase() !== 'MONEY' &&
-            value.toUpperCase() !== 'FREESHIP' &&
-            value.toUpperCase() !== 'PERCENT'
-          )
+          const voucherTypeList = Object.entries(VoucherTypeEnum).map(
+            ([key, value]) => {
+              return key;
+            }
+          );
+          if (!voucherTypeList.includes(value.toUpperCase()))
             return `${propName} is invalid. Only MONEY, FREESHIP OR PERCENT!`;
           return null;
         },
@@ -202,11 +203,12 @@ export default class VoucherMiddleware {
         name: 'type',
         type: String,
         validator: (propName: string, value: string) => {
-          if (
-            value.toUpperCase() !== 'MONEY' &&
-            value.toUpperCase() !== 'FREESHIP' &&
-            value.toUpperCase() !== 'PERCENT'
-          )
+          const voucherTypeList = Object.entries(VoucherTypeEnum).map(
+            ([key, value]) => {
+              return key;
+            }
+          );
+          if (!voucherTypeList.includes(value.toUpperCase()))
             return `${propName} is invalid. Only MONEY, FREESHIP OR PERCENT!`;
           return null;
         },
