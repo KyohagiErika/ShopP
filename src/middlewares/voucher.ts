@@ -54,11 +54,12 @@ export default class VoucherMiddleware {
         name: 'type',
         type: String,
         validator: (propName: string, value: string) => {
-          if (
-            value.toUpperCase() !== 'MONEY' &&
-            value.toUpperCase() !== 'FREESHIP' &&
-            value.toUpperCase() !== 'PERCENT'
-          )
+          const voucherTypeList = Object.entries(VoucherTypeEnum).map(
+            ([key, value]) => {
+              return key;
+            }
+          );
+          if (!voucherTypeList.includes(value.toUpperCase()))
             return `${propName} is invalid. Only MONEY, FREESHIP OR PERCENT!`;
           return null;
         },
@@ -67,7 +68,35 @@ export default class VoucherMiddleware {
         name: 'amount',
         validator: (propName: string, value: string) => {
           const number = Number(value);
-          if (!number) return `${propName} must be a number`;
+          if (Number.isNaN(number)) return `${propName} must be a number`;
+          if (number <= 0) return `${propName} must be positive`;
+          return null;
+        },
+      },
+      {
+        name: 'minBillPrice',
+        validator: (propName: string, value: string) => {
+          const number = Number(value);
+          if (Number.isNaN(number)) return `${propName} must be a number`;
+          if (number < 0) return `${propName} must not be negative`;
+          return null;
+        },
+      },
+      {
+        name: 'priceDiscount',
+        validator: (propName: string, value: string) => {
+          const number = Number(value);
+          if (Number.isNaN(number)) return `${propName} must be a number`;
+          if (number <= 0) return `${propName} must be positive`;
+          return null;
+        },
+      },
+      {
+        name: 'maxPriceDiscount',
+        validator: (propName: string, value: string) => {
+          const number = Number(value);
+          if (Number.isNaN(number)) return `${propName} must be a number`;
+          if (number < 0) return `${propName} must not be negative`;
           return null;
         },
       },
@@ -174,11 +203,12 @@ export default class VoucherMiddleware {
         name: 'type',
         type: String,
         validator: (propName: string, value: string) => {
-          if (
-            value.toUpperCase() !== 'MONEY' &&
-            value.toUpperCase() !== 'FREESHIP' &&
-            value.toUpperCase() !== 'PERCENT'
-          )
+          const voucherTypeList = Object.entries(VoucherTypeEnum).map(
+            ([key, value]) => {
+              return key;
+            }
+          );
+          if (!voucherTypeList.includes(value.toUpperCase()))
             return `${propName} is invalid. Only MONEY, FREESHIP OR PERCENT!`;
           return null;
         },
@@ -187,7 +217,8 @@ export default class VoucherMiddleware {
         name: 'amount',
         validator: (propName: string, value: string) => {
           const number = Number(value);
-          if (!number) return `${propName} must be a number`;
+          if (Number.isNaN(number)) return `${propName} must be a number`;
+          if (number <= 0) return `${propName} must be positive`;
           return null;
         },
       },
@@ -195,7 +226,8 @@ export default class VoucherMiddleware {
         name: 'minBillPrice',
         validator: (propName: string, value: string) => {
           const number = Number(value);
-          if (!number) return `${propName} must be a number`;
+          if (Number.isNaN(number)) return `${propName} must be a number`;
+          if (number < 0) return `${propName} must not be negative`;
           return null;
         },
       },
@@ -203,7 +235,8 @@ export default class VoucherMiddleware {
         name: 'priceDiscount',
         validator: (propName: string, value: string) => {
           const number = Number(value);
-          if (!number) return `${propName} must be a number`;
+          if (Number.isNaN(number)) return `${propName} must be a number`;
+          if (number <= 0) return `${propName} must be positive`;
           return null;
         },
       },
@@ -211,7 +244,8 @@ export default class VoucherMiddleware {
         name: 'maxPriceDiscount',
         validator: (propName: string, value: string) => {
           const number = Number(value);
-          if (!number) return `${propName} must be a number`;
+          if (Number.isNaN(number)) return `${propName} must be a number`;
+          if (number < 0) return `${propName} must not be negative`;
           return null;
         },
       },
