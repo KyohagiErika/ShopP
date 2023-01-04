@@ -193,7 +193,7 @@ export default class OrderMiddleware {
    *      type: string
    *      format: uuid
    *      description: additional info of product
-   *      example: 'no sugar'
+   *      example: 'size: M, color: red'
    */
   @ControllerService({
     body: [
@@ -249,7 +249,7 @@ export default class OrderMiddleware {
 
     const freeShipVoucherId =
       req.body.freeShipVoucherId != null && req.body?.freeShipVoucherId != ''
-        ? req.body.appVoucherId
+        ? req.body.freeShipVoucherId
         : null;
 
     const result = await orderModel.postNew(
@@ -283,9 +283,9 @@ export default class OrderMiddleware {
    *    type: object
    *    properties:
    *     title:
-   *      $ref: '#/components/schema/TitleStatusEnum'
+   *      $ref: '#/components/schemas/TitleStatusEnum'
    *     deliveryStatus:
-   *      $ref: '#/components/schema/DeliveryStatusEnum'
+   *      $ref: '#/components/schemas/DeliveryStatusEnum'
    *     location:
    *      type: string
    *      description: location of package
@@ -334,12 +334,12 @@ export default class OrderMiddleware {
     if (checkOrder == false) {
       return res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'order not found' });
+        .send({ message: 'Order not found' });
     } else {
       if (!(checkOrder.shop.id == shop.id)) {
         return res
           .status(HttpStatusCode.BAD_REQUEST)
-          .send({ message: 'only edit your order' });
+          .send({ message: 'Only edit your order' });
       }
     }
 
@@ -350,7 +350,7 @@ export default class OrderMiddleware {
     if (!deliveryObj.includes(deliveryStatus.toString())) {
       return res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'delivery status is not correct' });
+        .send({ message: 'Delivery status is not correct' });
     }
     const newDeliveryStatus = getValueByKeyEnum(
       DeliveryStatusEnum,
@@ -361,7 +361,7 @@ export default class OrderMiddleware {
     if (!titleObj.includes(title.toString())) {
       return res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send({ message: 'title is not correct' });
+        .send({ message: 'Title is not correct' });
     }
     const newTitle = getValueByKeyEnum(TitleStatusEnum, title);
 
@@ -409,12 +409,12 @@ export default class OrderMiddleware {
       if (checkOrder == false) {
         return res
           .status(HttpStatusCode.BAD_REQUEST)
-          .send({ message: 'order not found' });
+          .send({ message: 'Order not found' });
       } else {
         if (!(checkOrder.customer.id == user.customer.id)) {
           return res
             .status(HttpStatusCode.BAD_REQUEST)
-            .send({ message: 'only cancel your order' });
+            .send({ message: 'Only cancel your order' });
         } else {
           title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_CUSTOMER;
         }
@@ -424,12 +424,12 @@ export default class OrderMiddleware {
       if (checkOrder == false) {
         return res
           .status(HttpStatusCode.BAD_REQUEST)
-          .send({ message: 'order not found' });
+          .send({ message: 'Order not found' });
       } else {
         if (!(checkOrder.shop.id == user.shop.id)) {
           return res
             .status(HttpStatusCode.BAD_REQUEST)
-            .send({ message: 'only cancel your order' });
+            .send({ message: 'Only cancel your order' });
         } else {
           title = TitleStatusEnum.ORDER_IS_CANCELLED_BY_SHOP;
         }
@@ -473,7 +473,7 @@ export default class OrderMiddleware {
    *     location:
    *      type: string
    *      description: location of package
-   *      example: 'ho chi minh city'
+   *      example: 'Ho Chi Minh city'
    */
   @ControllerService()
   static async returnOrder(req: Request, res: Response) {
@@ -486,12 +486,12 @@ export default class OrderMiddleware {
       if (checkOrder == false) {
         return res
           .status(HttpStatusCode.BAD_REQUEST)
-          .send({ message: 'order not found' });
+          .send({ message: 'Order not found' });
       } else {
         if (!(checkOrder.customer.id == user.customer.id)) {
           return res
             .status(HttpStatusCode.BAD_REQUEST)
-            .send({ message: 'only cancel your order' });
+            .send({ message: 'Only return your order' });
         } else {
           title = TitleStatusEnum.ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER;
         }
@@ -501,12 +501,12 @@ export default class OrderMiddleware {
       if (checkOrder == false) {
         return res
           .status(HttpStatusCode.BAD_REQUEST)
-          .send({ message: 'order not found' });
+          .send({ message: 'Order not found' });
       } else {
         if (!(checkOrder.shop.id == user.shop.id)) {
           return res
             .status(HttpStatusCode.BAD_REQUEST)
-            .send({ message: 'only cancel your order' });
+            .send({ message: 'Only return your order' });
         } else {
           title = TitleStatusEnum.ORDER_IS_RETURN_BY_DELEVERY_UNSUCCESSFULLY;
         }

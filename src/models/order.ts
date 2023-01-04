@@ -18,7 +18,7 @@ import {
   VoucherTypeEnum,
 } from '../utils/shopp.enum';
 import { OrderRequest } from '../interfaces/order';
-import { In, Like } from 'typeorm';
+import { In, LessThan, Like, MoreThan } from 'typeorm';
 import { TrackingOrder } from '../entities/trackingOrder';
 
 const orderRepository = ShopPDataSource.getRepository(Order);
@@ -40,7 +40,6 @@ export default class orderModel {
       },
       where: {
         id: id,
-        status: StatusEnum.ACTIVE,
       },
     });
     return order ? order : false;
@@ -209,8 +208,9 @@ export default class orderModel {
       appVoucher = await voucherRepository.findOne({
         where: {
           id: appVoucherId,
-          roleCreator: RoleEnum.ADMIN,
-          //check valid time
+          roleCreator: Like(RoleEnum.ADMIN),
+          mfgDate: LessThan(new Date()),
+          expDate: MoreThan(new Date()),
         },
       });
       if (appVoucher == null)
@@ -225,8 +225,9 @@ export default class orderModel {
       freeShipVoucher = await voucherRepository.findOne({
         where: {
           id: freeShipVoucherId,
-          roleCreator: RoleEnum.ADMIN,
-          //check valid time
+          roleCreator: Like(RoleEnum.ADMIN),
+          mfgDate: LessThan(new Date()),
+          expDate: MoreThan(new Date()),
         },
       });
       if (freeShipVoucher == null)
@@ -267,7 +268,6 @@ export default class orderModel {
       let findOrder = new Order();
 
       //check shop voucher
-      console.log(orders[i].shopVoucherId);
       let shopVoucher: Voucher | null = null;
       if (
         orders[i].shopVoucherId !== undefined &&
@@ -276,8 +276,9 @@ export default class orderModel {
         shopVoucher = await voucherRepository.findOne({
           where: {
             id: orders[i].shopVoucherId,
-            roleCreator: RoleEnum.SHOP,
-            //check valid time
+            roleCreator: Like(RoleEnum.SHOP),
+            mfgDate: LessThan(new Date()),
+            expDate: MoreThan(new Date()),
           },
         });
         if (shopVoucher == null) {
@@ -322,8 +323,6 @@ export default class orderModel {
           totalBill += product.amount * orderProduct[j].quantity;
         }
       }
-      allTotalBill += totalBill;
-      allTotalTransportFee += findOrder.transportFee;
 
       (findOrder.orderProducts = orderProductArr),
         (findOrder.totalBill = totalBill);
@@ -356,48 +355,55 @@ export default class orderModel {
           }
         }
       }
+
+      totalBill -= findOrder.shopVoucher;
+      allTotalBill += totalBill;
+      allTotalTransportFee += findOrder.transportFee;
       orderArr.push(findOrder);
     }
 
     if (appVoucher != null) {
       //calculate app voucher discount
-      if (allTotalBill < appVoucher.minBillPrice)
-        return new Response(
-          HttpStatusCode.BAD_REQUEST,
-          'Can not use this app voucher!'
-        );
-      if (appVoucher.type == VoucherTypeEnum.MONEY) {
-        if (appVoucher.priceDiscount >= allTotalBill) {
-          for (let i = 0; i < orderArr.length; i++) {
-            orderArr[i].appVoucher = Math.round(
-              (allTotalBill * orderArr[i].totalBill) / allTotalBill
-            );
+      if (allTotalBill > 0) {
+        if (allTotalBill < appVoucher.minBillPrice)
+          return new Response(
+            HttpStatusCode.BAD_REQUEST,
+            'Can not use this app voucher!'
+          );
+        if (appVoucher.type == VoucherTypeEnum.MONEY) {
+          if (appVoucher.priceDiscount >= allTotalBill) {
+            for (let i = 0; i < orderArr.length; i++) {
+              orderArr[i].appVoucher = Math.round(
+                (allTotalBill * orderArr[i].totalBill) / allTotalBill
+              );
+            }
+          } else {
+            for (let i = 0; i < orderArr.length; i++) {
+              orderArr[i].appVoucher = Math.round(
+                (appVoucher.priceDiscount * orderArr[i].totalBill) /
+                  allTotalBill
+              );
+            }
           }
         } else {
-          for (let i = 0; i < orderArr.length; i++) {
-            orderArr[i].appVoucher = Math.round(
-              (appVoucher.priceDiscount * orderArr[i].totalBill) / allTotalBill
-            );
-          }
-        }
-      } else {
-        //VoucherTypeEnum.PERCENT
-        let percentDiscount = Math.round(
-          appVoucher.priceDiscount * 0.01 * allTotalBill
-        );
-        if (percentDiscount >= appVoucher.maxPriceDiscount)
-          percentDiscount = appVoucher.maxPriceDiscount;
-        if (percentDiscount >= allTotalBill) {
-          for (let i = 0; i < orderArr.length; i++) {
-            orderArr[i].appVoucher = Math.round(
-              (allTotalBill * orderArr[i].totalBill) / allTotalBill
-            );
-          }
-        } else {
-          for (let i = 0; i < orderArr.length; i++) {
-            orderArr[i].appVoucher = Math.round(
-              (percentDiscount * orderArr[i].totalBill) / allTotalBill
-            );
+          //VoucherTypeEnum.PERCENT
+          let percentDiscount = Math.round(
+            appVoucher.priceDiscount * 0.01 * allTotalBill
+          );
+          if (percentDiscount >= appVoucher.maxPriceDiscount)
+            percentDiscount = appVoucher.maxPriceDiscount;
+          if (percentDiscount >= allTotalBill) {
+            for (let i = 0; i < orderArr.length; i++) {
+              orderArr[i].appVoucher = Math.round(
+                (allTotalBill * orderArr[i].totalBill) / allTotalBill
+              );
+            }
+          } else {
+            for (let i = 0; i < orderArr.length; i++) {
+              orderArr[i].appVoucher = Math.round(
+                (percentDiscount * orderArr[i].totalBill) / allTotalBill
+              );
+            }
           }
         }
       }
