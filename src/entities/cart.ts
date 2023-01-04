@@ -30,6 +30,7 @@ export class Cart {
 
   @Column({
     nullable: true,
+    type: 'text',
   })
   products: string;
 
