@@ -269,20 +269,25 @@ export default class VoucherMiddleware {
   })
   static async newVoucher(req: Request, res: Response) {
     const data = req.body;
+    if (
+      data.type == VoucherTypeEnum.PERCENT &&
+      (data.priceDiscount > 100 || data.priceDiscount < 0)
+    )
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'priceDiscount must be between 0 and 100' });
     const mfgDate = new Date(ConvertDate(data.mfgDate));
     const expDate = new Date(ConvertDate(data.expDate));
     const now = new Date();
     if (now >= mfgDate) {
-      res
+      return res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'mfgDate must be after today!' });
-      return;
     }
     if (mfgDate > expDate) {
-      res
+      return res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'mfgDate must be smaller than expDate!' });
-      return;
     }
     const result = await VoucherModel.newVoucher(
       res.locals.user,
@@ -296,10 +301,13 @@ export default class VoucherMiddleware {
       expDate
     );
     if (result.getCode() == HttpStatusCode.OK)
-      res
+      return res
         .status(result.getCode())
         .send({ message: result.getMessage(), data: result.getData() });
-    else res.status(result.getCode()).send({ message: result.getMessage() });
+    else
+      return res
+        .status(result.getCode())
+        .send({ message: result.getMessage() });
   }
 
   @ControllerService()
