@@ -92,7 +92,7 @@ export class Voucher {
   @Column()
   priceDiscount: number;
 
-  @Column({ nullable: true })
+  @Column()
   maxPriceDiscount: number;
 
   @Column()
