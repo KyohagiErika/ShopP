@@ -79,6 +79,32 @@ export default class VoucherModel {
     return vouchers && vouchers.length > 0 ? vouchers : false;
   }
 
+  static async listVouchersByShopId(shopId: string) {
+    const voucherRepository = ShopPDataSource.getRepository(Voucher);
+    const now = new Date();
+    const vouchers = await voucherRepository.find({
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        amount: true,
+        mfgDate: true,
+        expDate: true,
+        minBillPrice: true,
+        priceDiscount: true,
+        maxPriceDiscount: true,
+      },
+      where: {
+        createdBy: {
+          role: { role: Like(RoleEnum.SHOP) },
+          shop: { id: shopId },
+        },
+        expDate: MoreThan(now),
+      },
+    });
+    return vouchers && vouchers.length > 0 ? vouchers : false;
+  }
+
   static async getOneById(id: string) {
     const voucherRepository = ShopPDataSource.getRepository(Voucher);
     const voucher = await voucherRepository.findOne({

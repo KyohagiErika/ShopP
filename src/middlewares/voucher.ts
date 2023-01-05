@@ -30,6 +30,14 @@ export default class VoucherMiddleware {
   }
 
   @ControllerService()
+  static async listVouchersByShopId(req: Request, res: Response) {
+    const result = await VoucherModel.listVouchersByShopId(req.params.shopId);
+    if (result) res.status(HttpStatusCode.OK).send({ data: result });
+    else
+      res.status(HttpStatusCode.OK).send({ message: 'No vouchers available' });
+  }
+
+  @ControllerService()
   static async getOneById(req: Request, res: Response) {
     const id = req.params.id;
     const result = await VoucherModel.getOneById(id);
