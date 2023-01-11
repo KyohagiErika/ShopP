@@ -38,9 +38,9 @@ import {
  *      example: 10
  *     createdAt:
  *      type: string
- *      description: day created of evaluation
  *      format: date-time
- *      example: 2022-10-29
+ *      description: day created of evaluation
+ *      example: '2020-12-12T12:12:12.000Z'
  *     evaluationImages:
  *      $ref: '#/components/schemas/LocalFileListResponse'
  *   EvaluationListResponse:
