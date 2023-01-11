@@ -2,6 +2,7 @@ import { parse } from 'dotenv';
 import { Request, Response } from 'express';
 import { Customer } from '../entities/customer';
 import { Shop } from '../entities/shop';
+import { TrackingOrder } from '../entities/trackingOrder';
 import { User } from '../entities/user';
 import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
@@ -300,9 +301,13 @@ export default class OrderMiddleware {
    *    type: object
    *    properties:
    *     title:
-   *      $ref: '#/components/schema/TitleStatusEnum'
+   *      type: string
+   *      description: title
+   *      example: 'ORDER_HAS_ARRIVED_TO_STATION_1'
    *     deliveryStatus:
-   *      $ref: '#/components/schema/DeliveryStatusEnum'
+   *      type: string
+   *      description: status
+   *      example: 'DELIVERING'
    *     location:
    *      type: string
    *      description: location of package
@@ -377,6 +382,13 @@ export default class OrderMiddleware {
         .send({ message: 'title is not correct' });
     }
     const newTitle = getValueByKeyEnum(TitleStatusEnum, title);
+
+    const check = await trackingOrderModel.checkTracking(id, newDeliveryStatus, newTitle);
+    if(check!=false){
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'this tracking already exist' });
+    }
 
     const result1 = await orderModel.editDeliveryStatus(
       id,

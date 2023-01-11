@@ -338,6 +338,20 @@ export default class orderModel {
           'Title is not match delivery status 3'
         );
       }
+      const check = await trackingRepository.find({
+        where: {
+          orderNumber: {id: id},
+          deliveryStatus: Like(DeliveryStatusEnum.DELIVERING)
+        }
+      })
+      for(let i = 0; i<check.length; i++){
+        if(check[i].title>title){
+          return new Response(
+            HttpStatusCode.BAD_REQUEST,
+            'Cannot change title backward'
+          );
+        }
+      }
     } else {
       if (deliveryStatus != title) {
         return new Response(

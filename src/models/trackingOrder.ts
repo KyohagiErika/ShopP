@@ -1,9 +1,10 @@
 import { response } from 'express';
+import { Like } from 'typeorm';
 import { ShopPDataSource } from '../data';
 import { Order } from '../entities/order';
 import { TrackingOrder } from '../entities/trackingOrder';
 import Response from '../utils/response';
-import { HttpStatusCode } from '../utils/shopp.enum';
+import { DeliveryStatusEnum, HttpStatusCode } from '../utils/shopp.enum';
 
 const trackingOrderRepository = ShopPDataSource.getRepository(TrackingOrder);
 const orderRepository = ShopPDataSource.getRepository(Order);
@@ -25,6 +26,17 @@ export default class trackingOrderModel {
       },
     });
     return trackingOrder ? trackingOrder : false;
+  }
+
+  static async checkTracking(id: string, deliveryStatus: number, title: number){
+    const tracking = await trackingOrderRepository.findOne({
+      where: {
+        orderNumber: {id: id},
+        deliveryStatus: Like(deliveryStatus),
+        title: Like(title)
+      }
+    });
+    return tracking ? tracking: false
   }
 
   static async postNew(
