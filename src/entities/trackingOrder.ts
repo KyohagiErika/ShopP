@@ -54,7 +54,7 @@ export class TrackingOrder {
   @Column({
     type: 'enum',
     enum: TitleStatusEnum,
-    default: TitleStatusEnum.ORDER_IS_REPARING,
+    default: TitleStatusEnum.ORDER_IS_REPAIRING,
   })
   title: TitleStatusEnum;
 

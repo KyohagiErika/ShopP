@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Customer } from '../entities/customer';
 import { Shop } from '../entities/shop';
+import { TrackingOrder } from '../entities/trackingOrder';
 import { User } from '../entities/user';
 import { OrderRequest } from '../interfaces/order';
 import orderModel from '../models/order';
@@ -312,7 +313,7 @@ export default class OrderMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           if (
-            value.toUpperCase() !== 'ORDER_IS_REPARING' &&
+            value.toUpperCase() !== 'ORDER_IS_REPAIRING' &&
             value.toUpperCase() !== 'ORDER_READY_TO_BE_SEND' &&
             value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_1' &&
             value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_2' &&
@@ -364,6 +365,13 @@ export default class OrderMiddleware {
         .send({ message: 'Title is not correct' });
     }
     const newTitle = getValueByKeyEnum(TitleStatusEnum, title);
+
+    const check = await trackingOrderModel.checkTracking(id, newDeliveryStatus, newTitle);
+    if(check!=false){
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: 'this tracking already exist' });
+    }
 
     const result1 = await orderModel.editDeliveryStatus(
       id,

@@ -190,7 +190,7 @@ export enum DeliveryStatusEnum {
  *   TitleStatusEnum:
  *    type: string
  *    enum:
- *    - ORDER_IS_REPARING
+ *    - ORDER_IS_REPAIRING
  *    - ORDER_READY_TO_BE_SEND
  *    - ORDER_HAS_ARRIVED_TO_STATION_1
  *    - ORDER_HAS_ARRIVED_TO_STATION_2
@@ -203,7 +203,7 @@ export enum DeliveryStatusEnum {
  *    - ORDER_IS_RETURN_TO_SHOP_BY_CUSTOMER
  */
 export enum TitleStatusEnum {
-  ORDER_IS_REPARING = 1,
+  ORDER_IS_REPAIRING = 1,
   ORDER_READY_TO_BE_SEND = 2,
   ORDER_HAS_ARRIVED_TO_STATION_1 = 3.1,
   ORDER_HAS_ARRIVED_TO_STATION_2 = 3.2,
