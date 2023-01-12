@@ -23,9 +23,7 @@ import { Shop } from './shop';
  *      description: id of the report
  *      example: '1'
  *     type:
- *      type: enum
- *      description: type of the report
- *      example: 'CUSTOMER_TO_SHOP'
+ *      $ref: '#/components/schemas/TypeTransferEnum'
  *     resason:
  *      type: string
  *      description: reason of the report
@@ -35,13 +33,12 @@ import { Shop } from './shop';
  *      description: description of the report
  *      example: 'bad shop'
  *     reportAt:
- *      type: date
- *      description: date create report
- *      example: '15-12-2022'
+ *      type: string
+ *      format: date-time
+ *      description: date time when creating report
+ *      example: '2020-12-12T12:12:12.000Z'
  *     status:
- *      type: enum
- *      description: status of the report
- *      example: 'PROCESSING'
+ *      $ref: '#/components/schemas/StatusReportEnum'
  *     shop:
  *      type: string
  *      description: shopId of the report
