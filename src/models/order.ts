@@ -242,6 +242,9 @@ export default class orderModel {
     let allTotalTransportFee = 0;
     const orderArr: Order[] = [];
     for (let i = 0; i < orders.length; i++) {
+      console.log('allTotalBill: ' + allTotalBill);
+      console.log('allTotalTransportFee: ' + allTotalTransportFee);
+      console.log('-------');
       let totalBill = 0;
       //check shopping unit
       const shoppingUnit = await shoppingUnitRepository.findOne({
@@ -320,7 +323,9 @@ export default class orderModel {
             (orderProductEntity.product = product),
             orderProductArr.push(orderProductEntity);
           //Calculate total bill
-          totalBill += product.amount * orderProduct[j].quantity;
+          totalBill += +product.amount * +orderProduct[j].quantity;
+          console.log('totalBill: ' + totalBill);
+          console.log('-------');
         }
       }
 
@@ -354,11 +359,15 @@ export default class orderModel {
             findOrder.shopVoucher = percentDiscount;
           }
         }
+        totalBill -= +findOrder.shopVoucher;
       }
 
-      totalBill -= findOrder.shopVoucher;
       allTotalBill += totalBill;
       allTotalTransportFee += findOrder.transportFee;
+      console.log('allTotalBill: ' + allTotalBill);
+      console.log('allTotalTransportFee: ' + allTotalTransportFee);
+      console.log('totalBill: ' + totalBill);
+      console.log('-------');
       orderArr.push(findOrder);
     }
 
@@ -376,6 +385,8 @@ export default class orderModel {
               orderArr[i].appVoucher = Math.round(
                 (allTotalBill * orderArr[i].totalBill) / allTotalBill
               );
+              console.log('appVoucher(order): ' + orderArr[i].appVoucher);
+              console.log('-------');
             }
           } else {
             for (let i = 0; i < orderArr.length; i++) {
@@ -383,6 +394,8 @@ export default class orderModel {
                 (appVoucher.priceDiscount * orderArr[i].totalBill) /
                   allTotalBill
               );
+              console.log('appVoucher(order): ' + orderArr[i].appVoucher);
+              console.log('-------');
             }
           }
         } else {
@@ -397,17 +410,22 @@ export default class orderModel {
               orderArr[i].appVoucher = Math.round(
                 (allTotalBill * orderArr[i].totalBill) / allTotalBill
               );
+              console.log('appVoucher(order): ' + orderArr[i].appVoucher);
+              console.log('-------');
             }
           } else {
             for (let i = 0; i < orderArr.length; i++) {
               orderArr[i].appVoucher = Math.round(
                 (percentDiscount * orderArr[i].totalBill) / allTotalBill
               );
+              console.log('appVoucher(order): ' + orderArr[i].appVoucher);
+              console.log('-------');
             }
           }
         }
       }
     }
+
     if (freeShipVoucher != null) {
       //calculate free-ship voucher discount
       if (allTotalTransportFee < freeShipVoucher.minBillPrice)
@@ -421,6 +439,8 @@ export default class orderModel {
             (allTotalTransportFee * orderArr[i].transportFee) /
               allTotalTransportFee
           );
+          console.log('freeShipVoucher(order): ' + orderArr[i].freeShipVoucher);
+          console.log('-------');
         }
       } else {
         for (let i = 0; i < orderArr.length; i++) {
@@ -428,6 +448,8 @@ export default class orderModel {
             (freeShipVoucher.priceDiscount * orderArr[i].transportFee) /
               allTotalTransportFee
           );
+          console.log('freeShipVoucher(order): ' + orderArr[i].freeShipVoucher);
+          console.log('-------');
         }
       }
     }
