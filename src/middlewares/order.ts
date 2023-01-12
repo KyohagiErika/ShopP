@@ -301,13 +301,9 @@ export default class OrderMiddleware {
    *    type: object
    *    properties:
    *     title:
-   *      type: string
-   *      description: title
-   *      example: 'ORDER_HAS_ARRIVED_TO_STATION_1'
+   *      $ref: '#/components/schemas/TitleStatusEnum'
    *     deliveryStatus:
-   *      type: string
-   *      description: status
-   *      example: 'DELIVERING'
+   *      $ref: '#/components/schemas/DeliveryStatusEnum'
    *     location:
    *      type: string
    *      description: location of package
@@ -334,7 +330,7 @@ export default class OrderMiddleware {
         type: String,
         validator: (propName: string, value: string) => {
           if (
-            value.toUpperCase() !== 'ORDER_IS_REPARING' &&
+            value.toUpperCase() !== 'ORDER_IS_REPAIRING' &&
             value.toUpperCase() !== 'ORDER_READY_TO_BE_SEND' &&
             value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_1' &&
             value.toUpperCase() !== 'ORDER_HAS_ARRIVED_TO_STATION_2' &&
