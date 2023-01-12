@@ -9,7 +9,7 @@ const routes = Router();
 
 /**
  * @swagger
- * /transport-fee/get/{shopId}:
+ * /transport-fee/get/{shopId}/{placeOfDelivery}:
  *  get:
  *   tags:
  *    - Transport Fee
@@ -25,6 +25,13 @@ const routes = Router();
  *      required: true
  *      description: id of the shop
  *      example: 27580e3b-6953-43cc-a482-eaa62b997883
+ *    - in: path
+ *      name: placeOfDelivery
+ *      schema:
+ *       type: string
+ *      required: true
+ *      description: placeOfDelivery of the customer
+ *      example: Thu Duc, Ho Chi Minh
  *   responses:
  *    200:
  *     description: Success
@@ -45,7 +52,7 @@ const routes = Router();
  *     $ref: '#/components/responses/404NotFound'
  */
 routes.get(
-  '/get/:shopId',
+  '/get/:shopId/:placeOfDelivery',
   [AuthMiddleware.checkJwt, checkRole(RoleEnum.CUSTOMER)],
   TransportFeeMiddleware.getTransportFee
 );

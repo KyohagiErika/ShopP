@@ -17,15 +17,23 @@ export default class TransportFeeMiddleware {
   })
   static async getTransportFee(req: Request, res: Response) {
     const shopId = req.params.shopId;
-    const customer = res.locals.user.customer;
     const shop = await shopModel.getOneById(shopId);
     if (shop == false)
       return res
         .status(HttpStatusCode.NOT_FOUND)
         .send({ message: 'Shop not found' });
+
+    const customer = res.locals.user.customer;
+    const placeOfDelivery = req.params.placeOfDelivery;
+    if (!customer.placeOfDelivery.includes(placeOfDelivery)) {
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .send({ message: "Invalid customer's place of delivery" });
+    }
+
     const result = await TransportFeeModel.getTransportFee(
       shop.placeOfReceipt,
-      customer.placeOfDelivery
+      placeOfDelivery
     );
     if (result.getCode() == HttpStatusCode.OK)
       return res
