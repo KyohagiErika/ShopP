@@ -83,7 +83,7 @@ export class Shop {
   @Column()
   phone: string;
 
-  @Column()
+  @Column({ type: 'text' })
   placeOfReceipt: string;
 
   @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
