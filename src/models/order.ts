@@ -477,12 +477,12 @@ export default class orderModel {
       }
       const check = await trackingRepository.find({
         where: {
-          orderNumber: {id: id},
-          deliveryStatus: Like(DeliveryStatusEnum.DELIVERING)
-        }
-      })
-      for(let i = 0; i<check.length; i++){
-        if(check[i].title>title){
+          orderNumber: { id: id },
+          deliveryStatus: Like(DeliveryStatusEnum.DELIVERING),
+        },
+      });
+      for (let i = 0; i < check.length; i++) {
+        if (check[i].title > title) {
           return new Response(
             HttpStatusCode.BAD_REQUEST,
             'Cannot change title backward'

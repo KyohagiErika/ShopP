@@ -102,7 +102,7 @@ export class Customer {
   @JoinColumn()
   user: User;
 
-  @Column()
+  @Column({ type: 'text' })
   placeOfDelivery: string;
 
   @Column({

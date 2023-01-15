@@ -366,8 +366,12 @@ export default class OrderMiddleware {
     }
     const newTitle = getValueByKeyEnum(TitleStatusEnum, title);
 
-    const check = await trackingOrderModel.checkTracking(id, newDeliveryStatus, newTitle);
-    if(check!=false){
+    const check = await trackingOrderModel.checkTracking(
+      id,
+      newDeliveryStatus,
+      newTitle
+    );
+    if (check != false) {
       return res
         .status(HttpStatusCode.BAD_REQUEST)
         .send({ message: 'this tracking already exist' });

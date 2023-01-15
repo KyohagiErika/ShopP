@@ -28,15 +28,19 @@ export default class trackingOrderModel {
     return trackingOrder ? trackingOrder : false;
   }
 
-  static async checkTracking(id: string, deliveryStatus: number, title: number){
+  static async checkTracking(
+    id: string,
+    deliveryStatus: number,
+    title: number
+  ) {
     const tracking = await trackingOrderRepository.findOne({
       where: {
-        orderNumber: {id: id},
+        orderNumber: { id: id },
         deliveryStatus: Like(deliveryStatus),
-        title: Like(title)
-      }
+        title: Like(title),
+      },
     });
-    return tracking ? tracking: false
+    return tracking ? tracking : false;
   }
 
   static async postNew(
