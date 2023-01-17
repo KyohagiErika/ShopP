@@ -81,7 +81,7 @@ class AuthMiddleware {
       flag
     );
     if (result.getCode() === HttpStatusCode.OK) {
-      res.cookie('jwt', result.getData().refreshToken, {
+      res.cookie('refresh_token', result.getData().refreshToken, {
         httpOnly: true,
         sameSite: 'none',
         //secure: true,
