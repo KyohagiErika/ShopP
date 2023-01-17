@@ -14,6 +14,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.enable('trust proxy');
 app.use(
   cors({
     origin: '*',
@@ -21,7 +22,7 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
     credentials: true,
     maxAge: 600,
-    exposedHeaders: ['*', 'Authorization'],
+    exposedHeaders: ['Authorization'],
   })
 );
 // app.use(helmet());
