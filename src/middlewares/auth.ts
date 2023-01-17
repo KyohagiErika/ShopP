@@ -81,7 +81,7 @@ class AuthMiddleware {
       flag
     );
     if (result.getCode() === HttpStatusCode.OK) {
-      res.cookie('jwt', result.getData().refreshToken, {
+      res.cookie('refresh_token', result.getData().refreshToken, {
         httpOnly: true,
         sameSite: 'none',
         //secure: true,
@@ -501,8 +501,8 @@ class AuthMiddleware {
 
   static async refreshToken(req: Request, res: Response) {
     //Get the jwt token from the cookies
-    if (req.cookies?.jwt) {
-      const refreshToken = req.cookies.jwt;
+    if (req.cookies?.refresh_token) {
+      const refreshToken = req.cookies.refresh_token;
       jwt.verify(
         refreshToken,
         config.REFRESH_TOKEN_SECRET,

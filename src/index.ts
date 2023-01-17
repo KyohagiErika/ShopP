@@ -14,7 +14,17 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors());
+app.enable('trust proxy');
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
+    credentials: true,
+    maxAge: 600,
+    exposedHeaders: ['Authorization'],
+  })
+);
 // app.use(helmet());
 app.use(routes);
 app.use(express.static(path.join(__dirname, 'public/uploads')));
